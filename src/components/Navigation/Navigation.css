@@ -1,0 +1,20 @@
+header {
+    background-color: #743939;
+    height: 80px;
+    z-index: 1000;
+}
+
+/* nav .links {
+    line-height: 25px;
+    justify-content: flex-end;
+} */
+nav a:last-of-type {
+    position: relative;
+    top: -4px;
+    margin-left: 20px;
+}
+nav img {
+    height: 25px;
+    -webkit-filter: grayscale(1) invert(1);
+    filter: grayscale(1) invert(1);
+;}

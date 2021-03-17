@@ -1,0 +1,30 @@
+
+.courses-table-container tbody tr{
+    height: 60px;
+}
+.courses-table-container tbody tr td{
+    height: 60px;
+    /* padding: 0px;
+    margin: 0px; */
+}
+
+.courses-table-container .academics-course-name {
+    width: 76%;
+}
+
+.academics-course-f, .academics-course-p, .academics-course-hp, .academics-course-h, .blank-col {
+    width: 6%;
+}
+
+
+.course-grade-filled{
+    /* width: 80%; */
+    height: 80%;
+    background-color: #6FBA84;
+}
+
+
+
+.score-container {
+    width: 50%;
+}

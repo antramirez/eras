@@ -1,0 +1,89 @@
+.fc .fc-today-button, .fc .fc-today-button:disabled, .fc .fc-today-button:hover, .fc .fc-today-button:active, .fc .fc-today-button:focus, .fc .fc-button-primary, .fc .fc-button-primary:hover, .fc-prev-button, .fc-next-button {
+    background-color: transparent;
+}
+
+.fc .fc-scrollgrid, .fc .fc-scrollgrid table {
+    border: none;
+}
+
+
+.fc-theme-standard th {
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    border-left: none;
+    border-right: none;
+}
+
+.fc-theme-standard td {
+    border: none;
+}
+
+
+#goals_tasks > div.mw8.calendar-container > div.calendar.pa2.white > div > div.fc-view-harness.fc-view-harness-active > div > table > thead > tr > td > div > div > table > tbody > tr {
+    padding-top: 1.75em;
+    padding-bottom: 1.75em;
+}
+
+
+.fc-daygrid-event {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+div.fc-daygrid-day-top .fc-daygrid-day-number{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding-top: .6em;
+}
+
+
+.fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events a {
+    display: block;
+    height: 100%;
+}
+
+.fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events {
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    padding: 0;
+}
+.fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events > *{
+    /* display: block;
+    width: 25px;
+    height: 25px;
+    min-height: 0px;
+    border-radius: 0px; */
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    margin: 0.15em;
+    /* width: 100%;
+    height: 100px; */
+}
+
+.fc-event .fc-event-main {
+    /* position: absolute !important; */
+    /* height: auto; */
+    background-color: blue;
+    position: absolute;
+    border-radius: 50%;
+    right:-.4em;
+    top: -.4em;
+    height: 10px;
+    width: 10px;
+    z-index: 10;
+}
+.fc-event .fc-event-main i{
+    visibility: hidden;
+}

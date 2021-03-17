@@ -1,0 +1,53 @@
+#uploads {
+    background-color: #D8B8A0;
+}
+
+.file_upload_container {
+    background: rgba(192, 151, 148, 0.49);
+    border: 1px solid #000000;
+    height: 50px;
+}
+
+.inputfile {
+	width: 0.1px;
+	height: 0.1px;
+	/* opacity: 0;
+	overflow: hidden; */
+	position: absolute;
+	z-index: -1;
+}
+
+.inputfile + label {
+    font-size: 1.25em;
+    font-weight: 700;
+    color: black;
+    /* background-color: black; */
+    display: inline-block;
+	cursor: pointer; 
+    width: 100%; /* to make entire row clickable */
+}
+
+/* .inputfile:focus + label,
+.inputfile + label:hover {
+    background-color: red;
+} */
+
+.inputfile:focus + label {
+	outline: 1px dotted #000;
+	outline: -webkit-focus-ring-color auto 5px;
+}
+
+.upload-label {
+    padding-top: .6em;
+    padding-left: .75em;
+}
+
+.upload-label span {
+    /* top: 10px; */
+    top: .5em;
+}
+
+.upload-label span img {
+    width: 25px;
+    height: auto;
+}

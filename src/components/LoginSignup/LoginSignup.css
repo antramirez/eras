@@ -1,0 +1,6 @@
+.login-signup-container input[type=submit] {
+    background-color: #B47B7B;
+    width: 100px;
+    height: 40px;
+    border: none;
+}
