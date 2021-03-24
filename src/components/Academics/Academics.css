@@ -1,11 +1,9 @@
-
+/* Courses table */
 .courses-table-container tbody tr{
     height: 60px;
 }
 .courses-table-container tbody tr td{
     height: 60px;
-    /* padding: 0px;
-    margin: 0px; */
 }
 
 .courses-table-container .academics-course-name {
@@ -16,15 +14,102 @@
     width: 6%;
 }
 
-
 .course-grade-filled{
-    /* width: 80%; */
     height: 80%;
     background-color: #6FBA84;
 }
 
+.courses-table-container .edit-btn {
+    display: inline-block;
+    background-color: transparent;
+    border: none;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    left: 3em;
+    top: 1em;
+    padding: 0;
+    cursor: pointer;
+}
 
 
+
+/* Edit Course Pop Up */
+.edit-course-popup-container {
+    position: fixed;
+    z-index: 100000;
+    background-color: rgba(220, 220, 220, .7);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.edit-course-popup-container > form {
+    background-color: #E5E1E1;
+    width: 20rem;
+    height: 22rem;
+}
+
+.edit-course-popup-container > form select{
+    background-color: rgba(202, 125, 125, 0.16);
+}
+
+
+/* Add Course Pop Up */
+.add-course-popup-container {
+    position: fixed;
+    z-index: 100000;
+    background-color: rgba(220, 220, 220, .7);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.add-course-popup-container > form {
+    background-color: #E5E1E1;
+    width: 28rem;
+    height: 22rem;
+}
+
+.add-course-popup-container > form select{
+    background-color: rgba(202, 125, 125, 0.16);
+    height: 40px;
+}
+
+
+/* Edit Step 1/2 Score Pop Up */
+.edit-score-popup-container {
+    position: fixed;
+    z-index: 100000;
+    background-color: rgba(220, 220, 220, .7);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.edit-score-popup-container > form {
+    background-color: #E5E1E1;
+    width: 20rem;
+    height: 18rem;
+}
+
+
+/* Step 1&2 Scores */
 .score-container {
     width: 50%;
+}
+
+.score-container span {
+    width: 1.2rem;
+    position: relative;
+    bottom: .25rem;
+    cursor: pointer;
+}
+
+.score-container span img {
+    height: 1.2rem;
 }

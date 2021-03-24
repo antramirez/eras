@@ -1,23 +1,17 @@
+/* Publication */
 .publication {
     width: 300px;
     height: 350px;
     max-width: 100%;
 }
 
-.publication > img {
+.publication a > img {
     height: 30px;
     bottom: 1em;
     right: 1em;
 }
 
-
-.add-publication-popup select {
-    background-color: rgba(202, 125, 125, 0.16);
-    height: 40px;
-}
-
-
-.research-pub {
+.paper-pub {
     background-color: #DED0D0;
 }
 
@@ -27,4 +21,42 @@
 
 .presentation-pub {
     background-color: rgba(164, 66, 0, 0.63);
+}
+
+.other-pub {
+    background-color: #4E5283;
+}
+
+
+/* Add Publication Pop Up */
+.add-publication-popup-container {
+    position: fixed;
+    z-index: 100000;
+    background-color: rgba(220, 220, 220, .7);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.add-publication-popup-container > form {
+    background-color: #E5E1E1;
+    width: 28rem;
+    height: 28rem;
+}
+
+.add-publication-popup-container > form select {
+    background-color: rgba(202, 125, 125, 0.16);
+    height: 40px;
+}
+
+.close-btn {
+    width: 30px;
+    top: 1em;
+    right: .5em;
+    cursor: pointer;
+}
+
+.close-btn img{
+    width: 100%;
 }

@@ -4,3 +4,7 @@
     height: 40px;
     border: none;
 }
+
+.login-signup-container {
+    min-height: calc(100vh - 160px - 16rem + 80px);
+}

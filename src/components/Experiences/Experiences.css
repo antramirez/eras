@@ -2,22 +2,10 @@
     background-color: rgba(133, 144, 179, 0.42);
 }
 
+/*Experience Card */
 .experience {
-    /* flex-; */
     width: 450px;
     max-width: 100%;
-}
-
-.experience span {
-    /* height: 1rem; */
-    width: 1rem;
-    bottom: -1px;
-    cursor: pointer;
-}
-
-.experience span img {
-    height: 1rem;
-
 }
 
 .experience > img {
@@ -31,7 +19,56 @@
     right: -1.6rem;
 }
 
-.add-experience-popup textarea {
-    background-color: rgba(121, 127, 171, 0.29);
+.experience span {
+    width: 1rem;
+    bottom: -1px;
+    cursor: pointer;
+}
+
+.experience span img {
+    height: 1rem;
+}
+
+
+/* Add Experience Pop Up */
+.add-experience-popup-container {
+    position: fixed;
+    z-index: 100000;
+    background-color: rgba(133, 144, 179, 0.42);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.add-experience-popup-container form {
+    background-color: #BDBFCD;
+}
+
+.add-experience-popup-container form textarea {
+    background: rgba(121, 127, 171, 0.29);
     min-height: 200px;
+    width: 28rem;
+}
+
+
+/* Edit Experience Pop Up */
+.edit-experience-popup-container {
+    position: fixed;
+    z-index: 100000;
+    background-color: rgba(133, 144, 179, 0.42);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.edit-experience-popup-container form {
+    background-color: #BDBFCD;
+}
+
+.edit-experience-popup-container form textarea {
+    background: rgba(121, 127, 171, 0.29);
+    min-height: 200px;
+    width: 28rem;
 }

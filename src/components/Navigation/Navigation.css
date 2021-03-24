@@ -4,15 +4,25 @@ header {
     z-index: 1000;
 }
 
-/* nav .links {
-    line-height: 25px;
-    justify-content: flex-end;
-} */
-nav a:last-of-type {
+nav a.account-icon:last-of-type {
     position: relative;
     top: -4px;
     margin-left: 20px;
 }
+
+nav a:last-of-type {
+    position: relative;
+    margin-left: 20px;
+}
+
+.account-icon {
+    top: -4px;
+}
+
+.signup-icon {
+    top: -9px;
+}
+
 nav img {
     height: 25px;
     -webkit-filter: grayscale(1) invert(1);
