@@ -6,6 +6,7 @@
     max-width: 80em;
 }
 
+/* Calendar */
 .calendar-container {
     background-color: #85A9AE;
 }
@@ -32,7 +33,7 @@
 }
 
 
-
+/* Tasks */
 .tasks-container {
     max-width: 650px;
     width: 70%;
@@ -41,8 +42,6 @@
 #task-table {
     color: #FFFFFF;
 }
-/* .num_tasks {
-} */
 
 .num_tasks img{
     height: 30px;
@@ -59,11 +58,24 @@
 #task-table .task-border {
     border-color: #FFFFFF;
 }
-/* 
-.task-border:last-of-type {
-    border-bottom: none;
-} */
 
 #task-table .lh-copy tr:last-of-type .task-border {
     border: none;
+}
+
+/* Add Task Pop Up */
+.add-task-popup-container {
+    position: fixed;
+    z-index: 100000;
+    background-color: rgba(97, 129, 133, 0.16);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.add-task-popup-container > form {
+    background-color: #d0d2d2;
+    width: 28rem;
+    height: 22rem;
 }
