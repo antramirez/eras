@@ -6,6 +6,7 @@
     max-width: 80em;
 }
 
+
 /* Calendar */
 .calendar-container {
     background-color: #85A9AE;
@@ -30,6 +31,28 @@
     width: 30px;
     height: 30px;
     left: 10px;
+}
+
+.fc-daygrid-day {
+    cursor: pointer;
+}
+
+
+/* Add Calendar Event Pop Up */
+.add-calendar-event-popup-container {
+    position: fixed;
+    z-index: 100000;
+    background-color: rgba(97, 129, 133, 0.16);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.add-calendar-event-popup-container > form {
+    background-color: #d0d2d2;
+    width: 28rem;
+    height: 22rem;
 }
 
 
@@ -62,6 +85,7 @@
 #task-table .lh-copy tr:last-of-type .task-border {
     border: none;
 }
+
 
 /* Add Task Pop Up */
 .add-task-popup-container {

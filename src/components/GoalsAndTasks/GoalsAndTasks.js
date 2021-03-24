@@ -5,30 +5,116 @@ import AddButton from '../AddButton/AddButton';
 import taskIcon from './../../assets/completed-task.png';
 import cross from './../../assets/cross.svg';
 
-// Temporary events for calendar
-const events = [
-    { title: 'Milestone 1', date: '2021-03-01' },
-    { title: 'Milestone 2', date: '2021-03-20' },
-    { title: 'Milestone 3', date: '2021-03-22' }
-]
+const AddCalendarEventPopUp = ({date, visible, handleDateSelect, handleClose, handleAdd}) => {
+    const popUpContainerRef = useRef(null);
+    const [dateInputValue, setDateInputValue] = useState(date);
+    const [eventInputValue, setEventInputValue] = useState(date);
+
+    // Display the popup everytime visible is true, which happens when add button is pressed
+    useEffect(() => {
+        setDateInputValue(date);
+        if (visible) {
+            if (popUpContainerRef.current) {
+                popUpContainerRef.current.classList.remove('dn');
+                popUpContainerRef.current.classList.add('flex', 'content-center', 'justify-center', 'items-center');
+            }
+        } else {
+            if (popUpContainerRef.current) {
+                popUpContainerRef.current.classList.add('dn');
+                popUpContainerRef.current.classList.remove('flex', 'content-center', 'justify-center', 'items-center');
+            }
+        }
+        
+    }, [visible])
+
+    // Handler for closing pop up
+    const handleCloseClick = (e) => {
+        e.preventDefault();
+        handleClose();
+    }
+
+    // Handler for event input change
+    const handleInputChange = (e) => {
+        setEventInputValue(e.target.value);
+        // handleDateSelect(inputValue)
+    }
+
+    // Handler for submitting form
+    const handleAddClick = (e) => {
+        e.preventDefault();
+        handleAdd(eventInputValue, dateInputValue);
+        handleClose();
+    }
+
+    return (
+        <article className="add-calendar-event-popup-container  " ref={popUpContainerRef}>
+            <form className="black-80 mw6 center pa4 shadow-5 br3 relative" acceptCharset="utf-8">
+                <button className="close-btn absolute bn bg-transparent" onClick={handleCloseClick}>
+                    <img src={cross} alt=""/>
+                </button>
+                <h3 className="f3">Add Goal or Milestone</h3>
+                <fieldset id="log_in" className="ba b--transparent ph0 mh0">
+                    <div className="mt3">
+                        <label className="db fw4 lh-copy f5" htmlFor="calendar-event-date">Date</label>
+                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="calendar-event-date"  id="calendar-event-date" readOnly value={dateInputValue}/>
+                    </div>
+                    <div className="mt3">
+                        <label className="db fw4 lh-copy f5" htmlFor="calendar-event-title">Goal/Milestone</label>
+                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="calendar-event-title"  id="calendar-event-title" onChange={handleInputChange}/>
+                    </div>
+                </fieldset>
+                <button className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleAddClick}>Add</button>
+            </form>
+        </article>
+    )
+}
 
 const CalendarSection = () => {
+    const [showAddCalendarEventPopUp, setShowAddCalendarEventPopUp] = useState(false);
+    const [dateOfEvent, setDateOfEvent] = useState('');
+
+    // Temporary events for calendar
+    const [events, setEvents] = useState([
+        { title: 'Milestone 1', date: '2021-03-01'},
+        { title: 'Milestone 2', date: '2021-03-20' },
+        { title: 'Milestone 3', date: '2021-03-22' }
+    ])
+
+    useEffect( () => {
+        setEvents(events);
+    }, [events.length])
+
+    // Handlers for clicking add and close button to display/hide pop up
+    const handleDateClick = (date) => {
+        setDateOfEvent(date);
+        setShowAddCalendarEventPopUp(true);
+    }
+    const handleClose = () => {
+        setShowAddCalendarEventPopUp(false);
+    }
+
+    // Handler for adding event and updating calendar events
+    const handleAddEvent = (title, date) => {
+        console.log(events.push({title, date}));
+        setEvents(events);
+    }
+
     return (
         <div className="calendar-container">
             <div className="calendar pa2 white">
-                <Calendar events={events}/>
+                <Calendar events={events} handleDateClick={handleDateClick} />
             </div>
             <div className="calendar-events">
                 {events.map(e=> 
                     <div className="calendar-event-container pa3 bb b--white flex">
                         <div className="calendar-event-icon-container relative ml3 mr3 br4 pa1 flex justify-center items-center ">
                             <img src={taskIcon} alt=""/>
-
                         </div>
-                        <p>{e.title}</p>
+                        <p>{e.date} - {e.title}</p>
                     </div>
                 )}
             </div>
+            <AddCalendarEventPopUp date={dateOfEvent} visible={showAddCalendarEventPopUp} handleClose={handleClose} handleAdd={handleAddEvent} />
         </div>
     )
 }
