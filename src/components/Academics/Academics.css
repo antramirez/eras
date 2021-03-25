@@ -34,7 +34,6 @@
 }
 
 
-
 /* Edit Course Pop Up */
 .edit-course-popup-container {
     position: fixed;
@@ -54,6 +53,7 @@
 
 .edit-course-popup-container > form select{
     background-color: rgba(202, 125, 125, 0.16);
+    height: 40px;
 }
 
 

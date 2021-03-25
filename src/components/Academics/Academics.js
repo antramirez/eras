@@ -76,7 +76,7 @@ const AddCoursePopUp = ({visible, handleClose, handleAdd}) => {
     )
 }
 
-const EditCoursePopUp = ({course, grade, visible, handleClose, handleEdit}) => {
+const EditCoursePopUp = ({course, grade, visible, handleClose, handleEdit, handleDelete}) => {
     const popUpContainerRef = useRef(null);
     const [courseInputValue, setCourseInputValue] = useState(course);
     const [gradeInputValue, setGradeInputValue] = useState(grade);
@@ -114,11 +114,18 @@ const EditCoursePopUp = ({course, grade, visible, handleClose, handleEdit}) => {
         setGradeInputValue(e.target.value)
     }
 
-    // Handler for submitting form
+    // Handler for submitting form to edit course
     const handleEditClick = (e) => {
         e.preventDefault();
         handleEdit({title: course, grade: grade}, courseInputValue, gradeInputValue);
         handleClose();
+    }
+
+    // Handler for submitting form to delete course
+    const handleDeleteClick = (e) => {
+        e.preventDefault();
+        handleDelete(course);
+        handleClose()
     }
 
     return (
@@ -145,7 +152,10 @@ const EditCoursePopUp = ({course, grade, visible, handleClose, handleEdit}) => {
                         </select>
                     </div>
                 </fieldset>
-                <button className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleEditClick}>Edit</button>
+                <div className="buttons tc">
+                    <button className=" mt3 mb2 mr2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleEditClick}>Edit</button>
+                    <button className=" mt3 mb2 ml2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleDeleteClick}>Delete</button>
+                </div>
             </form>
         </article>
     )
@@ -168,7 +178,7 @@ const Course = ({title, grade, handleEdit}) => {
 
     return (
         <tr className="stripe-dark relative">
-            <td className="pa3">{title}</td>
+            <td className="pa3 f5">{title}</td>
             {row.map(cell => cell)}
             <button className="edit-btn" onClick={handleClick}><img src={editPNG} alt="Edit icon"/></button>
         </tr>
@@ -214,12 +224,18 @@ const Courses = () => {
         setGradeToEdit(grade)
 
         setShowEditCoursePopUp(true)
-        console.log(course)
     }
 
     // Handler to add a course to the table
     const handleAddCourse = (title, grade) => {
         courses.push({title: title, grade: grade})
+        setCourses(courses)
+    }
+
+    // Handler to delete a course and update courses
+    const handleDeleteCourse = (title) => {
+        const courseToDelete = courses.find(course => course.title === title)
+        courses.splice(courses.indexOf(courseToDelete), 1);
         setCourses(courses)
     }
 
@@ -237,7 +253,7 @@ const Courses = () => {
                 <table className="f6 w-100 mw8 center" cellSpacing="0">
                 <thead>
                     <tr className="">
-                        <th className="fw6 tl pa3 academics-course-name">Clerkship Grades</th>
+                        <th className="fw6 tl pa3 academics-course-name f3">Clerkship Grades</th>
                         <th className="fw6 tl pa3 academics-course-f">F</th>
                         <th className="fw6 tl pa3 academics-course-p">P</th>
                         <th className="fw6 tl pa3 academics-course-hp">HP</th>
@@ -252,7 +268,7 @@ const Courses = () => {
             </div>
             <AddButton onClick={handleAddClick}/>
             <AddCoursePopUp visible={showAddCoursePopUp} handleClose={handleAddClose} handleAdd={handleAddCourse} />
-            <EditCoursePopUp course={courseTitleToEdit} grade={courseGradeToEdit} visible={showEditCoursePopUp} handleClose={handleEditClose} handleEdit={handleEditCourse}/>
+            <EditCoursePopUp course={courseTitleToEdit} grade={courseGradeToEdit} visible={showEditCoursePopUp} handleClose={handleEditClose} handleEdit={handleEditCourse} handleDelete={handleDeleteCourse} />
         </div>
     )
 }

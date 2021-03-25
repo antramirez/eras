@@ -4,6 +4,7 @@ import './GoalsAndTasks.css';
 import AddButton from '../AddButton/AddButton';
 import taskIcon from './../../assets/completed-task.png';
 import cross from './../../assets/cross.svg';
+import check from './../../assets/check-mark.svg';
 
 const AddCalendarEventPopUp = ({date, visible, handleDateSelect, handleClose, handleAdd}) => {
     const popUpContainerRef = useRef(null);
@@ -176,12 +177,15 @@ const AddTaskPopUp = ({visible, handleClose, handleAdd }) => {
     )
 }
 
-const Task = ({task}) => {
+const Task = ({task, onClick}) => {
     return (
-       <tr>
-           <td className="pv3  pr3 bb task-border ">
-                <p className="f4 pl3 mt1 mb1">{task}</p>
-           </td>
+       <tr className="relative bb task-border task-row">
+            <td className="pv3 pr3 task-cell">
+                    <p className="f4 pl3 mt1 mb1">{task}</p>
+            </td>
+            <td>
+                <button className="bg-transparent bn b grow pointer f6 check-mark" onClick={onClick}><img src={check} alt="Check mark"/></button>
+            </td>
        </tr>
     )
 }
@@ -192,6 +196,12 @@ const TaskTable = () => {
                                         'Email Professor Erling about letter of rec',
                                         'Finish chapter 3 of textbook'
                                     ])
+    const [numTasks, setNumTasks] = useState(tasks.length)
+
+    // update tasks every time number of tasks in array updates
+    useEffect(() => {
+        setTasks(tasks);
+    }, [numTasks])
 
     // Handlers for clicking add/closing pop up
     const handleAddTaskClick = (e) => {
@@ -206,13 +216,23 @@ const TaskTable = () => {
         tasks.push(task)
         setTasks(tasks)
     }
+
+    // Handler for marking task comleted (removing task)
+    const handleMarkCompleted = (task) => {
+        const taskToRemove = tasks.find(task => task === task);
+        tasks.splice(tasks.indexOf(taskToRemove), 1)
+        setTasks(tasks);
+        // task array doesn't update immediately so useEffect will run when numTasks updates instead
+        setNumTasks(tasks.length)
+    }
+
     return (
         <div className="tasks-container ml4">
-            <div className="overflow-auto">
-                <table id="task-table" className="f3 w-100 mw9 center" cellSpacing="0">
+            <div className="">
+                <table id="task-table" className="f3 w-100 mw9 center collapse" cellSpacing="0">
                 <thead>
                     <tr>
-                        <th className="fw6 bb b--black-20 tl pb3 pr3 pl3 tc">
+                        <th className="fw6 tl pb3 pl4 tc">
                             <h2 className="f1 mb2 mt2">Tasks</h2>
                             <div className="num_tasks flex justify-center items-center">
                                 <img className="ma1" src={taskIcon} alt=""/>
@@ -220,10 +240,11 @@ const TaskTable = () => {
                             </div>
                             <p className="f3 mb1 mt2">tasks due</p>
                         </th>
+                        <th className="check-box"></th>
                     </tr>
                 </thead>
                 <tbody className="lh-copy">
-                    {tasks.map(task => <Task task={task} />)}
+                    {tasks.map(task => <Task task={task} onClick={() => handleMarkCompleted(task)}/>)}
                 </tbody>
                 </table>
             </div>

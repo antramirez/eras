@@ -112,7 +112,7 @@ const AddExperiencePopUp = ({visible, handleClose, handleAdd}) => {
     )
 }
 
-const EditExperiencePopUp = ({org, imgType, position, start, end, description, visible, handleClose, handleEdit}) => {
+const EditExperiencePopUp = ({org, imgType, position, start, end, description, visible, handleClose, handleEdit, handleDelete}) => {
     const popUpContainerRef = useRef(null);
     // Values of form
     const [orgInputValue, setOrgInputValue] = useState(org);
@@ -166,10 +166,17 @@ const EditExperiencePopUp = ({org, imgType, position, start, end, description, v
         setDescInputValue(e.target.value);
     }
 
-    // Handler for submit
+    // Handler for submitting edited publication
     const handleEditClick = (e) => {
         e.preventDefault();
         handleEdit({organization: org, image: imgType, position: position, startDate: start, endDate: end, description: description}, orgInputValue, imgType, posInputValue, startInputValue, endInputValue, descInputValue);
+        handleClose();
+    }
+
+    // Handler for submitting form to delete experience
+    const handleDeleteClick = (e) => {
+        e.preventDefault();
+        handleDelete(org);
         handleClose();
     }
 
@@ -202,7 +209,10 @@ const EditExperiencePopUp = ({org, imgType, position, start, end, description, v
                         <textarea className="experience-description pa2 input-reset bn w-100 measure" type="text" name="edit-description" id="edit-description" value={descInputValue} onChange={handleDescInputChange}/>
                     </div>
                 </fieldset>
-                <button className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleEditClick}>Edit</button>
+                <div className="tc">
+                    <button className=" mt3 mb2 mr2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleEditClick}>Edit</button>
+                    <button className=" mt3 mb2 ml2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleDeleteClick}>Delete</button>
+                </div>
             </form>
         </article>
     )
@@ -303,6 +313,13 @@ const Experiences = () => {
         setExperiences(experiences)
     }
 
+    // Handler for deleting experience and updating experiences
+    const handleDeleteExperience = (org) => {
+        const expToDelete = experiences.find(exp => exp.organization === org)
+        experiences.splice(experiences.indexOf(expToDelete), 1);
+        setExperiences(experiences);
+    }
+
     return (
         <section id="experiences" className="ph4 pv4 pv5-ns ph4-m ph5-l">
             <h1 className="pl3 f1">Experiences</h1>
@@ -311,7 +328,7 @@ const Experiences = () => {
                 {experiences.map(exp => <Experience organization={exp.organization} image={exp.image} position={exp.position} startDate={exp.startDate} endDate={exp.endDate} description={exp.description} handleEdit={() => handleEditClick(exp.organization, exp.image, exp.position, exp.startDate, exp.endDate, exp.description)}/>)}
             </div>
             <AddExperiencePopUp visible={showAddPopUp} handleClose={handleAddClose} handleAdd={handleAddExperience}/>
-            <EditExperiencePopUp org={orgToEdit} imgType={imgToSave} position={posToEdit} start={startToEdit} end={endToEdit} description={descToEdit} visible={showEditPopUp} handleClose={handleEditClose} handleEdit={handleEditExperience}/>
+            <EditExperiencePopUp org={orgToEdit} imgType={imgToSave} position={posToEdit} start={startToEdit} end={endToEdit} description={descToEdit} visible={showEditPopUp} handleClose={handleEditClose} handleEdit={handleEditExperience} handleDelete={handleDeleteExperience} />
         </section>
     )
 }

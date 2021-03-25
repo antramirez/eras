@@ -27,6 +27,7 @@
     background-color: #E5E1E1;
     border-radius: 50%;
 }
+
 .calendar-event-container .calendar-event-icon-container img {
     width: 30px;
     height: 30px;
@@ -37,6 +38,13 @@
     cursor: pointer;
 }
 
+.fc .fc-button-primary, .fc .fc-button-primary:disabled, .fc .fc-button-primary:hover, .fc .fc-button-primary:disabled:hover {
+    border-color: white;
+}
+
+.fc .fc-button-primary:not(:disabled):active {
+    background-color: transparent;
+}
 
 /* Add Calendar Event Pop Up */
 .add-calendar-event-popup-container {
@@ -67,7 +75,9 @@
 }
 
 .num_tasks img{
+    position: relative;
     height: 30px;
+    bottom: 4px;
 }
 
 #task-table thead tr th{
@@ -82,8 +92,41 @@
     border-color: #FFFFFF;
 }
 
-#task-table .lh-copy tr:last-of-type .task-border {
+#task-table .lh-copy tr:last-of-type.task-border {
     border: none;
+}
+
+.task-cell {
+    width: calc(100% -  2rem);
+}
+
+.check-box {
+    width: 2rem;
+}
+
+.task-row:hover td button {
+    visibility: visible;
+}
+
+.task-row td button {
+    visibility: hidden;
+}
+
+.check-mark  {
+    display: inline-block;
+    background-color: transparent;
+    border: none;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    right: 1em;
+    top: .5em;
+    padding: 0;
+    cursor: pointer;
+}
+
+.check-box button img {
+    width: 100%;
 }
 
 
