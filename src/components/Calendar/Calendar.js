@@ -18,7 +18,8 @@ const Calendar = ({events, handleDateClick}) => {
 
   // Handler for when a date is clicked, which passes date to parent
   const handleClick = (info) => {
-    handleDateClick(info.dateStr);
+    const dateFormatted = `${info.date.toLocaleDateString("en", {month: "short"})} ${info.date.getDate()}, ${info.date.getFullYear()}`;
+    handleDateClick(info.dateStr, dateFormatted, info.date);
   }
 
   // Use Calendar API to add event to calendar every time the array of events gets bigger

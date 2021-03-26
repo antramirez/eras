@@ -8,7 +8,7 @@
 
 
 /* Calendar */
-.calendar-container {
+.calendar {
     background-color: #85A9AE;
 }
 
@@ -112,7 +112,7 @@
     visibility: hidden;
 }
 
-.check-mark  {
+.task-row .check-mark  {
     display: inline-block;
     background-color: transparent;
     border: none;
@@ -125,7 +125,7 @@
     cursor: pointer;
 }
 
-.check-box button img {
+.task-row .check-box button img {
     width: 100%;
 }
 
