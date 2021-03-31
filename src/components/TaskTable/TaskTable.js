@@ -22,9 +22,19 @@ const AddTaskPopUp = ({visible, handleClose, handleAdd, cross }) => {
         
     }, [visible])
 
+    // Reset input field
+    const resetForm = () => {
+        setInputValue('');
+
+        if (popUpContainerRef.current) {
+            popUpContainerRef.current.firstChild.reset();
+        }
+    }
+
     // Handler for closing pop up
     const handleCloseClick = (e) => {
         e.preventDefault();
+        resetForm();
         handleClose();
     }
     
@@ -32,6 +42,7 @@ const AddTaskPopUp = ({visible, handleClose, handleAdd, cross }) => {
     const handleAddClick = (e) => {
         e.preventDefault();
         handleAdd(inputValue);
+        resetForm();
         handleClose();
     }
 

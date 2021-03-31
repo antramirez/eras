@@ -24,11 +24,11 @@
     background-color: transparent;
     border: none;
     position: relative;
-    width: 30px;
-    height: 30px;
+    width: 1.5em;
+    height: 1.5em;
     display: inline-block;
     left: 3em;
-    top: 1em;
+    top: 1.4em;
     padding: 0;
     cursor: pointer;
 }
@@ -101,6 +101,20 @@
 /* Step 1&2 Scores */
 .score-container {
     width: 50%;
+}
+
+.score-container button {
+    width: 1.2rem;
+    height: 1.2rem;
+    position: relative;
+    top: 1.2em;
+    padding: 0px;
+    margin-left: .8em;
+    cursor: pointer;
+}
+
+.score-container button img {
+    height: 100%;
 }
 
 .score-container span {

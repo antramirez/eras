@@ -6,24 +6,14 @@
 }
 
 .add-button {
+    display: block;
     width: 30px;
     height: 30px;
     cursor: pointer;
-    background-color: rgba(87,82,82,0);
     border-radius: 25px;
     border: 0;
     font-size: 2rem;
     padding: 0px;
-    -webkit-transition: all .3s ease-in-out;
-    -moz-transition: all .3s ease-in-out;
-    -o-transition: all .3s ease-in-out;
-    transition: background-color .3s ease-in;
-    bottom: 1rem;
-    right: 2rem;
-}
-
-.add-button:hover {
-    background-color: #DED0D0;
 }
 
 .add-button:focus {

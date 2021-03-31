@@ -12,8 +12,11 @@ const Experience = ({organization, image, position, startDate, endDate, descript
         handleEdit(organization, position, startDate, endDate, description)
     }
     return (
-        <article className="experience relative mw5 mw6-ns hidden mv4 pa3 ma2 dib">
-            <h3 className="f4 mv0 pv2 bb">{organization} <span><img src={editPNG} alt="Edit button"  onClick={handleClick} /></span></h3>
+        <article className="experience relative mw5 mw6-ns dib">
+            <div className="experience-heading bb flex">
+                <h3 className="f4 mv0 pv2">{organization}</h3>
+                <button className="bg-transparent bn b grow"><img src={editPNG} alt="Edit button"  onClick={handleClick} /></button>
+            </div>
             <img className="absolute" src={image} alt="Experience Type"/>
             <h4 className="mt2 mb1 i-ns">{`${position} (${startDate} - ${endDate})`}</h4>
             <div className="pa2">
@@ -47,8 +50,22 @@ const AddExperiencePopUp = ({visible, handleClose, handleAdd}) => {
         
     }, [visible])
 
+    // Reset input fields
+    const resetForm = () => {
+        setExperienceOrg('');
+        setExperiencePos('');
+        setExperienceStart('');
+        setExperienceEnd('');
+        setExperienceDesc('');
+
+        if (popUpContainerRef.current) {
+            popUpContainerRef.current.firstChild.reset();
+        }
+    }
+
     const handleCloseClick = (e) => {
         e.preventDefault();
+        resetForm();
         handleClose();
     }
 
@@ -73,8 +90,8 @@ const AddExperiencePopUp = ({visible, handleClose, handleAdd}) => {
     const handleAddClick = (e) => {
         e.preventDefault();
         handleAdd(experienceOrg, experiencePos, experienceStart, experienceEnd, experienceDesc);
+        resetForm();
         handleClose();
-        // TODO: clear form
     }
 
     return (
@@ -166,10 +183,24 @@ const EditExperiencePopUp = ({org, imgType, position, start, end, description, v
         setDescInputValue(e.target.value);
     }
 
+    // Reset input fields
+    const resetForm = () => {
+        setOrgInputValue('');
+        setPosInputValue('');
+        setStartInputValue('');
+        setEndInputValue('');
+        setDescInputValue('');
+
+        if (popUpContainerRef.current) {
+            popUpContainerRef.current.firstChild.reset();
+        }
+    }
+
     // Handler for submitting edited publication
     const handleEditClick = (e) => {
         e.preventDefault();
         handleEdit({organization: org, image: imgType, position: position, startDate: start, endDate: end, description: description}, orgInputValue, imgType, posInputValue, startInputValue, endInputValue, descInputValue);
+        resetForm();
         handleClose();
     }
 
@@ -177,6 +208,7 @@ const EditExperiencePopUp = ({org, imgType, position, start, end, description, v
     const handleDeleteClick = (e) => {
         e.preventDefault();
         handleDelete(org);
+        resetForm();
         handleClose();
     }
 
@@ -323,9 +355,11 @@ const Experiences = () => {
     return (
         <section id="experiences" className="ph4 pv4 pv5-ns ph4-m ph5-l">
             <h1 className="pl3 f1">Experiences</h1>
-            <AddButton onClick={handleAddClick}/>
-            <div className="experiences-container flex flex-wrap justify-between mw8 center">
-                {experiences.map(exp => <Experience organization={exp.organization} image={exp.image} position={exp.position} startDate={exp.startDate} endDate={exp.endDate} description={exp.description} handleEdit={() => handleEditClick(exp.organization, exp.image, exp.position, exp.startDate, exp.endDate, exp.description)}/>)}
+            <div className="experiences-container center">
+                <div className="flex flex-wrap justify-center mw8 center">
+                    {experiences.map(exp => <Experience organization={exp.organization} image={exp.image} position={exp.position} startDate={exp.startDate} endDate={exp.endDate} description={exp.description} handleEdit={() => handleEditClick(exp.organization, exp.image, exp.position, exp.startDate, exp.endDate, exp.description)}/>)}
+                </div>
+                <AddButton onClick={handleAddClick}/>
             </div>
             <AddExperiencePopUp visible={showAddPopUp} handleClose={handleAddClose} handleAdd={handleAddExperience}/>
             <EditExperiencePopUp org={orgToEdit} imgType={imgToSave} position={posToEdit} start={startToEdit} end={endToEdit} description={descToEdit} visible={showEditPopUp} handleClose={handleEditClose} handleEdit={handleEditExperience} handleDelete={handleDeleteExperience} />

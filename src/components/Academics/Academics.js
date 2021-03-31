@@ -8,8 +8,9 @@ import cross from './../../assets/cross.svg';
 
 const AddCoursePopUp = ({visible, handleClose, handleAdd}) => {
     const popUpContainerRef = useRef(null);
+    const selectOptionRef = useRef(null);
     const [titleInputValue, setTitleInputValue] = useState('');
-    const [gradeInputValue, setGradeInputValue] = useState(-1);
+    const [gradeInputValue, setGradeInputValue] = useState('');
 
     // display the popup everytime visible is true, which happens when add button is pressed
     useEffect(() => {
@@ -26,9 +27,22 @@ const AddCoursePopUp = ({visible, handleClose, handleAdd}) => {
         }
     }, [visible])
     
+    // Reset input fields
+    const resetForm = () => {
+        setTitleInputValue('');
+        setGradeInputValue('');
+
+        selectOptionRef.current.selected = true;
+        
+        if (popUpContainerRef.current) {
+            popUpContainerRef.current.firstChild.reset()
+        }
+    }
+
     // Handler for closing pop up
     const handleCloseClick = (e) => {
         e.preventDefault();
+        resetForm();
         handleClose();
     }
 
@@ -44,6 +58,7 @@ const AddCoursePopUp = ({visible, handleClose, handleAdd}) => {
     const handleAddClick = (e) => {
         e.preventDefault();
         handleAdd(titleInputValue, gradeInputValue);
+        resetForm();
         handleClose();
     }
 
@@ -61,8 +76,8 @@ const AddCoursePopUp = ({visible, handleClose, handleAdd}) => {
                     </div>
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="course-grade">Grade</label>
-                        <select className="w-100 mt1 bn" name="course-grade" id="course-grade" onChange={handleSelectChange}>
-                            <option value="" selected disabled hidden></option>
+                        <select className="w-100 mt1 bn" name="course-grade" id="course-grade" value={gradeInputValue} onChange={handleSelectChange}>
+                            <option ref={selectOptionRef} value="" selected disabled hidden></option>
                             <option value="1">Fail</option>
                             <option value="2">Pass</option>
                             <option value="3">High Pass</option>
@@ -100,9 +115,20 @@ const EditCoursePopUp = ({course, grade, visible, handleClose, handleEdit, handl
         
     }, [visible])
 
+    // Reset input fields
+    const resetForm = () => {
+        setCourseInputValue('');
+        setGradeInputValue('');
+
+        if (popUpContainerRef.current) {
+            popUpContainerRef.current.firstChild.reset();
+        }
+    }
+
     // Handler for closing pop up
     const handleCloseClick = (e) => {
         e.preventDefault();
+        resetForm();
         handleClose();
     }
 
@@ -118,6 +144,7 @@ const EditCoursePopUp = ({course, grade, visible, handleClose, handleEdit, handl
     const handleEditClick = (e) => {
         e.preventDefault();
         handleEdit({title: course, grade: grade}, courseInputValue, gradeInputValue);
+        resetForm();
         handleClose();
     }
 
@@ -125,6 +152,7 @@ const EditCoursePopUp = ({course, grade, visible, handleClose, handleEdit, handl
     const handleDeleteClick = (e) => {
         e.preventDefault();
         handleDelete(course);
+        resetForm();
         handleClose()
     }
 
@@ -144,7 +172,7 @@ const EditCoursePopUp = ({course, grade, visible, handleClose, handleEdit, handl
                         <label className="db fw4 lh-copy f5" htmlFor="course-grade
                         -to-edit">Grade</label>
                         <select className="w-100 mt1 bn" name="course-grade-to-edit" id="course-grade-to-edit" value={gradeInputValue} onChange={handleSelectChange}>
-                            {/* <option value="" selected disabled hidden></option> */}
+                            <option value="" selected disabled hidden></option>
                             <option value="1">Fail</option>
                             <option value="2">Pass</option>
                             <option value="3">High Pass</option>
@@ -180,7 +208,7 @@ const Course = ({title, grade, handleEdit}) => {
         <tr className="stripe-dark relative">
             <td className="pa3 f5">{title}</td>
             {row.map(cell => cell)}
-            <button className="edit-btn" onClick={handleClick}><img src={editPNG} alt="Edit icon"/></button>
+            <button className="edit-btn bg-transparent bn b grow" onClick={handleClick}><img src={editPNG} alt="Edit icon"/></button>
         </tr>
     )
 }
@@ -248,9 +276,9 @@ const Courses = () => {
     }
 
     return (
-        <div className="pa4 courses-table-container relative">
-            <div className="overflow-auto">
-                <table className="f6 w-100 mw8 center" cellSpacing="0">
+        <div className="pa4 courses-container relative">
+            <div className="courses-table-container mw8 center">
+                <table className="f6 w-100" cellSpacing="0">
                 <thead>
                     <tr className="">
                         <th className="fw6 tl pa3 academics-course-name f3">Clerkship Grades</th>
@@ -265,8 +293,8 @@ const Courses = () => {
                     {courses.map(course => <Course title={course.title} grade={course.grade} handleEdit={() => handleEditCourseClick(course.title, course.grade)} />)}
                 </tbody>
                 </table>
+                <AddButton onClick={handleAddClick}/>
             </div>
-            <AddButton onClick={handleAddClick}/>
             <AddCoursePopUp visible={showAddCoursePopUp} handleClose={handleAddClose} handleAdd={handleAddCourse} />
             <EditCoursePopUp course={courseTitleToEdit} grade={courseGradeToEdit} visible={showEditCoursePopUp} handleClose={handleEditClose} handleEdit={handleEditCourse} handleDelete={handleDeleteCourse} />
         </div>
@@ -279,6 +307,7 @@ const EditScorePopUp = ({step, value, visible, handleClose, handleEdit}) => {
 
     // Display the popup everytime visible is true, which happens when edit button is pressed
     useEffect(() => {
+        setInputValue((value > -1 ? value : ''))
         if (visible) {
             if (popUpContainerRef.current) {
                 popUpContainerRef.current.classList.remove('dn');
@@ -293,9 +322,19 @@ const EditScorePopUp = ({step, value, visible, handleClose, handleEdit}) => {
         
     }, [visible])
 
+    // Reset input fields
+    const resetForm = () => {
+        setInputValue('');
+
+        if (popUpContainerRef.current) {
+            popUpContainerRef.current.firstChild.reset();
+        }
+    }
+    
     // Handler for closing pop up
     const handleCloseClick = (e) => {
         e.preventDefault();
+        resetForm();
         handleClose();
     }
 
@@ -308,6 +347,7 @@ const EditScorePopUp = ({step, value, visible, handleClose, handleEdit}) => {
     const handleEditClick = (e) => {
         e.preventDefault();
         handleEdit(inputValue);
+        resetForm();
         handleClose();
     }
 
@@ -365,12 +405,27 @@ const Scores = ({score1, score2}) => {
         <div className="scores-container flex center justify-center mw8 mb5">
             <div className="score-container   br bw1 b--black">
                 <h2 className="f2 tc">Step 1</h2>
-                <p className="f1 mt1 tc">{step1Score > -1 ? step1Score : '---'} <span onClick={handleClick1}><img src={editPNG} alt="Edit button"/></span></p>
+                <div className="flex center justify-center">
+                    <p className="f1 mt1 tc">
+                        {step1Score > -1 ? step1Score : '---'}
+                    </p>
+                    <button className="bg-transparent bn b grow" onClick={handleClick1}>
+                        <img src={editPNG} alt="Edit button"/>
+                    </button>
+                </div>                
                 <EditScorePopUp step={1} value={step1Score} visible={showPopUp1} handleClose={handleClose1} handleEdit={handleEdit1} />
             </div>
             <div className="score-container">
                 <h2 className="f2 tc">Step 2</h2>
-                <p className="f1 mt1 tc">{step2Score > -1 ? step2Score : '---'} <span onClick={handleClick2}><img src={editPNG} alt="Edit button"/></span></p>
+                <div className="flex center justify-center">
+                    <p className="f1 mt1 tc">
+                        {step2Score > -1 ? step2Score : '---'}
+                    </p>
+                    <button className="bg-transparent bn b grow" onClick={handleClick2}>
+                        <img src={editPNG} alt="Edit button"/>
+                    </button>
+                </div>     
+                
                 <EditScorePopUp step={2} value={step2Score} visible={showPopUp2} handleClose={handleClose2} handleEdit={handleEdit2} />
             </div>
             

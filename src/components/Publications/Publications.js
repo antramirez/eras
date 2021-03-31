@@ -40,9 +40,21 @@ const AddPublicationPopUp = ({ visible, handleClose, handleAdd}) => {
         
     }, [visible])
 
+    // Reset input fields
+    const resetForm = () => {
+        setTitleInputValue('');
+        setTypeSelectValue('');
+        setLinkInputValue('');
+
+        if (popUpContainerRef.current) {
+            popUpContainerRef.current.firstChild.reset();
+        }
+    }
+
     // Handler for closing pop up
     const handleCloseClick = (e) => {
         e.preventDefault();
+        resetForm();
         handleClose();
     }
 
@@ -61,6 +73,7 @@ const AddPublicationPopUp = ({ visible, handleClose, handleAdd}) => {
     const handleAddClick = (e) => {
         e.preventDefault();
         handleAdd(titleInputValue, typeSelectValue, linkInputValue);
+        resetForm();
         handleClose();
     }
 
@@ -177,9 +190,11 @@ const Publications = () => {
     return (
         <section id="publications" className="ph4 pv4 pv5-ns ph4-m ph5-l">
             <h1 className="pl3 f1">Publications</h1>
-            <AddButton onClick={handleClick}/>
-            <div className="publications-container flex flex-wrap mw8 center justify-center">
-                {publications.map(course => <Publication title={course.title} image={course.image} link={'#'} colorClassName={`${course.type.toLowerCase()}-pub`} />)}
+            <div className="publications-container mw8 center">
+                <div className="flex flex-wrap mw8 center justify-center">
+                    {publications.map(course => <Publication title={course.title} image={course.image} link={'#'} colorClassName={`${course.type.toLowerCase()}-pub`} />)}
+                </div>
+                <AddButton onClick={handleClick}/>
             </div>
             <AddPublicationPopUp visible={showPopUp} handleClose={handleClose} handleAdd={handleAddPublication}/>
         </section>
