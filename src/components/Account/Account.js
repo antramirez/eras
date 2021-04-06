@@ -22,20 +22,23 @@ const Account = ({firstName="Selam", lastName="Moges", gradYear=2024, legal, nee
     const [gradYearInputValue, setGradYearInputValue] = useState(gradYear);
 
     // Handlers for changing readonly attribute on inputs
-    const handleFirstNameEditField = () => {
-        setEditFirstName(true)
+    const handleFirstNameEditField = (e) => {
+        e.preventDefault();
+        setEditFirstName(true);
         if (firstNameInputRef.current) {
             firstNameInputRef.current.focus();
         }
     }
-    const handleLastNameEditField = () => {
-        setEditLastName(true)
+    const handleLastNameEditField = (e) => {
+        e.preventDefault();
+        setEditLastName(true);
         if (lastNameInputRef.current) {
             lastNameInputRef.current.focus();
         }
     }
-    const handleGradYearEditField = () => {
-        setEditGradYear(true)
+    const handleGradYearEditField = (e) => {
+        e.preventDefault();
+        setEditGradYear(true);
         if (gradYearInputRef.current) {
             gradYearInputRef.current.focus();
         }
@@ -68,18 +71,17 @@ const Account = ({firstName="Selam", lastName="Moges", gradYear=2024, legal, nee
                         <div className="mt3">
                             <label className="db fw4 lh-copy f5" htmlFor="account-firstname">First Name</label>
                             <input className="pa2 input-reset bn w-100 measure" type="text" name="account-firstname"  id="account-firstname" value={firstNameInputValue} readOnly={!editFirstName} ref={firstNameInputRef} onChange={handleFirstNameChange} />
-                            <span className="edit-btn-container ml2 relative"><img src={editPNG} alt="Edit button" onClick={handleFirstNameEditField}/></span>
-
+                            <button className="edit-btn ml2 pointer grow relative"><img src={editPNG} alt="Edit button" onClick={handleFirstNameEditField}/></button>
                         </div>
                         <div className="mt3">
                             <label className="db fw4 lh-copy f5" htmlFor="account-lastname">Last Name</label>
                             <input className="pa2 input-reset bn w-100 measure" type="text" name="account-lastname"  id="account-lastname" value={lastNameInputValue} readOnly={!editLastName} ref={lastNameInputRef} onChange={handleLastNameChange} />
-                            <span className="edit-btn-container ml2 relative"><img src={editPNG} alt="Edit button" onClick={handleLastNameEditField}/></span>
+                            <button className="edit-btn ml2 pointer grow relative"><img src={editPNG} alt="Edit button" onClick={handleLastNameEditField}/></button>
                         </div>
                         <div className="mt3">
                             <label className="db fw4 lh-copy f5" htmlFor="account-grad-year">Graduation Year</label>
                             <input className="pa2 input-reset bn w-100 measure" type="text" name="account-grad-year"  id="account-grad-year" value={gradYearInputValue} readOnly={!editGradYear} ref={gradYearInputRef} onChange={handleGradYearChange} />
-                            <span className="edit-btn-container ml2 relative"><img src={editPNG} alt="Edit button" onClick={handleGradYearEditField}/></span>
+                            <button className="edit-btn ml2 pointer grow relative"><img src={editPNG} alt="Edit button" onClick={handleGradYearEditField}/></button>
                         </div>
                         <div className="mt3">
                             <label className="db f5 fw4 lh-copy" htmlFor="account-workstatus">Work Authorization Status</label>

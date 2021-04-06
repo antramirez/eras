@@ -103,7 +103,7 @@
     width: 50%;
 }
 
-.score-container button {
+.score-container > div> button {
     width: 1.2rem;
     height: 1.2rem;
     position: relative;
@@ -113,7 +113,7 @@
     cursor: pointer;
 }
 
-.score-container button img {
+.score-container > div > button img {
     height: 100%;
 }
 

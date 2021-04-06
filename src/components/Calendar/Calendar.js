@@ -13,7 +13,7 @@ const renderEventContent = (eventInfo) => {
     )
 }
 
-const Calendar = ({events, handleDateClick}) => {
+const Calendar = ({events, eventToAdd = {}, eventToRemove = {}, handleAdd, handleRemove, handleDateClick}) => {
   const calRef=useRef(null)
 
   // Handler for when a date is clicked, which passes date to parent
@@ -22,12 +22,32 @@ const Calendar = ({events, handleDateClick}) => {
     handleDateClick(info.dateStr, dateFormatted, info.date);
   }
 
-  // Use Calendar API to add event to calendar every time the array of events gets bigger
+  // Use Calendar API to add or remove event to calendar every time the array of events changes
   useEffect(() => {
     if (calRef.current) {
-      calRef.current.getApi().addEvent(events[events.length - 1])
+      // Remove event object if there is one to remove
+      if (Object.keys(eventToRemove).length !== 0) {
+        // There is no public remove single event method, so remove all and add back remaining ones
+        calRef.current.getApi().removeAllEvents();
+        events.forEach((e) => {
+            calRef.current.getApi().addEvent(e);
+        })
+
+        // clear events to add and remove
+        handleAdd();
+        handleRemove();
+      }
+
+      // Add event object if there is one to add
+      if (Object.keys(eventToAdd).length !== 0) {
+        calRef.current.getApi().addEvent(eventToAdd);
+
+        // clear events to add and remove
+        handleAdd();
+        handleRemove();
+      }
     }
-  }, [events.length])
+  }, [eventToAdd, eventToRemove])
 
   return (
     <FullCalendar

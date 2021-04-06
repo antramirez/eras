@@ -2,7 +2,6 @@ import { useRef, useEffect, useState } from 'react';
 import Calendar from './../Calendar/Calendar';
 import TaskTable from './../TaskTable/TaskTable';
 import './GoalsAndTasks.css';
-import AddButton from './../AddButton/AddButton';
 import taskIcon from './../../assets/completed-task.png';
 import cross from './../../assets/cross.svg';
 import check from './../../assets/check-mark.svg';
@@ -30,9 +29,20 @@ const AddCalendarEventPopUp = ({date, visible, handleDateSelect, handleClose, ha
         
     }, [visible])
 
+    // Reset input fields
+    const resetForm = () => {
+        setDateInputValue('');
+        setEventInputValue('');
+
+        if (popUpContainerRef.current) {
+            popUpContainerRef.current.firstChild.reset();
+        }
+    }
+
     // Handler for closing pop up
     const handleCloseClick = (e) => {
         e.preventDefault();
+        resetForm();
         handleClose();
     }
 
@@ -46,6 +56,7 @@ const AddCalendarEventPopUp = ({date, visible, handleDateSelect, handleClose, ha
     const handleAddClick = (e) => {
         e.preventDefault();
         handleAdd(eventInputValue, dateInputValue);
+        resetForm();
         handleClose();
     }
 
@@ -84,9 +95,13 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
         { title: 'Milestone 4', date: '2021-03-26', dateStr: 'Mar 26, 2021', dateObj: new Date('2021-03-20') }
     ])
 
+    const [numEvents, setNumEvents] = useState(events.length);
+    const [eventToRemove, setEventToRemove] = useState({});
+    const [eventToAdd, setEventToAdd] = useState({});
+
     useEffect( () => {
         setEvents(events);
-    }, [events.length])
+    }, [eventToRemove])
 
     // Boolean to determine whether event is this week so it can go in task table
     // Parameter is a date object
@@ -111,11 +126,12 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
         setShowAddCalendarEventPopUp(false);
     }
 
-    // Handler for adding event and updating calendar events
+    // Handler for adding/deleting event and updating calendar events
     const handleAddEvent = (title, date) => {
-        const dateObj = new Date(date)
-        events.push({title, date, dateStr: `${dateObj.toLocaleDateString("en", {month: "short"})} ${dateObj.getDate()}, ${dateObj.getFullYear()}`, dateObj: new Date(date)});
+        const dateObj = new Date(date);
+        events.push({title, date, dateStr: `${dateObj.toLocaleDateString("en-US", {month: "short"}, {timeZone: 'UTC'})} ${dateObj.getUTCDate()}, ${dateObj.getFullYear()}`, dateObj: new Date(date)});
         setEvents(events);
+        setEventToAdd({title, date, dateStr: `${dateObj.toLocaleDateString("en-US", {month: "short"}, {timeZone: 'UTC'})} ${dateObj.getUTCDate()}, ${dateObj.getFullYear()}`, dateObj: new Date(date)});
 
         // If event is in current week, add to tasks list
         if (isThisWeek(dateObj)) {
@@ -125,18 +141,38 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
         }
     }
 
+    const handleRemoveEvent = (title, date) => {
+        const e = events.find(event => event.title === title);
+        setEventToRemove(e);
+
+        events.splice(events.indexOf(e), 1);
+
+        setEvents(events);
+        setNumEvents(events.length);
+
+        // Remove from task table if event was this week
+        if (tasks.includes(title)) {
+            tasks.splice(tasks.indexOf(title), 1);
+            updateTasks(tasks);
+            updateNumTasks(tasks.length);
+        }
+    }
+
     return (
         <div className="calendar-container">
             <div className="calendar pa2 white">
-                <Calendar events={events} handleDateClick={handleDateClick} />
+                <Calendar events={events} numEvents={numEvents} eventToAdd={eventToAdd} eventToRemove={eventToRemove} handleAdd={() => setEventToAdd({})} handleRemove={() => setEventToRemove({})} handleDateClick={handleDateClick} />
             </div>
             <div className="calendar-events">
                 {events.map(e=> 
-                    <div className="calendar-event-container pa3 bb b--white flex">
-                        <div className="calendar-event-icon-container relative ml3 mr3 br4 pa1 flex justify-center items-center ">
+                    <div className="calendar-event-container pt3 pb3 pl1 pr1 bb b--white flex justify-between items-center">
+                        <div className="calendar-event-icon-container relative ml2 mr2 br4 pa1 flex justify-center items-center">
                             <img src={taskIcon} alt=""/>
                         </div>
-                        <p>{e.dateStr} - {e.title}</p>
+                        <div className="desc-container">
+                            <p><b>{e.dateStr}</b> - {e.title}</p>
+                        </div>
+                        <button className="bg-transparent bn b grow pointer f6 ml2 mr2" onClick={() => handleRemoveEvent(e.title, e.dateStr)}><img src={check} alt="Check mark"/></button>
                     </div>
                 )}
             </div>

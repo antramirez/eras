@@ -1,4 +1,4 @@
-import { Switch, Route, BrowserRouter } from "react-router-dom";
+import { Element } from 'react-scroll';
 import Welcome from './../Welcome/Welcome';
 import GoalsAndTasks from './../GoalsAndTasks/GoalsAndTasks';
 import Academics from './../Academics/Academics';
@@ -12,26 +12,21 @@ const Home = ({signedIn}) => {
             {signedIn && 
                 <Welcome />
             }
-            <GoalsAndTasks />
-            <Academics />
-            <Experiences />
-            <Publications />
-            <Uploads />
-
-            {/* <Switch>
-                <Route exact path={`/academics`}>
-                    <Academics />
-                </Route>
-                <Route exact path="/experiences">
-                    <Experiences />
-                </Route>
-                <Route exact path="/publications">
-                    <Publications />
-                </Route>
-                <Route exact path="/uploads">
-                    <Uploads />
-                </Route>
-            </Switch> */}
+            <Element name="goalsAndTasks">
+                <GoalsAndTasks />
+            </Element>
+            <Element name="academics">
+                <Academics />
+            </Element>
+            <Element name="experiences">
+                <Experiences />
+            </Element>
+            <Element name="publications">
+                <Publications />
+            </Element>
+            <Element name="uploads">
+                <Uploads />
+            </Element>
         </>
     )    
 }

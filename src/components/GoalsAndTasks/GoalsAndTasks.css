@@ -12,6 +12,24 @@
     background-color: #85A9AE;
 }
 
+.fc-daygrid-day {
+    cursor: pointer;
+}
+
+.fc .fc-button-primary, .fc .fc-button-primary:disabled, .fc .fc-button-primary:hover, .fc .fc-button-primary:disabled:hover {
+    border-color: white;
+}
+
+.fc .fc-button-primary:not(:disabled):active {
+    background-color: transparent;
+}
+
+.fc-today-button, .fc-today-button:disabled {
+    visibility: hidden;
+}
+
+
+/* Calendar Events Table */
 .calendar-events {
     background-color: #759EA5;
 }
@@ -34,17 +52,29 @@
     left: 10px;
 }
 
-.fc-daygrid-day {
+.calendar-event-container .desc-container  {
+    max-width: 12em;
+}
+
+.calendar-event-container button {
+    display: inline-block;
+    background-color: transparent;
+    border: none;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    padding: 0;
     cursor: pointer;
 }
 
-.fc .fc-button-primary, .fc .fc-button-primary:disabled, .fc .fc-button-primary:hover, .fc .fc-button-primary:disabled:hover {
-    border-color: white;
+.calendar-event-container button {
+    visibility: hidden;
 }
 
-.fc .fc-button-primary:not(:disabled):active {
-    background-color: transparent;
+.calendar-event-container:hover button {
+    visibility: visible;
 }
+
 
 /* Add Calendar Event Pop Up */
 .add-calendar-event-popup-container {
