@@ -1,0 +1,98 @@
+/* Edit Button */
+.edit-pubs-btn {
+    right: 1.5em;
+    bottom: .3em;
+    background-color: transparent;
+    border: none;
+    width: .5em;
+    height: .5em;
+    display: inline-block;
+    padding: 0;
+    cursor: pointer;
+}
+
+
+/* Add Publication Pop Up */
+.add-publication-popup-container {
+    position: fixed;
+    z-index: 100000;
+    background-color: rgba(220, 220, 220, .7);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.add-publication-popup-container > form {
+    background-color: #E5E1E1;
+    width: 28rem;
+    height: 28rem;
+}
+
+.add-publication-popup-container > form select {
+    background-color: rgba(202, 125, 125, 0.16);
+    height: 40px;
+}
+
+
+/* Edit Publications Pop Up */
+.edit-publications-popup-container {
+    position: fixed;
+    z-index: 100000;
+    background-color: rgba(220, 220, 220, .7);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.edit-publications-popup-container form {
+    background-color: #E5E1E1;
+    width: 28em;
+    height: 26em;
+    padding: 1em 3em;
+}
+
+.edit-publications-popup-container > form input {
+    text-overflow: ellipsis;
+}
+
+.edit-publications-popup-container > form select {
+    background-color: rgba(202, 125, 125, 0.16);
+    height: 40px;
+}
+
+/* Previous and Next Buttons */
+.edit-pub-back {
+    left: 0;
+    top: 50%;
+    background-color: transparent;
+    border: none;
+    width: 1.5em;
+    height: 1.5em;
+    padding: 0;
+    margin-left: .75em;
+    transform: rotate(-180deg);
+}
+
+.edit-pub-next {
+    right: 0;
+    top: 50%;
+    background-color: transparent;
+    border: none;
+    width: 1.5em;
+    height: 1.5em;
+    padding: 0;
+    margin-right: .75em;
+}
+
+.close-btn {
+    width: 30px;
+    top: 1em;
+    right: .5em;
+    cursor: pointer;
+}
+
+.close-btn img{
+    width: 100%;
+}

@@ -1,0 +1,28 @@
+/* Publication */
+.publication {
+    width: 300px;
+    height: 350px;
+    max-width: 100%;
+}
+
+.publication a > img {
+    height: 30px;
+    bottom: 1em;
+    right: 1em;
+}
+
+.paper-pub {
+    background-color: #DED0D0;
+}
+
+.abstract-pub {
+    background-color: #CB8E91;
+}
+
+.presentation-pub {
+    background-color: rgba(164, 66, 0, 0.63);
+}
+
+.other-pub {
+    background-color: #787b9c;
+}

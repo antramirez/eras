@@ -20,13 +20,14 @@ const Login = ({signedIn, handleLogin}) => {
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="password">Password</label>
                         <input className="b pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent" type="password" name="login-password"  id="login-password" />
-                </div>
+                    </div>
                 </fieldset>
                 <div className="mt3 tc"><input className="b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" value="Login" onClick={handleClick}/></div>
             </form>
         </article>
     )
 }
+
 const SignUp = ({signedIn, handleLogin}) => {
     const handleClick = (e) => {
         e.preventDefault();
@@ -59,7 +60,7 @@ const SignUp = ({signedIn, handleLogin}) => {
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="password">Password</label>
                         <input className="b pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent" type="password" name="signup-password"  id="signup-password" />
-                </div>
+                    </div>
                 </fieldset>
                 <div className="mt3 tc"><input className="b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" value="Sign Up" onClick={handleClick} /></div>
             </form>
@@ -73,7 +74,6 @@ const LoginSignup = ({signedIn, handleLogin}) => {
             <Login signedIn={signedIn} handleLogin={handleLogin} />
             <SignUp signedIn={signedIn} handleLogin={handleLogin} />
         </section>
-        
     )
 }
 

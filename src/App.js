@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import 'tachyons';
 import Navigation from './components/Navigation/Navigation';
-import Home from './components/Home/Home'
-import LoginSignup from './components/LoginSignup/LoginSignup';
-import Account from './components/Account/Account';
+import Home from './containers/Home/Home'
+import LoginSignup from './containers/LoginSignup/LoginSignup';
+import Account from './containers/Account/Account';
 import Footer from './components/Footer/Footer';
 
 function App() {
@@ -24,7 +24,6 @@ function App() {
           <Route exact path="/" >
             <Home signedIn={signedIn} />
           </Route>
-          
           <Route  path="/account" >
             <Account signedIn={signedIn} />
           </Route>
@@ -34,11 +33,7 @@ function App() {
           <Route  path="/signup" >
             <LoginSignup signedIn={signedIn} handleLogin={handleLogin} />        
           </Route>
-
-          {/* <Route exact path="/" >
-            <Home signedIn={signedIn} />
-          </Route> */}
-
+          
         </Switch>
         <Footer />
       </div>

@@ -1,10 +1,10 @@
 import { Element } from 'react-scroll';
-import Welcome from './../Welcome/Welcome';
-import GoalsAndTasks from './../GoalsAndTasks/GoalsAndTasks';
-import Academics from './../Academics/Academics';
-import Experiences from './../Experiences/Experiences';
-import Publications from './../Publications/Publications';
-import Uploads from './../Uploads/Uploads';
+import Welcome from '../../components/Welcome/Welcome';
+import GoalsAndTasks from '../GoalsAndTasks/GoalsAndTasks';
+import Academics from '../Academics/Academics';
+import Experiences from '../Experiences/Experiences';
+import Publications from '../Publications/Publications';
+import Uploads from '../Uploads/Uploads';
 
 const Home = ({signedIn}) => {
     return (
