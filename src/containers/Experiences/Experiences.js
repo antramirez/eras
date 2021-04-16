@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Experience from './../../components/Experience/Experience';
 import AddExperiencePopUp from './../../components/AddExperiencePopUp/AddExperiencePopUp';
 import EditExperiencePopUp from './../../components/EditExperiencePopUp/EditExperiencePopUp';
+import { apiRequest, idApiRequest } from '../../utils/apiRequests';
 import AddButton from './../../components/AddButton/AddButton';
 import './Experiences.css';
 import volunteeringPNG from './../../assets/experience_volunteering.png';
-import tutoringPNG from './../../assets/experiences_work.png';
+import workPNG from './../../assets/experiences_work.png';
 
 const Experiences = () => {
     // Booleans for whether to display pop ups
@@ -15,97 +16,161 @@ const Experiences = () => {
     const [orgToEdit, setOrgToEdit] = useState('');
     const [imgToSave, setImgToSave] = useState('');
     const [posToEdit, setPosToEdit] = useState('');
+    const [typeToEdit, setTypeToEdit] = useState('');
     const [startToEdit, setStartToEdit] = useState('');
     const [endToEdit, setEndToEdit] = useState('');
     const [descToEdit, setDescToEdit] = useState('');
 
-    const [experiences, setExperiences] = useState([
-        {
-            organization: 'Tutoring1',
-            image: tutoringPNG,
-            position: 'Tutor',
-            startDate: 'May 2019',
-            endDate: 'August 2019',
-            description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
-        },
-        {
-            organization: 'Volunteering',
-            image: volunteeringPNG,
-            position: 'Tutor',
-            startDate: 'May 2019',
-            endDate: 'August 2019',
-            description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
-        },
-        {
-            organization: 'Tutoring2',
-            image: tutoringPNG,
-            position: 'Tutor',
-            startDate: 'May 2019',
-            endDate: 'August 2019',
-            description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
-        },
-        {
-            organization: 'Tutoring3',
-            image: tutoringPNG,
-            position: 'Tutor',
-            startDate: 'May 2019',
-            endDate: 'August 2019',
-            description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
-        }
-    ])
+    // const [fakeIdCounter, setFakeIdCounter] = useState(6); // TODO: uncomment when logged in state exists
+    const [experienceIdToEdit, setExperienceIdToEdit] = useState(0); // reference to current course
 
-    // Handlers for add/edit button and displaying pop ups
-    const handleAddClick = (e) => {
-        setShowAddPopUp(true);
-    }
-    const handleEditClick = (org, img, pos, start, end, desc) => {
+    const [experiences, setExperiences] = useState([]);
+
+    useEffect(() => {
+        // if user is logged in
+        apiRequest('experiences', 'GET', {}, setExperiences, console.log);
+
+        // TODO: uncomment when logged in state exists
+        // if user is not logged in
+        // const fakeExperiences = [
+        //     {
+        //         _id: 1,
+        //         organization: 'Tutoring1',
+        //         type: 'Work',
+        //         position: 'Tutor',
+        //         startDate: 'May 2019',
+        //         endDate: 'August 2019',
+        //         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
+        //     },
+        //     {
+        //         _id: 2,
+        //         organization: 'Volunteering',
+        //         type: 'Volunteering',
+        //         position: 'Tutor',
+        //         startDate: 'May 2019',
+        //         endDate: 'August 2019',
+        //         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
+        //     },
+        //     {
+        //         _id: 3,
+        //         organization: 'Tutoring2',
+        //         type: 'Work',
+        //         position: 'Tutor',
+        //         startDate: 'May 2019',
+        //         endDate: 'August 2019',
+        //         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
+        //     },
+        //     {
+        //         _id: 4,
+        //         organization: 'Tutoring3',
+        //         type: 'Work',
+        //         position: 'Tutor',
+        //         startDate: 'May 2019',
+        //         endDate: 'August 2019',
+        //         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
+        //     }
+        // ];
+        // setExperiences(fakeExperiences);
+    }, [])
+
+    const handleEditClick = (id, org, pos, type, start, end, desc) => {
+        setExperienceIdToEdit(id);
         setOrgToEdit(org);
-        setImgToSave(img);
+        setImgToSave(imgType(type));
         setPosToEdit(pos);
+        setTypeToEdit(type)
         setStartToEdit(start);
         setEndToEdit(end);
         setDescToEdit(desc);
         setShowEditPopUp(true);
     }
 
-    // Handlers for closing pop ups
-    const handleAddClose = () => {
-        setShowAddPopUp(false);
-    }
-    const handleEditClose = () => {
-        setShowEditPopUp(false);
-    }
-
-    const handleAddExperience = (org, pos, start, end, desc) => {
+    const handleAddExperience = (org, pos, type, start, end, desc) => {
         // temporary image
-        const possibleImgs = [volunteeringPNG, tutoringPNG]
+        const possibleImgs = [volunteeringPNG, workPNG]
         const imageType =possibleImgs[Math.floor(Math.random() * 2)]
 
-        // update experience array
-        experiences.push({organization: org, image: imageType, position: pos, startDate: start, endDate: end, description: desc});
-        setExperiences(experiences);
+        // if user is logged in
+        apiRequest('experiences', 'POST',
+        {   organization: org,
+            position: pos,
+            type:type,
+            startDate: start,
+            endDate: end,
+            description: desc
+        },
+        (newExperience) => {
+            setExperiences([...experiences, newExperience])
+        }, console.log);
+        
+        // TODO: uncomment when logged in state exists
+        // if user is not logged in
+        // setExperiences([... experiences, {_id: fakeIdCounter, organization: org, image: imageType, position: pos, type: type, startDate: start, endDate: end, description: desc}]);
+        // setFakeIdCounter(fakeIdCounter + 1);
     }
 
-    const handleEditExperience = (originalExp, org, imgType, pos, start, end, desc) => {
+    const handleEditExperience = (expId, org, pos, type, start, end, desc) => {
         // temporary image
-        const possibleImgs = [volunteeringPNG, tutoringPNG]
+        const possibleImgs = [volunteeringPNG, workPNG]
         const imageType =possibleImgs[Math.floor(Math.random() * 2)]
 
-        // update experience array with updated experience
-        const expToUpdate = experiences.find(exp => exp.organization === originalExp.organization)
-        expToUpdate.organization = org;
-        expToUpdate.position = pos;
-        expToUpdate.startDate = start;
-        expToUpdate.endDate = end;
-        expToUpdate.description = desc;
-        setExperiences(experiences)
+        const expToUpdate = experiences.find(exp => exp._id === expId);
+
+        idApiRequest('experiences', expId, 'PATCH',
+        {
+            organization: org,
+            position: pos,
+            type:type,
+            startDate: start,
+            endDate: end,
+            description: desc
+        },
+        (exp) => {
+            expToUpdate.organization = exp.organization;
+            expToUpdate.position = exp.position;
+            expToUpdate.type = exp.type;
+            expToUpdate.startDate = exp.startDate;
+            expToUpdate.endDate = exp.endDate;
+            expToUpdate.description = exp.description;
+            setExperiences([...experiences]);
+        }, console.log);
+
+        // TODO: uncomment when logged in state exists
+        // if user is not logged in
+        // expToUpdate.organization = org;
+        // expToUpdate.position = pos;
+        // expToUpdate.type = type;
+        // expToUpdate.startDate = start;
+        // expToUpdate.endDate = end;
+        // expToUpdate.description = desc;
+        // setExperiences([...experiences]);
     }
 
     // Handler for deleting experience and updating experiences
-    const handleDeleteExperience = (org) => {
-        const expToDelete = experiences.find(exp => exp.organization === org)
-        experiences.splice(experiences.indexOf(expToDelete), 1);
-        setExperiences(experiences);
+    const handleDeleteExperience = (id) => {
+        // apiRequest('experiences', 'DELETE', {}, console.log, console.log, '607629c39045b60a9e30e6d7');
+        // if user is logged in
+        idApiRequest('experiences', id, 'DELETE', {}, () => {
+            setExperiences(experiences.filter(exp => exp._id !== id))
+        }, console.log);
+
+        // TODO: uncomment when logged in state exists
+        // if user is not logged in
+        // setExperiences(experiences.filter(exp => exp._id !== id))
+    }
+
+    // Function to set image type 
+    const imgType = type => {
+        switch (type) {
+            case 'Volunteering':
+                return volunteeringPNG;
+            case'Work':
+                return workPNG;
+            case 'Other':
+                return workPNG; // TODO: find new image
+            default: 
+                return workPNG;
+        }
     }
 
     return (
@@ -113,12 +178,12 @@ const Experiences = () => {
             <h1 className="pl3 f1">Experiences</h1>
             <div className="experiences-container center">
                 <div className="flex flex-wrap justify-center mw8 center">
-                    {experiences.map(exp => <Experience organization={exp.organization} image={exp.image} position={exp.position} startDate={exp.startDate} endDate={exp.endDate} description={exp.description} handleEdit={() => handleEditClick(exp.organization, exp.image, exp.position, exp.startDate, exp.endDate, exp.description)}/>)}
+                    {experiences.map(exp => <Experience key={exp._id} organization={exp.organization} type={exp.type} image={imgType(exp.type)} position={exp.position} startDate={exp.startDate} endDate={exp.endDate} description={exp.description} handleEdit={() => handleEditClick(exp._id, exp.organization, exp.position, exp.type, exp.startDate, exp.endDate, exp.description)}/>)}
                 </div>
-                <AddButton onClick={handleAddClick}/>
+                <AddButton onClick={() => setShowAddPopUp(true)}/>
             </div>
-            <AddExperiencePopUp visible={showAddPopUp} handleClose={handleAddClose} handleAdd={handleAddExperience}/>
-            <EditExperiencePopUp org={orgToEdit} imgType={imgToSave} position={posToEdit} start={startToEdit} end={endToEdit} description={descToEdit} visible={showEditPopUp} handleClose={handleEditClose} handleEdit={handleEditExperience} handleDelete={handleDeleteExperience} />
+            <AddExperiencePopUp visible={showAddPopUp} handleClose={() => setShowAddPopUp(false)} handleAdd={handleAddExperience}/>
+            <EditExperiencePopUp id={experienceIdToEdit} org={orgToEdit} imgType={imgToSave} position={posToEdit} type={typeToEdit} start={startToEdit} end={endToEdit} description={descToEdit} visible={showEditPopUp} handleClose={() => setShowEditPopUp(false)} handleEdit={handleEditExperience} handleDelete={handleDeleteExperience} />
         </section>
     )
 }

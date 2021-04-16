@@ -1,11 +1,12 @@
 import { useRef, useEffect, useState } from 'react';
 import cross from './../../assets/cross.svg';
 
-const EditExperiencePopUp = ({org, imgType, position, start, end, description, visible, handleClose, handleEdit, handleDelete}) => {
+const EditExperiencePopUp = ({id, org, position, type, start, end, description, visible, handleClose, handleEdit, handleDelete}) => {
     const popUpContainerRef = useRef(null);
     // Values of form
     const [orgInputValue, setOrgInputValue] = useState(org);
     const [posInputValue, setPosInputValue] = useState(position);
+    const [typeInputValue, setTypeInputValue] = useState(type);
     const [startInputValue, setStartInputValue] = useState(start);
     const [endInputValue, setEndInputValue] = useState(end);
     const [descInputValue, setDescInputValue] = useState(description);
@@ -14,6 +15,7 @@ const EditExperiencePopUp = ({org, imgType, position, start, end, description, v
     useEffect(() => { 
         setOrgInputValue(org);
         setPosInputValue(position);
+        setTypeInputValue(type);
         setStartInputValue(start);
         setEndInputValue(end);
         setDescInputValue(description);
@@ -41,9 +43,11 @@ const EditExperiencePopUp = ({org, imgType, position, start, end, description, v
     const handleOrgInputChange = (e) => {
         setOrgInputValue(e.target.value);
     }
-
     const handlePosInputChange = (e) => {
         setPosInputValue(e.target.value);
+    }
+    const handleTypeInputChange = (e) => {
+        setTypeInputValue(e.target.value);
     }
     const handleStartInputChange = (e) => {
         setStartInputValue(e.target.value);
@@ -71,7 +75,7 @@ const EditExperiencePopUp = ({org, imgType, position, start, end, description, v
     // Handler for submitting edited publication
     const handleEditClick = (e) => {
         e.preventDefault();
-        handleEdit({organization: org, image: imgType, position: position, startDate: start, endDate: end, description: description}, orgInputValue, imgType, posInputValue, startInputValue, endInputValue, descInputValue);
+        handleEdit(id, orgInputValue, posInputValue, typeInputValue, startInputValue, endInputValue, descInputValue);
         resetForm();
         handleClose();
     }
@@ -79,7 +83,7 @@ const EditExperiencePopUp = ({org, imgType, position, start, end, description, v
     // Handler for submitting form to delete experience
     const handleDeleteClick = (e) => {
         e.preventDefault();
-        handleDelete(org);
+        handleDelete(id);
         resetForm();
         handleClose();
     }
@@ -99,6 +103,15 @@ const EditExperiencePopUp = ({org, imgType, position, start, end, description, v
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="edit-position">Position</label>
                         <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="edit-position" id="edit-position" value={posInputValue} onChange={handlePosInputChange}/>
+                    </div>
+                    <div className="mt3">
+                        <label className="db fw4 lh-copy f5" htmlFor="edit-experience-type">Type</label>
+                        <select className="w-100 mt1 bn" name="edit-experience-type" id="edit-experience-type" value={typeInputValue} onChange={handleTypeInputChange}>
+                            <option value="" selected disabled hidden></option>
+                            <option value="Volunteering">Volunteering</option>
+                            <option value="Work">Work</option>
+                            <option value="Other">Other</option>
+                        </select>
                     </div>
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="edit-start-date">Start Date</label>

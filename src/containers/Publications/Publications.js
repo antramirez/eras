@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import Publication from './../../components/Publication/Publication';
+import { apiRequest, idApiRequest } from '../../utils/apiRequests';
 import AddPublicationPopUp from './../../components/AddPublicationPopUp/AddPublicationPopUp';
 import EditPublicationsPopup from './../../components/EditPublicationsPopUp/EditPublicationsPopUp';
 import './Publications.css';
@@ -15,59 +16,56 @@ const Publications = () => {
     // Boolean for whether to display pop up
     const [showAddPopUp, setShowAddPopUp] = useState(false);
     const [showEditPopUp, setShowEditPopUp] = useState(false);
+    // const [fakeIdCounter, setFakeIdCounter] = useState(7); // TODO: uncomment when logged in state exists
 
-    const [publications, setPublications] = useState([
-        {
-            title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin',
-            image: publicationPaperPNG,
-            link: '#',
-            type: 'Paper'
-        },
-        {
-            title: 'Abstract',
-            image: geometricPNG,
-            link: '#',
-            type: 'Abstract'
-        },
-        {
-            title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin',
-            image: publicationPaperPNG,
-            link: '#',
-            type: 'Paper'
-        },
-        {
-            title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin Other',
-            image: paperclipPNG,
-            link: '#',
-            type: 'Other'
-        },
-        {
-            title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin',
-            image: publicationPaperPNG,
-            link: '#',
-            type: 'Paper'
-        },
-        {
-            title: 'Presentation',
-            image: presentationPNG,
-            link: '#',
-            type: 'Presentation'
-        },
-    ])
+    const [publications, setPublications] = useState([])
 
-    // Handler for clicking add/edit and buttons
-    const handleAddClick = (e) => {
-        setShowAddPopUp(true);
-    }
-    const handleEditClick = (e) => {
-        setShowEditPopUp(true)
-    }
-    const handleAddClose = () => {
-        setShowAddPopUp(false);
-    }
-    const handleEditClose = () => {
-        setShowEditPopUp(false);
-    }
+    // fetch publications from database and add them to memory
+    useEffect(() => {
+        apiRequest('publications', 'GET', {}, setPublications, console.log)
+
+        // TODO: uncomment when logged in state exists
+        // if user is not logged in
+        // const fakePublications = [
+        //     {
+        //         _id: 1,
+        //         title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin',
+        //         link: '#',
+        //         type: 'Paper'
+        //     },
+        //     {
+        //         _id: 2,
+        //         title: 'Abstract',
+        //         link: '#',
+        //         type: 'Abstract'
+        //     },
+        //     {
+        //         _id: 3,
+        //         title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin',
+        //         link: '#',
+        //         type: 'Paper'
+        //     },
+        //     {
+        //         _id: 4,
+        //         title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin Other',
+        //         link: '#',
+        //         type: 'Other'
+        //     },
+        //     {
+        //         _id: 5,
+        //         title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin',
+        //         link: '#',
+        //         type: 'Paper'
+        //     },
+        //     {
+        //         _id: 6,
+        //         title: 'Presentation',
+        //         link: '#',
+        //         type: 'Presentation'
+        //     },
+        // ];
+        // setPublications(fakePublications);
+    }, [])
 
     // Function to set image type 
     const imgType = type => {
@@ -87,33 +85,55 @@ const Publications = () => {
 
     // Handler for adding publication and updating publications
     const handleAddPublication = (title, type, link) => {
-        publications.push({title, image: imgType(type), type, link});
-        setPublications(publications);
+        // if user is logged in
+        apiRequest('publications', 'POST', {title, type, link}, (newPub) => {
+            setPublications([... publications, newPub]);
+        }, console.log);
+
+        // TODO: uncomment when logged in state exists
+        // if user is not logged in
+        // setPublications([... publications, {_id: fakeIdCounter, title, type, link}]);
+        // setFakeIdCounter(fakeIdCounter + 1);
     }
 
     // Handler for editing publication and updating publications
     const handleEditPublication = (idx, title, type, link) => {
-        publications[idx] = {title, image: imgType(type), type, link};
-        setPublications(publications);
+        // if user is logged in
+        idApiRequest('publications', publications[idx]._id, 'PATCH', {title, type, link}, (exp) => {
+            publications[idx] = {...exp};
+            setPublications([...publications]);
+        }, console.log);
+
+        // TODO: uncomment when logged in state exists
+        // if user is not logged in
+        // publications[idx] = {... publications[idx], title, type, link};
+        // setPublications([...publications]);
     }
 
     // Handler for deleting publication and updating publications
     const handleDeletePublication = (currIdx) => {
-        publications.splice(currIdx, 1);
-        setPublications(publications);
+        const toDelete = publications[currIdx];
+        // if user is logged in
+        idApiRequest('publications',  toDelete._id, 'DELETE', {}, (pub) => {
+            setPublications(publications.filter(p => p._id !== pub._id));
+        }, console.log);
+
+        // TODO: uncomment when logged in state exists
+        // if user is not logged in
+        // setPublications(publications.filter(p => p._id !== toDelete._id));
     }
 
     return (
         <section id="publications" className="ph4 pv4 pv5-ns ph4-m ph5-l">
-            <h1 className="pl3 f1">Publications <span><button className="edit-pubs-btn bg-transparent bn b grow" onClick={handleEditClick}><img src={editPNG} alt="Edit icon"/></button></span></h1>
+            <h1 className="pl3 f1">Publications <span><button className="edit-pubs-btn bg-transparent bn b grow" onClick={() => setShowEditPopUp(true)}><img src={editPNG} alt="Edit icon"/></button></span></h1>
             <div className="publications-container mw8 center relative">
                 <div className="flex flex-wrap mw8 center justify-center">
-                    {publications.map(course => <Publication title={course.title} image={course.image} link={'#'} colorClassName={`${course.type.toLowerCase()}-pub`} />)}
+                    {publications.map(pub => <Publication key={pub._id} title={pub.title} image={imgType(pub.type)} link={'#'} type={pub.type} />)}
                 </div>
-                <AddButton onClick={handleAddClick}/>
+                <AddButton onClick={() => setShowAddPopUp(true)}/>
             </div>
-            <AddPublicationPopUp visible={showAddPopUp} handleClose={handleAddClose} handleAdd={handleAddPublication}/>
-            <EditPublicationsPopup publications={publications} visible={showEditPopUp} handleClose={handleEditClose} handleEdit={handleEditPublication} handleDelete={handleDeletePublication} />
+            <AddPublicationPopUp visible={showAddPopUp} handleClose={() => setShowAddPopUp(false)} handleAdd={handleAddPublication}/>
+            <EditPublicationsPopup publications={publications} visible={showEditPopUp} handleClose={() => setShowEditPopUp(false)} handleEdit={handleEditPublication} handleDelete={handleDeletePublication} />
         </section>
     )
 }

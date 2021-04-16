@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import Course from './../Course/Course';
+import { apiRequest, idApiRequest } from '../../utils/apiRequests';
 import AddCoursePopUp from './../AddCoursePopUp/AddCoursePopUp';
 import EditCoursePopUp from './../EditCoursePopUp/EditCoursePopUp';
 import AddButton from './../AddButton/AddButton';
@@ -8,37 +9,34 @@ const Courses = () => {
     // Booleans for whether to show pop ups
     const [showAddCoursePopUp, setShowAddCoursePopUp] = useState(false);
     const [showEditCoursePopUp, setShowEditCoursePopUp] = useState(false);
+    // const [fakeIdCounter, setFakeIdCounter] = useState(6); // TODO: uncomment when logged in state exists
     
     // Fields to pass into edit form
     const [courseTitleToEdit, setCourseTitleToEdit] = useState('');
     const [courseGradeToEdit, setGradeToEdit] = useState(-1);
+    const [courseIdToEdit, setCourseIdToEdit] = useState(0);
 
-    const [courses, setCourses] = useState([
-        {title: 'Family Medicine', grade: 4},
-        {title: 'Pediatrics', grade: 2},
-        {title: 'Emergency Medicine', grade: 3},
-        {title: 'OB-GYN', grade: 3},
-        {title: 'Internal Medicine', grade: 4}
-    ])
+    const [courses, setCourses] = useState([])
 
-    // Handlers for opening and closing add popup
-    const handleAddClick = (e) => {
-        setShowAddCoursePopUp(true);
-    }
-    const handleAddClose = () => {
-        setShowAddCoursePopUp(false);
-    }
+    useEffect(() => {
+        // if user is logged in
+        apiRequest('courses', 'GET', {}, setCourses, console.log);
 
-    // Handler for closing edit pop up
-    const handleEditClose = () => {
-        setShowEditCoursePopUp(false);
-    }
+        // TODO: uncomment when logged in state exists
+        // if user is not logged in
+        // const fakeCourses = [
+        //     {_id: 1, name: 'Family Medicine', grade: 4},
+        //     {_id: 2, name: 'Pediatrics', grade: 2},
+        //     {_id: 3, name: 'Emergency Medicine', grade: 3},
+        //     {_id: 4, name: 'OB-GYN', grade: 3},
+        //     {_id: 5, name: 'Internal Medicine', grade: 4}
+        // ];
+        // setCourses(fakeCourses);
+    }, [])
 
     // Handler for when edit button in course row is clicked 
-    const handleEditCourseClick = (title, grade) => {
-        console.log(title, grade);
-        const course = courses.find(course => course.title === title);
-        
+    const handleEditCourseClick = (courseId, title, grade) => {
+        setCourseIdToEdit(courseId)
         setCourseTitleToEdit(title);
         setGradeToEdit(grade);
 
@@ -47,23 +45,44 @@ const Courses = () => {
 
     // Handler to add a course to the table
     const handleAddCourse = (title, grade) => {
-        courses.push({title: title, grade: grade})
-        setCourses(courses);
+        apiRequest('courses', 'POST', {name: title, grade: grade}, (course) => {
+            setCourses([...courses, course]);
+        }, console.log);
+        
+        // TODO: uncomment when logged in state exists
+        // if user is not logged in
+        // setCourses([...courses, {_id: fakeIdCounter, name: title, grade: grade}])
+        // setFakeIdCounter(fakeIdCounter + 1);
     }
 
     // Handler to delete a course and update courses
-    const handleDeleteCourse = (title) => {
-        const courseToDelete = courses.find(course => course.title === title);
-        courses.splice(courses.indexOf(courseToDelete), 1);
-        setCourses(courses);
+    const handleDeleteCourse = (courseId) => {
+        idApiRequest('courses', courseId, 'DELETE', {}, () => {
+            setCourses(courses.filter(course => course._id !== courseId));
+        }, console.log);
+
+        // TODO: uncomment when logged in state exists
+        // if user is not logged in
+        // setCourses(courses.filter(course => course._id !== courseId));
     }
 
     // Handler for when edit submit button is clicked in pop up. This changes value of course to be displayed in table
-    const handleEditCourse = (originalCourse, newTitle, newGrade) => {
-        const courseToUpdate = courses.find(course => course.title === originalCourse.title);
-        courseToUpdate.title = newTitle;
-        courseToUpdate.grade = Number.parseInt(newGrade);
-        setCourses(courses);
+    const handleEditCourse = (courseId, newTitle, newGrade) => {
+        const courseToUpdate = courses.find(course => course._id === courseId);
+
+        // if user is logged in
+        idApiRequest('courses', courseId, 'PATCH', {name: newTitle, grade: newGrade}, (course) => {
+            console.log(course)
+            courseToUpdate.name = course.name;
+            courseToUpdate.grade = course.grade;
+            setCourses([...courses]);
+        }, console.log);
+
+        // TODO: uncomment when logged in state exists
+        // if user is not logged in
+        // courseToUpdate.name = newTitle;
+        // courseToUpdate.grade = Number.parseInt(newGrade);
+        // setCourses([...courses]);
     }
 
     return (
@@ -81,13 +100,13 @@ const Courses = () => {
                     </tr>
                 </thead>
                 <tbody className="lh-copy">
-                    {courses.map(course => <Course title={course.title} grade={course.grade} handleEdit={() => handleEditCourseClick(course.title, course.grade)} />)}
+                    {courses.map(course => <Course key={course._id} title={course.name} grade={course.grade} handleEdit={() => handleEditCourseClick(course._id, course.name, course.grade)} />)}
                 </tbody>
                 </table>
-                <AddButton onClick={handleAddClick}/>
+                <AddButton onClick={() => setShowAddCoursePopUp(true)}/>
             </div>
-            <AddCoursePopUp visible={showAddCoursePopUp} handleClose={handleAddClose} handleAdd={handleAddCourse} />
-            <EditCoursePopUp course={courseTitleToEdit} grade={courseGradeToEdit} visible={showEditCoursePopUp} handleClose={handleEditClose} handleEdit={handleEditCourse} handleDelete={handleDeleteCourse} />
+            <AddCoursePopUp visible={showAddCoursePopUp} handleClose={() =>  setShowAddCoursePopUp(false)} handleAdd={handleAddCourse} />
+            <EditCoursePopUp id={courseIdToEdit} course={courseTitleToEdit} grade={courseGradeToEdit} visible={showEditCoursePopUp} handleClose={() => setShowEditCoursePopUp(false)} handleEdit={handleEditCourse} handleDelete={handleDeleteCourse} />
         </div>
     )
 }

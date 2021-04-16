@@ -3,8 +3,10 @@ import cross from './../../assets/cross.svg';
 
 const AddExperiencePopUp = ({visible, handleClose, handleAdd}) => {
     const popUpContainerRef = useRef(null);
+    const selectOptionRef = useRef(null);
     const [experienceOrg, setExperienceOrg] = useState('');
     const [experiencePos, setExperiencePos] = useState('');
+    const [experienceType, setExperienceType] = useState('');
     const [experienceStart, setExperienceStart] = useState('');
     const [experienceEnd, setExperienceEnd] = useState('');
     const [experienceDesc, setExperienceDesc] = useState('');
@@ -29,9 +31,12 @@ const AddExperiencePopUp = ({visible, handleClose, handleAdd}) => {
     const resetForm = () => {
         setExperienceOrg('');
         setExperiencePos('');
+        setExperienceType('');
         setExperienceStart('');
         setExperienceEnd('');
         setExperienceDesc('');
+
+        selectOptionRef.current.selected = true;
 
         if (popUpContainerRef.current) {
             popUpContainerRef.current.firstChild.reset();
@@ -51,6 +56,9 @@ const AddExperiencePopUp = ({visible, handleClose, handleAdd}) => {
     const handlePosInputChange = (e) => {
         setExperiencePos(e.target.value);
     }
+    const handleTypeSelectChange = (e) => {
+        setExperienceType(e.target.value);
+    }
     const handleStartInputChange = (e) => {
         setExperienceStart(e.target.value);
     }
@@ -64,7 +72,7 @@ const AddExperiencePopUp = ({visible, handleClose, handleAdd}) => {
     // Handler for submitting form
     const handleAddClick = (e) => {
         e.preventDefault();
-        handleAdd(experienceOrg, experiencePos, experienceStart, experienceEnd, experienceDesc);
+        handleAdd(experienceOrg, experiencePos, experienceType, experienceStart, experienceEnd, experienceDesc);
         resetForm();
         handleClose();
     }
@@ -84,6 +92,15 @@ const AddExperiencePopUp = ({visible, handleClose, handleAdd}) => {
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="position">Position</label>
                         <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="position" id="position" onChange={handlePosInputChange}/>
+                    </div>
+                    <div className="mt3">
+                        <label className="db fw4 lh-copy f5" htmlFor="experience-type">Type</label>
+                        <select className="w-100 mt1 bn" name="experience-type" id="experience-type" value={experienceType} onChange={handleTypeSelectChange}>
+                            <option ref={selectOptionRef} value="" selected disabled hidden></option>
+                            <option value="Volunteering">Volunteering</option>
+                            <option value="Work">Work</option>
+                            <option value="Other">Other</option>
+                        </select>
                     </div>
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="start-date">Start Date</label>

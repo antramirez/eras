@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import cross from './../../assets/cross.svg';
 
-const EditCoursePopUp = ({course, grade, visible, handleClose, handleEdit, handleDelete}) => {
+const EditCoursePopUp = ({id, course, grade, visible, handleClose, handleEdit, handleDelete}) => {
     const popUpContainerRef = useRef(null);
     const [courseInputValue, setCourseInputValue] = useState(course);
     const [gradeInputValue, setGradeInputValue] = useState(grade);
@@ -53,7 +53,7 @@ const EditCoursePopUp = ({course, grade, visible, handleClose, handleEdit, handl
     // Handler for submitting form to edit course
     const handleEditClick = (e) => {
         e.preventDefault();
-        handleEdit({title: course, grade: grade}, courseInputValue, gradeInputValue);
+        handleEdit(id, courseInputValue, gradeInputValue);
         resetForm();
         handleClose();
     }
@@ -61,7 +61,7 @@ const EditCoursePopUp = ({course, grade, visible, handleClose, handleEdit, handl
     // Handler for submitting form to delete course
     const handleDeleteClick = (e) => {
         e.preventDefault();
-        handleDelete(course);
+        handleDelete(id);
         resetForm();
         handleClose();
     }

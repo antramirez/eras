@@ -28,10 +28,11 @@ const EditPublicationsPopUp = ({publications, visible, handleClose, handleEdit, 
         }
 
         // set input fields to current publication every time index changes
-        setTitleInputValue(publications[currIdx].title);
-        setTypeInputValue(publications[currIdx].type);
-        setLinkInputValue(publications[currIdx].link);
-        
+        if (publications.length > 0) {
+            setTitleInputValue(publications[currIdx].title);
+            setTypeInputValue(publications[currIdx].type);
+            setLinkInputValue(publications[currIdx].link);
+        }        
     }, [visible, currIdx])
 
     const handleCloseClick = (e) => {
@@ -43,7 +44,6 @@ const EditPublicationsPopUp = ({publications, visible, handleClose, handleEdit, 
     const handleTitleInputChange = (e) => {
         setTitleInputValue(e.target.value);
     }
-
     const handleTypeInputChange = (e) => {
         setTypeInputValue(e.target.value);
     }

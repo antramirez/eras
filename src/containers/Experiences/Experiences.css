@@ -53,6 +53,11 @@
     background-color: #BDBFCD;
 }
 
+.add-experience-popup-container > form select {
+    background: rgba(121, 127, 171, 0.29);
+    height: 40px;
+}
+
 .add-experience-popup-container form textarea {
     background: rgba(121, 127, 171, 0.29);
     min-height: 200px;
@@ -73,6 +78,11 @@
 
 .edit-experience-popup-container form {
     background-color: #BDBFCD;
+}
+
+.edit-experience-popup-container > form select {
+    height: 40px;
+    background: rgba(121, 127, 171, 0.29);
 }
 
 .edit-experience-popup-container form textarea {
