@@ -1,43 +1,57 @@
-import { useState, useEffect } from 'react';
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { useState, useEffect, useContext } from 'react';
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import { UserContext, UserActionsContext } from './context/UserContext';
 import 'tachyons';
 import Navigation from './components/Navigation/Navigation';
 import Home from './containers/Home/Home'
-import LoginSignup from './containers/LoginSignup/LoginSignup';
+import LoginSignup from './containers/LoginSignUp/LoginSignUp';
 import Account from './containers/Account/Account';
 import Footer from './components/Footer/Footer';
 
 function App() {
-  const [signedIn, setSignedIn] = useState(false);
+  const { isLoggedIn }  = useContext(UserContext);
+  const { setUser, setIsLoggedIn }  = useContext(UserActionsContext);
+  const [isLoading, setIsloading] = useState(true);
 
-  // temporary handler to change state to signed in
-  const handleLogin = () => {
-    setSignedIn(true)
-  }
+  useEffect(() => {
+    // check if there's a user before setting isLoading to false
+    const currUser = localStorage.getItem('currentUser');
+    if (currUser) {
+        setIsLoggedIn(true);
+        setUser(JSON.parse(currUser));
+    }
+
+    setIsloading(false);
+  }, [isLoggedIn])
 
   return (
-    <BrowserRouter>
-      <div className="App center">
-        <Navigation signedIn={signedIn} />
-        <Switch>
-
-          <Route exact path="/" >
-            <Home signedIn={signedIn} />
-          </Route>
-          <Route  path="/account" >
-            <Account signedIn={signedIn} />
-          </Route>
-          <Route  path="/signin" >
-            <LoginSignup signedIn={signedIn} handleLogin={handleLogin} />        
-          </Route>
-          <Route  path="/signup" >
-            <LoginSignup signedIn={signedIn} handleLogin={handleLogin} />        
-          </Route>
-          
-        </Switch>
-        <Footer />
-      </div>
-    </BrowserRouter>
+    <>
+      {isLoading && 
+        <p className="pl3">Loading...</p>
+      }
+      {!isLoading && 
+        <BrowserRouter>
+        <div className="App center">
+          <Navigation />
+          <Switch>
+            <Route exact path="/" >
+              <Home />
+            </Route>
+            <Route exact path="/account" >
+              { !isLoggedIn ? <Redirect to="/signup" /> : <Account /> }
+            </Route>
+            <Route exact path="/signin" >
+              { isLoggedIn ? <Redirect to="/" /> : <LoginSignup /> }
+            </Route>
+            <Route exact path="/signup" >
+              { isLoggedIn ? <Redirect to="/" /> : <LoginSignup /> }
+            </Route>
+          </Switch>
+          <Footer />
+        </div>
+      </BrowserRouter> 
+      }
+    </>
   );
 }
 

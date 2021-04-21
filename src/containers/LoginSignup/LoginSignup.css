@@ -8,3 +8,8 @@
 .login-signup-container {
     min-height: calc(100vh - 160px - 16rem + 80px);
 }
+
+.login-signup-container select {
+    background-color: rgba(202, 125, 125, 0.16);
+    height: 40px;
+}

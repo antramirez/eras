@@ -1,4 +1,5 @@
-import { useRef, useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { UserContext } from '../../context/UserContext';
 import Publication from './../../components/Publication/Publication';
 import { apiRequest, idApiRequest } from '../../utils/apiRequests';
 import AddPublicationPopUp from './../../components/AddPublicationPopUp/AddPublicationPopUp';
@@ -13,59 +14,61 @@ import paperclipPNG from './../../assets/paperclip.png';
 
 
 const Publications = () => {
+    const { isLoggedIn } = useContext(UserContext);
+
     // Boolean for whether to display pop up
     const [showAddPopUp, setShowAddPopUp] = useState(false);
     const [showEditPopUp, setShowEditPopUp] = useState(false);
-    // const [fakeIdCounter, setFakeIdCounter] = useState(7); // TODO: uncomment when logged in state exists
+    const [fakeIdCounter, setFakeIdCounter] = useState(7);
 
-    const [publications, setPublications] = useState([])
+    const [publications, setPublications] = useState([]);
 
     // fetch publications from database and add them to memory
     useEffect(() => {
-        apiRequest('publications', 'GET', {}, setPublications, console.log)
-
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // const fakePublications = [
-        //     {
-        //         _id: 1,
-        //         title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin',
-        //         link: '#',
-        //         type: 'Paper'
-        //     },
-        //     {
-        //         _id: 2,
-        //         title: 'Abstract',
-        //         link: '#',
-        //         type: 'Abstract'
-        //     },
-        //     {
-        //         _id: 3,
-        //         title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin',
-        //         link: '#',
-        //         type: 'Paper'
-        //     },
-        //     {
-        //         _id: 4,
-        //         title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin Other',
-        //         link: '#',
-        //         type: 'Other'
-        //     },
-        //     {
-        //         _id: 5,
-        //         title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin',
-        //         link: '#',
-        //         type: 'Paper'
-        //     },
-        //     {
-        //         _id: 6,
-        //         title: 'Presentation',
-        //         link: '#',
-        //         type: 'Presentation'
-        //     },
-        // ];
-        // setPublications(fakePublications);
-    }, [])
+        if (isLoggedIn) {
+            apiRequest('publications', 'GET', {}, setPublications, console.log);
+        } else {
+            const fakePublications = [
+                {
+                    _id: 1,
+                    title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin',
+                    link: '#',
+                    type: 'Paper'
+                },
+                {
+                    _id: 2,
+                    title: 'Abstract',
+                    link: '#',
+                    type: 'Abstract'
+                },
+                {
+                    _id: 3,
+                    title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin',
+                    link: '#',
+                    type: 'Paper'
+                },
+                {
+                    _id: 4,
+                    title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin Other',
+                    link: '#',
+                    type: 'Other'
+                },
+                {
+                    _id: 5,
+                    title: 'Polyethylene Glycol Camouflaged Earthworm Hemoglobin',
+                    link: '#',
+                    type: 'Paper'
+                },
+                {
+                    _id: 6,
+                    title: 'Presentation',
+                    link: '#',
+                    type: 'Presentation'
+                },
+            ];
+            setPublications(fakePublications);
+        }
+    }, [isLoggedIn])
 
     // Function to set image type 
     const imgType = type => {
@@ -85,42 +88,39 @@ const Publications = () => {
 
     // Handler for adding publication and updating publications
     const handleAddPublication = (title, type, link) => {
-        // if user is logged in
-        apiRequest('publications', 'POST', {title, type, link}, (newPub) => {
-            setPublications([... publications, newPub]);
-        }, console.log);
-
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // setPublications([... publications, {_id: fakeIdCounter, title, type, link}]);
-        // setFakeIdCounter(fakeIdCounter + 1);
+        if (isLoggedIn) {
+            apiRequest('publications', 'POST', {title, type, link}, (newPub) => {
+                setPublications([... publications, newPub]);
+            }, console.log);
+        } else {
+            setPublications([... publications, {_id: fakeIdCounter, title, type, link}]);
+            setFakeIdCounter(fakeIdCounter + 1);
+        }
     }
 
     // Handler for editing publication and updating publications
     const handleEditPublication = (idx, title, type, link) => {
-        // if user is logged in
-        idApiRequest('publications', publications[idx]._id, 'PATCH', {title, type, link}, (exp) => {
-            publications[idx] = {...exp};
+        if (isLoggedIn) {
+            idApiRequest('publications', publications[idx]._id, 'PATCH', {title, type, link}, (exp) => {
+                publications[idx] = {...exp};
+                setPublications([...publications]);
+            }, console.log);
+        } else {
+            publications[idx] = {... publications[idx], title, type, link};
             setPublications([...publications]);
-        }, console.log);
-
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // publications[idx] = {... publications[idx], title, type, link};
-        // setPublications([...publications]);
+        }
     }
 
     // Handler for deleting publication and updating publications
     const handleDeletePublication = (currIdx) => {
         const toDelete = publications[currIdx];
-        // if user is logged in
-        idApiRequest('publications',  toDelete._id, 'DELETE', {}, (pub) => {
-            setPublications(publications.filter(p => p._id !== pub._id));
-        }, console.log);
-
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // setPublications(publications.filter(p => p._id !== toDelete._id));
+        if (isLoggedIn) {
+            idApiRequest('publications',  toDelete._id, 'DELETE', {}, (pub) => {
+                setPublications(publications.filter(p => p._id !== pub._id));
+            }, console.log);
+        } else {
+            setPublications(publications.filter(p => p._id !== toDelete._id));
+        }
     }
 
     return (

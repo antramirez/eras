@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../../context/UserContext';
 import Experience from './../../components/Experience/Experience';
 import AddExperiencePopUp from './../../components/AddExperiencePopUp/AddExperiencePopUp';
 import EditExperiencePopUp from './../../components/EditExperiencePopUp/EditExperiencePopUp';
@@ -9,6 +10,8 @@ import volunteeringPNG from './../../assets/experience_volunteering.png';
 import workPNG from './../../assets/experiences_work.png';
 
 const Experiences = () => {
+    const { isLoggedIn } = useContext(UserContext);
+
     // Booleans for whether to display pop ups
     const [showAddPopUp, setShowAddPopUp] = useState(false);
     const [showEditPopUp, setShowEditPopUp] = useState(false);
@@ -21,57 +24,56 @@ const Experiences = () => {
     const [endToEdit, setEndToEdit] = useState('');
     const [descToEdit, setDescToEdit] = useState('');
 
-    // const [fakeIdCounter, setFakeIdCounter] = useState(6); // TODO: uncomment when logged in state exists
+    const [fakeIdCounter, setFakeIdCounter] = useState(6);
     const [experienceIdToEdit, setExperienceIdToEdit] = useState(0); // reference to current course
 
     const [experiences, setExperiences] = useState([]);
 
     useEffect(() => {
-        // if user is logged in
-        apiRequest('experiences', 'GET', {}, setExperiences, console.log);
-
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // const fakeExperiences = [
-        //     {
-        //         _id: 1,
-        //         organization: 'Tutoring1',
-        //         type: 'Work',
-        //         position: 'Tutor',
-        //         startDate: 'May 2019',
-        //         endDate: 'August 2019',
-        //         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
-        //     },
-        //     {
-        //         _id: 2,
-        //         organization: 'Volunteering',
-        //         type: 'Volunteering',
-        //         position: 'Tutor',
-        //         startDate: 'May 2019',
-        //         endDate: 'August 2019',
-        //         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
-        //     },
-        //     {
-        //         _id: 3,
-        //         organization: 'Tutoring2',
-        //         type: 'Work',
-        //         position: 'Tutor',
-        //         startDate: 'May 2019',
-        //         endDate: 'August 2019',
-        //         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
-        //     },
-        //     {
-        //         _id: 4,
-        //         organization: 'Tutoring3',
-        //         type: 'Work',
-        //         position: 'Tutor',
-        //         startDate: 'May 2019',
-        //         endDate: 'August 2019',
-        //         description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
-        //     }
-        // ];
-        // setExperiences(fakeExperiences);
-    }, [])
+        if (isLoggedIn) {
+            apiRequest('experiences', 'GET', {}, setExperiences, console.log);
+        } else {
+            const fakeExperiences = [
+                {
+                    _id: 1,
+                    organization: 'Tutoring1',
+                    type: 'Work',
+                    position: 'Tutor',
+                    startDate: 'May 2019',
+                    endDate: 'August 2019',
+                    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
+                },
+                {
+                    _id: 2,
+                    organization: 'Volunteering',
+                    type: 'Volunteering',
+                    position: 'Tutor',
+                    startDate: 'May 2019',
+                    endDate: 'August 2019',
+                    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
+                },
+                {
+                    _id: 3,
+                    organization: 'Tutoring2',
+                    type: 'Work',
+                    position: 'Tutor',
+                    startDate: 'May 2019',
+                    endDate: 'August 2019',
+                    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
+                },
+                {
+                    _id: 4,
+                    organization: 'Tutoring3',
+                    type: 'Work',
+                    position: 'Tutor',
+                    startDate: 'May 2019',
+                    endDate: 'August 2019',
+                    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
+                }
+            ];
+            setExperiences(fakeExperiences);
+        }
+    }, [isLoggedIn])
 
     const handleEditClick = (id, org, pos, type, start, end, desc) => {
         setExperienceIdToEdit(id);
@@ -90,23 +92,22 @@ const Experiences = () => {
         const possibleImgs = [volunteeringPNG, workPNG]
         const imageType =possibleImgs[Math.floor(Math.random() * 2)]
 
-        // if user is logged in
-        apiRequest('experiences', 'POST',
-        {   organization: org,
-            position: pos,
-            type:type,
-            startDate: start,
-            endDate: end,
-            description: desc
-        },
-        (newExperience) => {
-            setExperiences([...experiences, newExperience])
-        }, console.log);
-        
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // setExperiences([... experiences, {_id: fakeIdCounter, organization: org, image: imageType, position: pos, type: type, startDate: start, endDate: end, description: desc}]);
-        // setFakeIdCounter(fakeIdCounter + 1);
+        if (isLoggedIn) {
+            apiRequest('experiences', 'POST',
+            {   organization: org,
+                position: pos,
+                type:type,
+                startDate: start,
+                endDate: end,
+                description: desc
+            },
+            (newExperience) => {
+                setExperiences([...experiences, newExperience])
+            }, console.log);
+        } else {
+            setExperiences([... experiences, {_id: fakeIdCounter, organization: org, image: imageType, position: pos, type: type, startDate: start, endDate: end, description: desc}]);
+            setFakeIdCounter(fakeIdCounter + 1);
+        }
     }
 
     const handleEditExperience = (expId, org, pos, type, start, end, desc) => {
@@ -116,47 +117,45 @@ const Experiences = () => {
 
         const expToUpdate = experiences.find(exp => exp._id === expId);
 
-        idApiRequest('experiences', expId, 'PATCH',
-        {
-            organization: org,
-            position: pos,
-            type:type,
-            startDate: start,
-            endDate: end,
-            description: desc
-        },
-        (exp) => {
-            expToUpdate.organization = exp.organization;
-            expToUpdate.position = exp.position;
-            expToUpdate.type = exp.type;
-            expToUpdate.startDate = exp.startDate;
-            expToUpdate.endDate = exp.endDate;
-            expToUpdate.description = exp.description;
+        if (isLoggedIn) {
+            idApiRequest('experiences', expId, 'PATCH',
+            {
+                organization: org,
+                position: pos,
+                type:type,
+                startDate: start,
+                endDate: end,
+                description: desc
+            },
+            (exp) => {
+                expToUpdate.organization = exp.organization;
+                expToUpdate.position = exp.position;
+                expToUpdate.type = exp.type;
+                expToUpdate.startDate = exp.startDate;
+                expToUpdate.endDate = exp.endDate;
+                expToUpdate.description = exp.description;
+                setExperiences([...experiences]);
+            }, console.log);
+        } else {
+            expToUpdate.organization = org;
+            expToUpdate.position = pos;
+            expToUpdate.type = type;
+            expToUpdate.startDate = start;
+            expToUpdate.endDate = end;
+            expToUpdate.description = desc;
             setExperiences([...experiences]);
-        }, console.log);
-
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // expToUpdate.organization = org;
-        // expToUpdate.position = pos;
-        // expToUpdate.type = type;
-        // expToUpdate.startDate = start;
-        // expToUpdate.endDate = end;
-        // expToUpdate.description = desc;
-        // setExperiences([...experiences]);
+        }        
     }
 
     // Handler for deleting experience and updating experiences
     const handleDeleteExperience = (id) => {
-        // apiRequest('experiences', 'DELETE', {}, console.log, console.log, '607629c39045b60a9e30e6d7');
-        // if user is logged in
-        idApiRequest('experiences', id, 'DELETE', {}, () => {
-            setExperiences(experiences.filter(exp => exp._id !== id))
-        }, console.log);
-
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // setExperiences(experiences.filter(exp => exp._id !== id))
+        if (isLoggedIn) {
+            idApiRequest('experiences', id, 'DELETE', {}, () => {
+                setExperiences(experiences.filter(exp => exp._id !== id));
+            }, console.log);
+        } else {
+            setExperiences(experiences.filter(exp => exp._id !== id));
+        }        
     }
 
     // Function to set image type 

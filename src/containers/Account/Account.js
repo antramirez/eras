@@ -1,64 +1,62 @@
-import { useRef, useEffect, useState } from 'react';
+import { useContext, useReducer } from 'react';
+import { UserContext, UserActionsContext } from '../../context/UserContext';
+import { accountReducer } from '../../reducers/AccountReducer';
+import { apiRequest } from '../../utils/apiRequests';
+import { useHistory, useLocation } from 'react-router-dom';
 import './Account.css';
-import editPNG from './../../assets/edit.png';
 
-const Account = ({firstName="Selam", lastName="Moges", gradYear=2024, legal, needVisa}) => {
-    // references for each input value
-    const firstNameInputRef = useRef(null);
-    const lastNameInputRef = useRef(null);
-    const gradYearInputRef = useRef(null);
-    const legalInputRef = useRef(null);
-    const needVisaInputRef = useRef(null);
-    
-    // booleans for whether input should be edited
-    const [editFirstName, setEditFirstName] = useState(false)
-    const [editLastName, setEditLastName] = useState(false)
-    const [editGradYear, setEditGradYear] = useState(false)
-    const [editLegal, setEditLegal] = useState(false)
-    const [editNeedVisa, setEditNeedVisa] = useState(false)
+const Account = () => {
+    const { user } = useContext(UserContext);
+    const { setUser, setIsLoggedIn } = useContext(UserActionsContext);
+    const { firstName, lastName, graduationYear, legalUS, needVisa } = user; 
 
-    const [firstNameInputValue, setFirstNameInputValue] = useState(firstName);
-    const [lastNameInputValue, setLastNameInputValue] = useState(lastName);
-    const [gradYearInputValue, setGradYearInputValue] = useState(gradYear);
-
-    // Handlers for changing readonly attribute on inputs
-    const handleFirstNameEditField = (e) => {
-        e.preventDefault();
-        setEditFirstName(true);
-        if (firstNameInputRef.current) {
-            firstNameInputRef.current.focus();
+    const [state, dispatch] = useReducer(accountReducer, 
+        {
+            accountFirstName: firstName,
+            accountLastName: lastName,
+            accountGraduationYear: graduationYear,
+            accountLegalUS: legalUS,
+            accountNeedVisa: needVisa,
+            isLoading: false,
+            success: false,
+            error: ''
         }
-    }
-    const handleLastNameEditField = (e) => {
-        e.preventDefault();
-        setEditLastName(true);
-        if (lastNameInputRef.current) {
-            lastNameInputRef.current.focus();
-        }
-    }
-    const handleGradYearEditField = (e) => {
-        e.preventDefault();
-        setEditGradYear(true);
-        if (gradYearInputRef.current) {
-            gradYearInputRef.current.focus();
-        }
-    }
+    )
+    const {accountFirstName, accountLastName, accountGraduationYear, accountLegalUS, accountNeedVisa, isLoading, success, error} = state;
 
-    // Handlers for input changes
-    const handleFirstNameChange = (e) => {
-        setFirstNameInputValue(e.target.value);
-    }
-    const handleLastNameChange = (e) => {
-        setLastNameInputValue(e.target.value);
-    }
-    const handleGradYearChange = (e) => {
-        setGradYearInputValue(e.target.value);
-    }
+    // variables to redirect user back to homepage after logout
+    let history = useHistory();
+    let location = useLocation();
+    let { from } = location.state || { from: { pathname: "/" } };
 
     // Handler for updating account
     const handleSaveClick = (e) => {
         e.preventDefault();
-        // TODO: update 
+
+        if (accountFirstName === '' || accountLastName === '') {
+            dispatch({ type: 'error', payload: 'Please fill out all fields' });
+        } else {
+            dispatch({ type: 'save' });
+            apiRequest('account', 'PATCH', 
+            {
+                firstName: accountFirstName,
+                lastName: accountLastName,
+                graduationYear: accountGraduationYear,
+                legalUS: accountLegalUS,
+                needVisa: accountNeedVisa,
+            }, (data) => {
+                localStorage.setItem('currentUser', JSON.stringify(data));
+                setUser(data);
+                dispatch({ type: 'success' });
+            }, (e) => dispatch({ type: 'error', payload: 'Couldn\'t update account, please try again.' }));
+        }
+    }
+
+    const handleLogout = () => {
+        setIsLoggedIn(false);
+        setUser({});
+        localStorage.clear();
+        history.replace(from);
     }
 
     return (
@@ -69,34 +67,97 @@ const Account = ({firstName="Selam", lastName="Moges", gradYear=2024, legal, nee
                     <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
                         <legend className="ph0 mh0 fw6 clip">Account</legend>
                         <div className="mt3">
-                            <label className="db fw4 lh-copy f5" htmlFor="account-firstname">First Name</label>
-                            <input className="pa2 input-reset bn w-100 measure" type="text" name="account-firstname"  id="account-firstname" value={firstNameInputValue} readOnly={!editFirstName} ref={firstNameInputRef} onChange={handleFirstNameChange} />
-                            <button className="edit-btn ml2 pointer grow relative"><img src={editPNG} alt="Edit button" onClick={handleFirstNameEditField}/></button>
+                            <label className="db fw4 lh-copy f5" htmlFor="firstName">First Name</label>
+                            <input 
+                                className="pa2 input-reset bn w-100 measure" 
+                                type="text" 
+                                name="firstName"  
+                                value={accountFirstName} 
+                                onChange={(e) => 
+                                    dispatch({
+                                        type: 'field',
+                                        fieldName: 'accountFirstName',
+                                        payload: e.target.value
+                                    })
+                                }
+                            />
                         </div>
                         <div className="mt3">
-                            <label className="db fw4 lh-copy f5" htmlFor="account-lastname">Last Name</label>
-                            <input className="pa2 input-reset bn w-100 measure" type="text" name="account-lastname"  id="account-lastname" value={lastNameInputValue} readOnly={!editLastName} ref={lastNameInputRef} onChange={handleLastNameChange} />
-                            <button className="edit-btn ml2 pointer grow relative"><img src={editPNG} alt="Edit button" onClick={handleLastNameEditField}/></button>
+                            <label className="db fw4 lh-copy f5" htmlFor="lastName">Last Name</label>
+                            <input className="pa2 input-reset bn w-100 measure" 
+                                type="text" 
+                                name="lastName" 
+                                value={accountLastName} 
+                                onChange={(e) => 
+                                    dispatch({
+                                        type: 'field',
+                                        fieldName: 'accountLastName',
+                                        payload: e.target.value
+                                    })
+                                }
+                            />
                         </div>
                         <div className="mt3">
-                            <label className="db fw4 lh-copy f5" htmlFor="account-grad-year">Graduation Year</label>
-                            <input className="pa2 input-reset bn w-100 measure" type="text" name="account-grad-year"  id="account-grad-year" value={gradYearInputValue} readOnly={!editGradYear} ref={gradYearInputRef} onChange={handleGradYearChange} />
-                            <button className="edit-btn ml2 pointer grow relative"><img src={editPNG} alt="Edit button" onClick={handleGradYearEditField}/></button>
+                            <label className="db fw4 lh-copy f5" htmlFor="graduationYear">Graduation Year</label>
+                            <select 
+                                className="w-100 mt1 bn" 
+                                name="graduationYear" 
+                                value={accountGraduationYear} 
+                                onChange={(e) => 
+                                    dispatch({
+                                        type: 'field',
+                                        fieldName: 'accountGraduationYear',
+                                        payload: parseInt(e.target.value)
+                                    })
+                                }
+                            >
+                                <option value="" selected disabled hidden></option>
+                                <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+                                <option value={new Date().getFullYear() + 1}>{new Date().getFullYear() + 1}</option>
+                                <option value={new Date().getFullYear() + 2}>{new Date().getFullYear() + 2}</option>
+                                <option value={new Date().getFullYear() + 3}>{new Date().getFullYear() + 3}</option>
+                            </select>
                         </div>
                         <div className="mt3">
-                            <label className="db f5 fw4 lh-copy" htmlFor="account-workstatus">Work Authorization Status</label>
+                            <label className="db f5 fw4 lh-copy" htmlFor="workStatus">Work Authorization Status</label>
                             <div className="work-status pl4">
                                 <div className="work-status-q-1">
                                     <p className="f6" >Are you legally allowed to work in the US?</p>
                                     <div className="flex ml4">
                                         <div className="pa2">
-                                            <input type="radio" id="legal" name="legal" value="Yes" checked />
-                                            <label htmlFor="legal">Yes</label>
+                                            <input 
+                                                type="radio" 
+                                                id="legal" 
+                                                name="legalUS" 
+                                                value="Yes" 
+                                                checked={accountLegalUS ? true: false}
+                                                onChange={(e) => 
+                                                    dispatch({
+                                                        type: 'field',
+                                                        fieldName: 'accountLegalUS',
+                                                        payload: e.target.value === 'Yes' ? true : false
+                                                    })
+                                                }
+                                            />
+                                            <label htmlFor="legalUS">Yes</label>
                                         </div>
 
                                         <div className="pa2">
-                                            <input type="radio" id="not_legal" name="not_legal" value="No" />
-                                            <label htmlFor="not_legal">No</label>
+                                            <input 
+                                                type="radio" 
+                                                id="not_legal" 
+                                                name="legalUS" 
+                                                value="No"
+                                                checked={!accountLegalUS ? true: false}
+                                                onChange={(e) => 
+                                                    dispatch({
+                                                        type: 'field',
+                                                        fieldName: 'accountLegalUS',
+                                                        payload: e.target.value === 'Yes' ? true : false
+                                                    })
+                                                }
+                                            />
+                                            <label htmlFor="legalUS">No</label>
                                         </div>
                                     </div>
                                 </div>
@@ -104,22 +165,48 @@ const Account = ({firstName="Selam", lastName="Moges", gradYear=2024, legal, nee
                                     <p className="f6" >Will you now or in the future need visa sponsorship?</p>
                                     <div className="flex ml4">
                                         <div className="pa2">
-                                            <input type="radio" id="need_visa" name="need_visa" value="Yes"  />
-                                            <label htmlFor="legal">Yes</label>
+                                            <input 
+                                                type="radio" 
+                                                name="needVisa" 
+                                                value="Yes"
+                                                checked={accountNeedVisa}
+                                                onChange={(e) => 
+                                                    dispatch({
+                                                        type: 'field',
+                                                        fieldName: 'accountNeedVisa',
+                                                        payload: e.target.value === 'Yes' ? true : false
+                                                    })
+                                                }
+                                            />
+                                            <label htmlFor="needVisa">Yes</label>
                                         </div>
-
                                         <div className="pa2">
-                                            <input type="radio" id="no_visa" name="no_visa" value="No" checked/>
-                                            <label htmlFor="no_visa">No</label>
+                                            <input 
+                                                type="radio"
+                                                name="needVisa" 
+                                                value="No" 
+                                                checked={!accountNeedVisa}
+                                                onChange={(e) => 
+                                                    dispatch({
+                                                        type: 'field',
+                                                        fieldName: 'accountNeedVisa',
+                                                        payload: e.target.value === 'Yes' ? true : false
+                                                    })
+                                                }
+                                            />
+                                            <label htmlFor="needVisa">No</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
                         </div>
                     </fieldset>
-                    <button className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleSaveClick}>Save</button>
+                    <button disabled={isLoading} className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleSaveClick}>{isLoading ? 'Saving...' : 'Save'}</button>
                 </form>
+                <p className="f5 b red">{error}</p>
+                <p className="f5 b green">{success ? 'Account updated.' : ''}</p>
+                <button className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleLogout}>{isLoading ? 'Logging out...' : 'Logout'}</button>
+
             </article>
         </section>
     )

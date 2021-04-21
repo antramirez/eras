@@ -1,4 +1,5 @@
-import { useRef, useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { UserContext } from '../../context/UserContext';
 import AddCalendarEventPopUp from './../AddCalendarEventPopUp/AddCalendarEventPopUp';
 import { apiRequest, idApiRequest } from '../../utils/apiRequests';
 import Calendar from './../Calendar/Calendar';
@@ -6,9 +7,11 @@ import trophyIcon from './../../assets/trophy.png';
 import check from './../../assets/check-mark.svg';
 
 const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
+    const { isLoggedIn } = useContext(UserContext);
+
     const [showAddCalendarEventPopUp, setShowAddCalendarEventPopUp] = useState(false);
     const [dateStrOfEvent, setDateStrOfEvent] = useState('');
-    // const [fakeIdCounter, setFakeIdCounter ]= useState(5); //TODO: uncomment when logged in state exists
+    const [fakeIdCounter, setFakeIdCounter ]= useState(5);
 
     const [events, setEvents] = useState([]);
 
@@ -18,21 +21,22 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
 
     useEffect( () => {
         // if user is logged in
-        apiRequest('goals', 'GET', {}, (data) => {
-            setEvents(data);
-            setNumEvents(data.length)
-        }, console.log);
-
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // setEvents([
-        //     { _id: 1, title: 'Milestone 1', date: '2021-03-01', dateStr: 'Mar 01, 2021', dateObj: new Date('2021-03-01') },
-        //     { _id: 2, title: 'Milestone 2', date: '2021-03-20', dateStr: 'Mar 20, 2021', dateObj: new Date('2021-03-20') },
-        //     { _id: 3, title: 'Milestone 3', date: '2021-03-22', dateStr: 'Mar 22, 2021', dateObj: new Date('2021-03-22') },
-        //     { _id: 4, title: 'Milestone 4', date: '2021-03-26', dateStr: 'Mar 26, 2021', dateObj: new Date('2021-03-26') }
-        // ]);
-        // setNumEvents(events.length)
-    }, [])
+        if (isLoggedIn) {
+            apiRequest('goals', 'GET', {}, (data) => {
+                setEvents(data);
+                setNumEvents(data.length)
+            }, console.log);
+        } else {
+            // if user is not logged in
+            setEvents([
+                { _id: 1, title: 'Milestone 1', date: '2021-03-01', dateStr: 'Mar 01, 2021', dateObj: new Date('2021-03-01') },
+                { _id: 2, title: 'Milestone 2', date: '2021-03-20', dateStr: 'Mar 20, 2021', dateObj: new Date('2021-03-20') },
+                { _id: 3, title: 'Milestone 3', date: '2021-03-22', dateStr: 'Mar 22, 2021', dateObj: new Date('2021-03-22') },
+                { _id: 4, title: 'Milestone 4', date: '2021-03-26', dateStr: 'Mar 26, 2021', dateObj: new Date('2021-03-26') }
+            ]);
+            setNumEvents(events.length);
+        }
+    }, [isLoggedIn])
 
     // Boolean to determine whether event is this week so it can go in task table
     // Parameter is a date object
@@ -62,34 +66,32 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
         const dateObj = new Date(date);
         const dateStr = `${dateObj.toLocaleDateString("en-US", {month: "short"}, {timeZone: 'UTC'})} ${dateObj.getUTCDate()}, ${dateObj.getFullYear()}`; 
 
-        // if user is logged in
-        apiRequest('goals', 'POST', {date: date, dateObj: dateObj, title: title, dateStr: dateStr}, 
-        (goal) => {
-            setEvents([...events, goal]);
-            setEventToAdd(goal)
-        }, console.log);
-
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // const e = {_id: fakeIdCounter, title, date, dateStr: dateStr, dateObj: new Date(date)}
-        // setEvents([...events, e]);
-        // setEventToAdd(e); 
-        // setFakeIdCounter(fakeIdCounter + 1);
+        if (isLoggedIn) {
+            apiRequest('goals', 'POST', {date: date, dateObj: dateObj, title: title, dateStr: dateStr}, 
+            (goal) => {
+                setEvents([...events, goal]);
+                setEventToAdd(goal)
+            }, console.log);
+        } else {
+            const e = {_id: fakeIdCounter, title, date, dateStr: dateStr, dateObj: new Date(date)}
+            setEvents([...events, e]);
+            setEventToAdd(e); 
+            setFakeIdCounter(fakeIdCounter + 1);
+        }
 
         // If event is in current week, add to tasks list
         if (isThisWeek(dateObj)) {
-            // if user is logged in
-            apiRequest('tasks', 'POST', {description: title}, 
-            (task) => {
-                updateNumTasks([...tasks, task].length);
-                updateTasks([...tasks, task])
-            }, console.log);
-
-            // TODO: uncomment when logged in state exists
-            // if user is not logged in
-            // const updatedTasks = [...tasks, {_id: `t-${fakeIdCounter}`, description: title}]
-            // updateTasks(updatedTasks);
-            // updateNumTasks(updatedTasks.length);
+            if (isLoggedIn) {
+                apiRequest('tasks', 'POST', {description: title}, 
+                (task) => {
+                    updateNumTasks([...tasks, task].length);
+                    updateTasks([...tasks, task])
+                }, console.log);
+            } else {
+                const updatedTasks = [...tasks, {_id: `t-${fakeIdCounter}`, description: title}]
+                updateTasks(updatedTasks);
+                updateNumTasks(updatedTasks.length);
+            }            
         }
     }
 
@@ -97,37 +99,35 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
         const e = events.find(event => event._id === eventId);
         const updatedEvents = events.filter(event => event._id !== eventId);
 
-        // if user is logged in
-        idApiRequest('goals', eventId, 'DELETE', {}, () => {
-            const updatedEvents = events.filter(event => event._id !== eventId);
+        if (isLoggedIn) {
+            idApiRequest('goals', eventId, 'DELETE', {}, () => {
+                const updatedEvents = events.filter(event => event._id !== eventId);
+                setEvents(updatedEvents);
+                setNumEvents(updatedEvents.length);
+                setEventToRemove(e);
+            }, console.log);    
+        } else {
             setEvents(updatedEvents);
             setNumEvents(updatedEvents.length);
             setEventToRemove(e);
-        }, console.log);    
-        
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // setEvents(updatedEvents);
-        // setNumEvents(updatedEvents.length);
-        // setEventToRemove(e);
+        }       
 
         // Remove from task table if event was this week
         if (tasks.some(task => task.description === e.title)) {
             const taskToRemove = tasks.find(task => task.description === e.title)
 
-            // if user is logged in
-            idApiRequest('tasks', taskToRemove._id, 'DELETE', {}, () => {
-                const updatedTasks = tasks.filter(task => task.description !== e.title)
-                updateTasks(updatedTasks)
+            if (isLoggedIn) {
+                idApiRequest('tasks', taskToRemove._id, 'DELETE', {}, () => {
+                    const updatedTasks = tasks.filter(task => task.description !== e.title)
+                    updateTasks(updatedTasks)
+                    updateNumTasks(updatedTasks.length);
+                }, console.log);
+            } else {
+                const fakeTaskToRemove = tasks.find(task => task._id === `t-${eventId}`);
+                const updatedTasks = tasks.filter(task => task._id !== fakeTaskToRemove._id)
+                updateTasks(updatedTasks);
                 updateNumTasks(updatedTasks.length);
-            }, console.log);
-            
-            // TODO: uncomment when logged in state exists
-            // if user is not logged in
-            // const fakeTaskToRemove = tasks.find(task => task._id === `t-${eventId}`);
-            // const updatedTasks = tasks.filter(task => task._id !== fakeTaskToRemove._id)
-            // updateTasks(updatedTasks);
-            // updateNumTasks(updatedTasks.length);
+            }
         }
     }
 

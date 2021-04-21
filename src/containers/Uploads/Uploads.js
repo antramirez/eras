@@ -1,25 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../../context/UserContext';
 import FileUpload from '../../components/FileUpload/FileUpload';
 import { apiRequest } from '../../utils/apiRequests';
 import './Uploads.css';
 
 const Uploads = () => {
+    const { isLoggedIn } = useContext(UserContext);
     const [uploads, setUploads] = useState([]);
 
-    // if user is logged in
     useEffect(() => {
-        apiRequest('uploads', 'GET', {}, setUploads, console.log);
-    }, [])
+        if (isLoggedIn) {
+            apiRequest('uploads', 'GET', {}, setUploads, console.log);
+        }
+        // TODO: user not logged in
+    }, [isLoggedIn])
 
     const handleUpload =  (type, data) => {
-        const formData = new FormData();
-        formData.append('data', data);
-        formData.append('type', type);
-        
-        // if user is logged in
-        apiRequest('uploads', 'POST', formData, (newUpload) => {
-            setUploads([... uploads, newUpload]);
-        }, console.log);
+        if (isLoggedIn) {
+            const formData = new FormData();
+            formData.append('data', data);
+            formData.append('type', type);
+            
+            apiRequest('uploads', 'POST', formData, (newUpload) => {
+                setUploads([... uploads, newUpload]);
+            }, console.log);
+        }
+        // TODO: user not logged in
     }
 
     return (

@@ -16,3 +16,9 @@
     top: .3em;
     padding: 0;
 }
+
+.account-container select {
+    background-color: rgba(202, 125, 125, 0.16);
+    width: 70%;
+    height: 40px;
+}

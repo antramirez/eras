@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../../context/UserContext';
 import { apiRequest } from '../../utils/apiRequests';
 import EditScorePopUp from './../EditScorePopUp/EditScorePopUp';
 import editPNG from './../../assets/edit.png';
 
 const Scores = () => {
+    const { isLoggedIn } = useContext(UserContext);
+
     // Booleans for whether pop ups should be displayed
     const [showPopUp1, setShowPopUp1] = useState(false);
     const [showPopUp2, setShowPopUp2] = useState(false);
@@ -13,40 +16,37 @@ const Scores = () => {
     const [step2Score, setStep2Score] = useState(0);
 
     useEffect(() => {
-        // if user is logged in
-        apiRequest('account', 'GET', {}, data => {
-            setStep1Score(data.step1);
-            setStep2Score(data.step2);
-        }, console.log);
-
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // setStep1Score(260);
-        // setStep2Score(0);
-    }, [])
+        if (isLoggedIn) {
+            apiRequest('account', 'GET', {}, data => {
+                setStep1Score(data.step1);
+                setStep2Score(data.step2);
+            }, console.log);
+        } else {
+            setStep1Score(260);
+            setStep2Score(0);
+        }        
+    }, [isLoggedIn])
 
     // Handlers for setting scores when submitting form
     const handleEdit1 = (score) => {
-        // if user is logged in
-        apiRequest('account', 'PATCH', {step1: score}, (data) => 
-            {localStorage.setItem('currentUser', JSON.stringify(data))
+        if (isLoggedIn) {
+            apiRequest('account', 'PATCH', {step1: score}, (data) => {
+                localStorage.setItem('currentUser', JSON.stringify(data));
+                setStep1Score(score);
+            }, console.log);
+        } else {
             setStep1Score(score);
-        }, console.log);
-
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // setStep1Score(score);
+        }
     }
     const handleEdit2 = (score) => {
-        // if user is logged in
-        apiRequest('account', 'PATCH', {step2: score}, (data) => 
-            {localStorage.setItem('currentUser', JSON.stringify(data))
+        if (isLoggedIn) {
+            apiRequest('account', 'PATCH', {step2: score}, (data) => {
+                localStorage.setItem('currentUser', JSON.stringify(data));
+                setStep2Score(score);
+            }, console.log);
+        } else {
             setStep2Score(score);
-        }, console.log);
-
-        // TODO: uncomment when logged in state exists
-        // if user is not logged in
-        // setStep2Score(score);
+        }
     }
 
     return (
