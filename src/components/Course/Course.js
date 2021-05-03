@@ -5,10 +5,10 @@ const Course = ({title, grade, handleEdit}) => {
 
     // Fill in number of cells that correspond to grade, and leave the remainder blank
     for (let i = 0; i < grade; i++) {
-        row.push(<td><div className="course-grade-filled"></div></td>);
+        row.push(<td key={i}><div className="course-grade-filled"></div></td>);
     }
     for (let i = 0; i < 4 - grade; i++) {
-        row.push(<td></td>);
+        row.push(<td key={i + grade} ></td>);
     }
 
     const handleClick = (title, grade) => {

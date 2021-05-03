@@ -1,17 +1,25 @@
 import { useRef, useState, useEffect } from 'react';
 import uploadPNG from './../../assets/upload.png';
 
-const FileUpload = ({type, label, handleUpload}) => {
+const FileUpload = ({state, type, label, handleUpload}) => {
     const fileToUploadRef = useRef(null);
-    const uploadButtonRef = useRef(null);
+    const uploadButtonContainerRef = useRef(null);
+    
+    // Destructure state from reducer
+    const { isAddingTranscript, isAddingRecommendation, isAddingOther } = state;
+
     const [fileToUpload, setFileToUpload] = useState(null);
     const [fileName, setFileName] = useState(null);
 
-    // Hide upload button if no file is selected
+    // Hide upload button container if no file is selected
     useEffect(() => {
         if(fileName) {
-            if (uploadButtonRef.current) {
-                uploadButtonRef.current.classList.remove('dn')
+            if (uploadButtonContainerRef.current) {
+                uploadButtonContainerRef.current.classList.remove('dn');
+            }
+        } else {
+            if (uploadButtonContainerRef.current) {
+                uploadButtonContainerRef.current.classList.add('dn');
             }
         }
     }, [fileName])
@@ -20,13 +28,18 @@ const FileUpload = ({type, label, handleUpload}) => {
     const handleFileChange = (e) => {
         const file = e.target.value.split('\\').pop();
         setFileToUpload(e.target.files[0]);
-        setFileName(file);
+        setFileName(file); // will be empty string if file is removed
     }
 
     // Handle file upload
-    const handleUploadFile = (e) => {
+    const handleUploadFile = async (e) => {
         e.preventDefault();
-        handleUpload(type, fileToUpload);
+        // Check if upload was successful
+        const success = await handleUpload(type, fileToUpload);
+        if (success) {
+            setFileToUpload(null);
+            setFileName('');
+        }
     }
 
     return (
@@ -39,8 +52,20 @@ const FileUpload = ({type, label, handleUpload}) => {
                         <span className="absolute right-1"><img src={uploadPNG} alt="Upload icon"/></span>
                     </label>
                 </div>
-                <div className="file-name-container mb1 mw6 center tc">
-                    <p className="f4 mt1 mb3">{fileName}<span><button className="mt3 mb2 ml3 b--black bg-transparent ba b ph3 pv2 grow pointer f6 dn" onClick={handleUploadFile} ref={uploadButtonRef}>Upload</button></span></p>
+                <div className="file-name-container mb1 mw6 center tc dn" ref={uploadButtonContainerRef}>
+                    <p className="f4 mt1 mb3">{fileName}<span>
+                        <button className="mt3 mb2 ml3 b--black bg-transparent ba b ph3 pv2 grow pointer f6" onClick={handleUploadFile} >
+                            {(() => {
+                                if (type === 'transcript') {
+                                    return isAddingTranscript ? 'Uploading...' : 'Upload';
+                                } else if (type === 'recommendation') {
+                                    return isAddingRecommendation ? 'Uploading...' : 'Upload';
+                                } else {
+                                    return isAddingOther ? 'Uploading...' : 'Upload';
+                                }
+                            })()}
+                        </button>
+                    </span></p>
                 </div>
             </form>
         </>

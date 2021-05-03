@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Task from './../Task/Task';
 import AddTaskPopUp from './../AddTaskPopUp/AddTaskPopUp';
 import AddButton from './../AddButton/AddButton';
 import taskIcon from './../../assets/completed-task.png';
 import cross from './../../assets/cross.svg';
 
-const TaskTable = ({tasks, numTasks, addTask, removeTask, check}) => {
+const TaskTable = ({tasks, numTasks, state, dispatch, addTask, removeTask, check}) => {
     const [showAddTaskPopUp, setShowAddTaskPopUp] = useState(false);
 
     return (
@@ -31,7 +31,7 @@ const TaskTable = ({tasks, numTasks, addTask, removeTask, check}) => {
                 </table>
                 <AddButton onClick={() => setShowAddTaskPopUp(true) }/>
             </div>
-            <AddTaskPopUp visible={showAddTaskPopUp} handleClose={() => setShowAddTaskPopUp(false)} handleAdd={addTask} cross={cross}/>
+            <AddTaskPopUp visible={showAddTaskPopUp} state={state} dispatch={dispatch} handleClose={() => setShowAddTaskPopUp(false)} handleAdd={addTask} cross={cross}/>
         </div>
     )
 }

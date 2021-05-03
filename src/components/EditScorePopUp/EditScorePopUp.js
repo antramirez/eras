@@ -1,13 +1,18 @@
 import { useRef, useEffect, useState } from 'react';
 import cross from './../../assets/cross.svg';
 
-const EditScorePopUp = ({step, value, visible, handleClose, handleEdit}) => {
+const EditScorePopUp = ({step, state, dispatch, visible, handleClose, handleEdit, handleDelete}) => {
     const popUpContainerRef = useRef(null);
-    const [inputValue, setInputValue] = useState(value > 0 ? value : '');
+
+    // Destructure state from reducer
+    const { step1, step2, step1Field, step2Field, isEditing, isDeleting, editError, deleteError } = state;
+    const scoreField = step === 1 ? step1Field : step2Field; // form field for score
+    const score = step === 1 ? step1 : step2; // score in db 
+    const scoreFieldName = step === 1 ? 'step1Field' : 'step2Field';
 
     // Display the popup everytime visible is true, which happens when edit button is pressed
     useEffect(() => {
-        setInputValue((value > 0 ? value : ''));
+        dispatch({ type: 'field', fieldName: scoreFieldName, payload: score > 0 ? score : '' });
         
         if (visible) {
             if (popUpContainerRef.current) {
@@ -25,7 +30,8 @@ const EditScorePopUp = ({step, value, visible, handleClose, handleEdit}) => {
 
     // Reset input fields
     const resetForm = () => {
-        setInputValue('');
+        dispatch({ type: 'field', fieldName: scoreFieldName, payload: '' });
+        dispatch({ type: 'edit_error',  payload: '' });
 
         if (popUpContainerRef.current) {
             popUpContainerRef.current.firstChild.reset();
@@ -39,17 +45,31 @@ const EditScorePopUp = ({step, value, visible, handleClose, handleEdit}) => {
         handleClose();
     }
 
-    // Handler for score input change
-    const handleInputChange = (e) => {
-        setInputValue(e.target.value);
+    // Handler for submitting form
+    const handleEditClick = async (e) => {
+        e.preventDefault();
+
+        // Make sure score is valid
+        if (scoreField.trim() === '' || isNaN(scoreField.trim()) || (!isNaN(scoreField.trim()) && parseInt(scoreField.trim()) < 1 || parseInt(scoreField.trim()) > 300)) {
+            dispatch({type: 'edit_error', payload: 'Please enter a valid score 1-300.'});
+        } else {
+            // Check if edit was successful after possible api call
+            const success = await handleEdit(parseInt(scoreField.trim()));
+            if (success) {
+                resetForm();
+                handleClose();
+            }
+        }   
     }
 
-    // Handler for submitting form
-    const handleEditClick = (e) => {
+    const handleDeleteClick = async (e) => {
         e.preventDefault();
-        handleEdit(inputValue);
-        resetForm();
-        handleClose();
+        // Check if "delete" was successful after possible api call
+        const success = handleDelete();
+        if (success) {
+            resetForm();
+            handleClose();
+        }   
     }
 
     return (
@@ -62,10 +82,13 @@ const EditScorePopUp = ({step, value, visible, handleClose, handleEdit}) => {
                 <fieldset id="log_in" className="ba b--transparent ph0 mh0">
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor={`step-${step}-score`}>Score</label>
-                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name={`step-${step}-score`}  id={`step-${step}-score`} value={inputValue} onChange={handleInputChange} />
+                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" placeholder="1-300" name={`step-${step}-score`}  id={`step-${step}-score`} value={scoreField} 
+                        onChange={ (e) => dispatch({type: 'field', fieldName: scoreFieldName, payload: e.target.value}) } />
                     </div>
                 </fieldset>
-                <button className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleEditClick}>Edit</button>
+                <button disabled={isEditing || isDeleting} className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleEditClick}>{isEditing ? 'Editing...' : 'Edit'}</button>
+                <button disabled={isDeleting || isEditing} className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6 ml2" type="submit" onClick={handleDeleteClick}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
+                <p className="f5 red b tc">{deleteError ? deleteError : ''}{editError ? editError : ''}</p>
             </form>
         </article>
     )

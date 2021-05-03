@@ -47,8 +47,8 @@
 
 .edit-course-popup-container > form {
     background-color: #E5E1E1;
-    width: 20rem;
-    height: 22rem;
+    width: 28rem;
+    height: 25rem;
 }
 
 .edit-course-popup-container > form select{
@@ -71,7 +71,7 @@
 .add-course-popup-container > form {
     background-color: #E5E1E1;
     width: 28rem;
-    height: 22rem;
+    height: 25rem;
 }
 
 .add-course-popup-container > form select{
@@ -94,7 +94,7 @@
 .edit-score-popup-container > form {
     background-color: #E5E1E1;
     width: 20rem;
-    height: 18rem;
+    height: 19.5rem;
 }
 
 

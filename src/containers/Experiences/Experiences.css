@@ -7,6 +7,7 @@
     width: 28em;
     margin: .75em 2em;
     max-width: 100%;
+    word-wrap: break-word;
 }
 
 .experience > img {
@@ -51,6 +52,7 @@
 
 .add-experience-popup-container form {
     background-color: #BDBFCD;
+    height: 54em;
 }
 
 .add-experience-popup-container > form select {
@@ -78,6 +80,7 @@
 
 .edit-experience-popup-container form {
     background-color: #BDBFCD;
+    height: 54em;
 }
 
 .edit-experience-popup-container > form select {

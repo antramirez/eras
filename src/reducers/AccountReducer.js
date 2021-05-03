@@ -1,34 +1,30 @@
 export function accountReducer(state, action) {
     switch (action.type) {
-        case 'field': {
+        case 'field':
             return {
                 ...state,
                 [action.fieldName]: action.payload
             }
-        }
-        case 'save': {
+        case 'save':
             return {
                 ...state,
                 error: '',
                 isLoading: true,
                 success: false
             }
-        }
-        case 'success': {
+        case 'success':
             return {
                 ...state,
                 isLoading: false,
                 success: true
             }
-        }
-        case 'error': {
+        case 'error':
             return {
                 ...state,
                 error: action.payload,
                 isLoading: false,
                 success: false
             }
-        }
         default:
             return;
     }

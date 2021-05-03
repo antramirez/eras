@@ -1,29 +1,130 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useReducer } from 'react';
 import { UserContext } from '../../context/UserContext';
 import FileUpload from '../../components/FileUpload/FileUpload';
-import { apiRequest } from '../../utils/apiRequests';
+import { apiRequest, idApiRequest } from '../../utils/apiRequests';
+import {uploadReducer} from '../../reducers/UploadReducer';
+import download from 'downloadjs';
 import './Uploads.css';
 
 const Uploads = () => {
     const { isLoggedIn } = useContext(UserContext);
-    const [uploads, setUploads] = useState([]);
+
+    const [state, dispatch] = useReducer(uploadReducer, { transcript: '', recommendation: '', other: '', isAddingTranscript: false, isAddingRecommendation: false, isAddingOther: false, isDeletingTranscript: false, isDeletingRecommendation: false, isDeletingOther: false, addTranscriptSuccess: '', addRecommendationSuccess: '', addOtherSuccess: '', addTranscriptError: '', addRecommendationError: '', addOtherError: '', deleteTranscriptSuccess: false, deleteRecommendationSuccess: false, deleteOtherSuccess: false, deleteTranscriptError: '', deleteRecommendationError: '', deleteOtherError: '' });
+
+    const { addTranscriptError, addRecommendationError, addOtherError, addTranscriptSuccess, addRecommendationSuccess, addOtherSuccess, deleteTranscriptError, deleteRecommendationError, deleteOtherError } = state;
+
+    const [uploads, setUploads] = useState([]); 
+    const [transcripts, setTranscripts] = useState([]); 
+    const [recommendations, setRecommendations] = useState([]); 
+    const [otherUploads, setOtherUploads] = useState([]); 
 
     useEffect(() => {
         if (isLoggedIn) {
-            apiRequest('uploads', 'GET', {}, setUploads, console.log);
+            apiRequest('uploads', 'GET', {}, (data) => {
+                data.forEach(u => {
+                    if (u.type === 'transcript') {
+                        const t = transcripts;
+                        t.push(u);
+                        setTranscripts([...t]);
+                    } else if (u.type === 'recommendation') {
+                        const r = recommendations;
+                        r.push(u);
+                        setRecommendations([...r]);
+                    } else {
+                        const o = otherUploads;
+                        o.push(u)
+                        setOtherUploads([...o]);
+                    }
+                });
+                setUploads(data);
+            }, console.log);
         }
         // TODO: user not logged in
     }, [isLoggedIn])
 
-    const handleUpload =  (type, data) => {
+    const handleUpload =  async (type, data) => {
         if (isLoggedIn) {
+            if (type === 'transcript') {
+                dispatch({ type: 'add_transcript' });
+            } else if (type === 'recommendation') {
+                dispatch({ type: 'add_recommendation' });
+            } else {
+                dispatch({ type: 'add_other' });
+            }
+            
+            let success = false;
+            
             const formData = new FormData();
             formData.append('data', data);
             formData.append('type', type);
             
-            apiRequest('uploads', 'POST', formData, (newUpload) => {
+            await apiRequest('uploads', 'POST', formData, (newUpload) => {
+                if (type === 'transcript') {
+                    setTranscripts([...transcripts, newUpload]);
+                    dispatch({ type: 'add_transcript_success', payload: 'File uploaded successfully.' });
+                } else if (type === 'recommendation') {
+                    setRecommendations([...recommendations, newUpload]);
+                    dispatch({ type: 'add_recommendation_success', payload: 'File uploaded successfully.' });
+                } else {
+                    setOtherUploads([...otherUploads, newUpload]);
+                    dispatch({ type: 'add_other_success', payload: 'File uploaded successfully.' });
+                }
                 setUploads([... uploads, newUpload]);
-            }, console.log);
+                success = true;
+            }, (e) => {
+                if (type === 'transcript') {
+                    dispatch({ type: 'add_transcript_error', payload: e.error});
+                } else if (type === 'recommendation') {
+                    dispatch({ type: 'add_recommendation_error', payload: e.error});
+                } else {
+                    dispatch({ type: 'add_other_error', payload: e.error});
+                }
+                success = false;
+            });
+
+            return success;
+        }
+        // TODO: user not logged in
+    }
+
+    const downloadFile = async (id) => {
+        const upload = uploads.find(u => u._id === id);
+        // create blob out of upload's data buffer array
+        download(new Blob([new Uint8Array(upload.data.data)]), upload.fileName, upload.mimeType);
+    }
+
+    const deleteUpload = async (type, id) => {
+        if (type === 'transcript') {
+            dispatch({ type: 'delete_transcript' });
+        } else if (type === 'recommendation') {
+            dispatch({ type: 'delete_recommendation' });
+        } else {
+            dispatch({ type: 'delete_other' });
+        }
+        if (isLoggedIn) {
+            await idApiRequest('uploads', id, 'DELETE', {}, () => {
+
+                if (type === 'transcript') {
+                    setTranscripts(transcripts.filter(u => u._id !== id))
+                    dispatch({ type: 'delete_transcript_success' });
+                } else if (type === 'recommendation') {
+                    setRecommendations(recommendations.filter(u => u._id !== id))
+                    dispatch({ type: 'delete_recommendation_success' });
+                } else {
+                    setOtherUploads(otherUploads.filter(u => u._id !== id))
+                    dispatch({ type: 'delete_other_success' });
+                }
+                setUploads(uploads.filter(u => u._id !== id));
+    
+            }, (e) => {
+                if (type === 'transcript') {
+                    dispatch({ type: 'delete_transcript_error', payload: e.error });
+                } else if (type === 'recommendation') {
+                    dispatch({ type: 'delete_recommendation_error', payload: e.error });
+                } else {
+                    dispatch({ type: 'delete_other_error', payload: e.error });
+                }
+            });
         }
         // TODO: user not logged in
     }
@@ -32,11 +133,48 @@ const Uploads = () => {
         <section id="uploads" className="ph4 pv4 pv5-ns ph4-m ph5-l">
             <h1 className="pl3 f1">Uploads</h1>
             <div className="file_uploads ph3 pv3 pv4-ns ph4-m ph5-l">
-                <FileUpload type={"transcript"} label={"Transcript"} handleUpload={handleUpload} />
-                <FileUpload type={"recommendation"} label={"Letters of Recommendation"} handleUpload={handleUpload} />
-                <FileUpload type={"other"} label={"Other documents"} handleUpload={handleUpload} />
-                {/* // TODO: map each upload to corresponding section */}
-                {uploads.map(u => <p key={u._id}>{u.type} - {u.fileName}</p>)}
+                <FileUpload state={state} dispatch={dispatch} type={"transcript"} label={"Transcript"} handleUpload={handleUpload} />
+                <p className="f5 red b tc">{addTranscriptError ? addTranscriptError : ''}</p>
+                <p className="f5 green b tc">{addTranscriptSuccess ? addTranscriptSuccess : ''}</p>
+                <div className="transcript-uploads mw7 center">
+                    {transcripts.map(u => 
+                        <div className="transcript" key={u._id}>
+                            <p className="b dib">{u.fileName}</p>
+                            <span className="ml3">––</span>
+                            <p className="underline pointer dib ml3" onClick={() => downloadFile(u._id)}>Download</p>
+                            <p className="underline pointer dib ml3" onClick={() => deleteUpload(u.type, u._id)}>Delete</p>
+                        </div>
+                    )}
+                    <p className="f5 red b tc">{deleteTranscriptError ? deleteTranscriptError : ''}</p>
+                </div>
+                <FileUpload state={state} dispatch={dispatch} type={"recommendation"} label={"Letters of Recommendation"} handleUpload={handleUpload} />
+                <p className="f5 red b tc">{addRecommendationError ? addRecommendationError : ''}</p>
+                <p className="f5 green b tc">{addRecommendationSuccess ? addRecommendationSuccess : ''}</p>
+                <div className="recommendation-uploads mw7 center">
+                    {recommendations.map(u => 
+                        <div className="recommendation" key={u._id}>
+                            <p className="b dib">{u.fileName}</p>
+                            <span className="ml3">––</span>
+                            <p className="underline pointer dib ml3" onClick={() => downloadFile(u._id)}>Download</p>
+                            <p className="underline pointer dib ml3" onClick={() => deleteUpload(u.type, u._id)}>Delete</p>
+                        </div>
+                    )}
+                    <p className="f5 red b tc">{deleteRecommendationError ? deleteRecommendationError : ''}</p>
+                </div>
+                <FileUpload state={state} dispatch={dispatch} type={"other"} label={"Other documents"} handleUpload={handleUpload} />
+                <p className="f5 red b tc">{addOtherError ? addOtherError : ''}</p>
+                <p className="f5 green b tc">{addOtherSuccess ? addOtherSuccess : ''}</p>
+                <div className="other-uploads mw7 center">
+                    {otherUploads.map(u => 
+                        <div className="other-uploads" key={u._id}>
+                            <p className="b dib">{u.fileName}</p>
+                            <span className="ml3">––</span>
+                            <p className="underline pointer dib ml3" onClick={() => downloadFile(u._id)}>Download</p>
+                            <p className="underline pointer dib ml3" onClick={() => deleteUpload(u.type, u._id)}>Delete</p>
+                        </div>
+                    )}
+                    <p className="f5 red b tc">{deleteOtherError ? deleteOtherError : ''}</p>
+                </div>
             </div>
         </section>
     )

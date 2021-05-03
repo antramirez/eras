@@ -1,27 +1,24 @@
 export function loginReducer(state, action) {
     switch (action.type) {
-        case 'field': {
+        case 'field':
             return {
                 ...state,
                 [action.fieldName]: action.payload
             }
-        }
-        case 'login': {
+        case 'login':
             return {
                 ...state,
                 error: '',
                 isLoading: true
             }
-        }
-        case 'success': {
+        case 'success':
             return {
                 ...state,
                 isLoading: false,
                 username: '',
                 password: '',
             }
-        }
-        case 'error': {
+        case 'error':
             return {
                 ...state,
                 error: action.payload,
@@ -29,7 +26,6 @@ export function loginReducer(state, action) {
                 username: '',
                 password: '',
             }
-        }
         default:
             return;
         }

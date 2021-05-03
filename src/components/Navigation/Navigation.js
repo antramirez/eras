@@ -9,10 +9,26 @@ const Navigation = () => {
     const {isLoggedIn} = useContext(UserContext);
     const [isHomepage, setIsHomepage] = useState(false);
 
+    const [showNavPopUp, setShowNavPopUp] = useState(true);
+
     let location = useLocation();
 
     useEffect(() => {
-        setIsHomepage(location.pathname === '/' ? true : false)
+        setIsHomepage(location.pathname === '/' ? true : false);
+        
+        let navPopUpTimeout = null;
+
+        // show sign in pop up for 12 seconds if user is not logged in
+        if (!isLoggedIn) {
+            if (showNavPopUp) {
+                navPopUpTimeout = setTimeout(() => {
+                    setShowNavPopUp(false);
+                }, 12000);
+            }
+        }
+        return () => {
+            clearTimeout(navPopUpTimeout);
+        }
     }, [location.pathname, isLoggedIn])
 
     return (
@@ -34,12 +50,22 @@ const Navigation = () => {
 
                 {!isLoggedIn && isHomepage &&
                     <>
-                        <NavLink className="link dim white dib mr3" to="/signin" title="Sign In">Sign In</NavLink>
-                        <NavLink className="f6 dib white bg-animate hover-bg-white hover-black no-underline pv2 ph4 br-pill ba b--white-20 signup-icon" to="/signup" title="Sign Up">Sign Up</NavLink>
+                        <NavLink className="f6 dib white bg-animate hover-bg-white hover-black no-underline pv2 ph4 br-pill ba b--white-20 signin-icon" to="/signin" title="Sign In">Sign In</NavLink>
+                        <span style={{display: showNavPopUp ? 'block' : 'none'}} className="nav-popup br3 shadow-5 pl3 pr3">
+                            <div className="nav-arrow"></div>
+                            <div>
+                                <p>Without an account, any change you make will be deleted after leaving the page.</p>
+                                <p>New user?<NavLink className="link dim di " to="/signup" title="Sign Up"> Start here.</NavLink></p>
+                            </div>
+                        </span>
                     </>
                 }
                 
-                {(!isLoggedIn && !isHomepage) || (isLoggedIn && !isHomepage) &&
+                {isLoggedIn && !isHomepage &&
+                    <NavLink activeClass="active" className="link dim white dib mr3" to="/" title="Home">Home</NavLink>
+                }
+
+                {!isLoggedIn && !isHomepage && 
                     <NavLink activeClass="active" className="link dim white dib mr3" to="/" title="Home">Home</NavLink>
                 }
             </nav>

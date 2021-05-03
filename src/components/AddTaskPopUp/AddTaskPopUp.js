@@ -1,8 +1,10 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 
-const AddTaskPopUp = ({visible, handleClose, handleAdd, cross }) => {
+const AddTaskPopUp = ({visible, state, dispatch, handleClose, handleAdd, cross }) => {
     const popUpContainerRef = useRef(null);
-    const [inputValue, setInputValue] = useState('');
+
+    // Destructure state from reducer
+    const { description, isAdding, addError} = state;
 
     // Display the popup everytime visible is true, which happens when add button is pressed
     useEffect(() => {
@@ -20,9 +22,10 @@ const AddTaskPopUp = ({visible, handleClose, handleAdd, cross }) => {
         
     }, [visible])
 
-    // Reset input field
+    // Reset input field and error state
     const resetForm = () => {
-        setInputValue('');
+        dispatch({type: 'field', fieldName: 'description', payload: ''});
+        dispatch({type: 'add_error', payload: ''});
 
         if (popUpContainerRef.current) {
             popUpContainerRef.current.firstChild.reset();
@@ -37,16 +40,20 @@ const AddTaskPopUp = ({visible, handleClose, handleAdd, cross }) => {
     }
     
     // Handler for submitting form
-    const handleAddClick = (e) => {
+    const handleAddClick = async (e) => {
         e.preventDefault();
-        handleAdd(inputValue);
-        resetForm();
-        handleClose();
-    }
 
-    // Handler for input change
-    const handleInputChange = (e) => {
-        setInputValue(e.target.value);
+        // Don't allow empty string
+        if (description.trim() === '') {
+            dispatch({type: 'add_error', payload: 'Please add a valid task.'});
+        } else {
+            // Check if add was successful after possible api call
+            const success = handleAdd(description);
+            if (success) {
+                resetForm();
+                handleClose();
+            }
+        }
     }
 
     return (
@@ -59,10 +66,11 @@ const AddTaskPopUp = ({visible, handleClose, handleAdd, cross }) => {
                 <fieldset id="log_in" className="ba b--transparent ph0 mh0">
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="task-title">Task</label>
-                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="task-title"  id="task-title" onChange={handleInputChange}/>
+                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="task-title" placeholder="Finish application" value={description} onChange={(e) => dispatch({type: 'field', fieldName: 'description', payload: e.target.value})}/>
                     </div>
                 </fieldset>
-                <button className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleAddClick}>Add</button>
+                <button disabled={isAdding} className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleAddClick}>{isAdding ? 'Adding...' : 'Add'}</button>
+                <p className="f5 b red tc">{addError}</p>
             </form>
         </article>
     )

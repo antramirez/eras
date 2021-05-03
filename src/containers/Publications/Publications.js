@@ -1,7 +1,8 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useReducer } from 'react';
 import { UserContext } from '../../context/UserContext';
 import Publication from './../../components/Publication/Publication';
 import { apiRequest, idApiRequest } from '../../utils/apiRequests';
+import { publicationReducer } from '../../reducers/PublicationReducer';
 import AddPublicationPopUp from './../../components/AddPublicationPopUp/AddPublicationPopUp';
 import EditPublicationsPopup from './../../components/EditPublicationsPopUp/EditPublicationsPopUp';
 import './Publications.css';
@@ -15,6 +16,8 @@ import paperclipPNG from './../../assets/paperclip.png';
 
 const Publications = () => {
     const { isLoggedIn } = useContext(UserContext);
+
+    const [state, dispatch] = useReducer(publicationReducer, {_id: 0, title: '', link: '', type: '', isAdding: false, isEditing: false, isDeleting: false, addSuccess: false, editSuccess: false, deleteSuccess: false, addError: '', editError: '', deleteError: ''})
 
     // Boolean for whether to display pop up
     const [showAddPopUp, setShowAddPopUp] = useState(false);
@@ -87,53 +90,89 @@ const Publications = () => {
     }
 
     // Handler for adding publication and updating publications
-    const handleAddPublication = (title, type, link) => {
+    const handleAddPublication = async (title, type, link) => {
+        dispatch({ type: 'add', payload: {title, link, type} });
+        let success = false; // temporary variable to get around reducer's async functionality
+
         if (isLoggedIn) {
-            apiRequest('publications', 'POST', {title, type, link}, (newPub) => {
+            await apiRequest('publications', 'POST', {title, type, link}, (newPub) => {
                 setPublications([... publications, newPub]);
-            }, console.log);
+                dispatch({ type: 'add_success' });
+                success = true;
+            }, (e) => {
+                dispatch({ type: 'add_error', payload: e.error });
+                success = false;
+            });
         } else {
             setPublications([... publications, {_id: fakeIdCounter, title, type, link}]);
             setFakeIdCounter(fakeIdCounter + 1);
+            success = true;
         }
+
+        return success;
     }
 
     // Handler for editing publication and updating publications
-    const handleEditPublication = (idx, title, type, link) => {
+    const handleEditPublication = async (idx, title, type, link) => {
+        let success = false; // temporary variable to get around reducer's async functionality
+        
         if (isLoggedIn) {
-            idApiRequest('publications', publications[idx]._id, 'PATCH', {title, type, link}, (exp) => {
+            await idApiRequest('publications', publications[idx]._id, 'PATCH', {title, type, link}, (exp) => {
                 publications[idx] = {...exp};
                 setPublications([...publications]);
-            }, console.log);
+
+                dispatch({ type: 'edit_success' });
+                success = true;
+            }, (e) => {
+                dispatch({ type:'edit_error', payload: e.error });
+                success = false;
+            });
         } else {
             publications[idx] = {... publications[idx], title, type, link};
             setPublications([...publications]);
+
+            dispatch({ type: 'edit_success' });
+            success = true;
         }
+
+        return success;
     }
 
     // Handler for deleting publication and updating publications
-    const handleDeletePublication = (currIdx) => {
+    const handleDeletePublication = async (currIdx) => {
+        dispatch({ type: 'delete' });
+        let success = false; // temporary variable to get around reducer's async functionality
+
         const toDelete = publications[currIdx];
         if (isLoggedIn) {
-            idApiRequest('publications',  toDelete._id, 'DELETE', {}, (pub) => {
+            await idApiRequest('publications',  toDelete._id, 'DELETE', {}, (pub) => {
                 setPublications(publications.filter(p => p._id !== pub._id));
-            }, console.log);
+                dispatch({ type: 'delete_success' });
+                success = true;
+            }, (e) => {
+                dispatch({ type: 'delete_error', payload: e.error });
+                success = false;
+            });
         } else {
             setPublications(publications.filter(p => p._id !== toDelete._id));
+            dispatch({ type: 'delete_success' });
+            success = true;
         }
+
+        return success;
     }
 
     return (
         <section id="publications" className="ph4 pv4 pv5-ns ph4-m ph5-l">
-            <h1 className="pl3 f1">Publications <span><button className="edit-pubs-btn bg-transparent bn b grow" onClick={() => setShowEditPopUp(true)}><img src={editPNG} alt="Edit icon"/></button></span></h1>
+            <h1 className="pl3 f1">Publications <span style={{display: publications.length > 0 ? 'inline-block' : 'none'}}><button className="edit-pubs-btn bg-transparent bn b grow" onClick={() => setShowEditPopUp(true)}><img src={editPNG} alt="Edit icon"/></button></span></h1>
             <div className="publications-container mw8 center relative">
                 <div className="flex flex-wrap mw8 center justify-center">
                     {publications.map(pub => <Publication key={pub._id} title={pub.title} image={imgType(pub.type)} link={'#'} type={pub.type} />)}
                 </div>
                 <AddButton onClick={() => setShowAddPopUp(true)}/>
             </div>
-            <AddPublicationPopUp visible={showAddPopUp} handleClose={() => setShowAddPopUp(false)} handleAdd={handleAddPublication}/>
-            <EditPublicationsPopup publications={publications} visible={showEditPopUp} handleClose={() => setShowEditPopUp(false)} handleEdit={handleEditPublication} handleDelete={handleDeletePublication} />
+            <AddPublicationPopUp visible={showAddPopUp} state={state} dispatch={dispatch} handleClose={() => setShowAddPopUp(false)} handleAdd={handleAddPublication}/>
+            <EditPublicationsPopup publications={publications} visible={showEditPopUp} state={state} dispatch={dispatch} handleClose={() => setShowEditPopUp(false)} handleEdit={handleEditPublication} handleDelete={handleDeletePublication} />
         </section>
     )
 }

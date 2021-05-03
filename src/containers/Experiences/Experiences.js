@@ -1,6 +1,7 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useReducer } from 'react';
 import { UserContext } from '../../context/UserContext';
 import Experience from './../../components/Experience/Experience';
+import { experienceReducer } from '../../reducers/ExperienceReducer';
 import AddExperiencePopUp from './../../components/AddExperiencePopUp/AddExperiencePopUp';
 import EditExperiencePopUp from './../../components/EditExperiencePopUp/EditExperiencePopUp';
 import { apiRequest, idApiRequest } from '../../utils/apiRequests';
@@ -12,21 +13,26 @@ import workPNG from './../../assets/experiences_work.png';
 const Experiences = () => {
     const { isLoggedIn } = useContext(UserContext);
 
+    const [state, dispatch] = useReducer(experienceReducer, { _id: 0, organization: '', type: '', position: '', startDate: '', endDate: '', description: '', isAdding: false, isEditing: false, isDeleting: false, addSuccess: false, editSuccess: false, deleteSuccess: false, addError: '', editError: '', deleteError: '' });
+
     // Booleans for whether to display pop ups
     const [showAddPopUp, setShowAddPopUp] = useState(false);
     const [showEditPopUp, setShowEditPopUp] = useState(false);
-    // Values to be passed to edit form
-    const [orgToEdit, setOrgToEdit] = useState('');
-    const [imgToSave, setImgToSave] = useState('');
-    const [posToEdit, setPosToEdit] = useState('');
-    const [typeToEdit, setTypeToEdit] = useState('');
-    const [startToEdit, setStartToEdit] = useState('');
-    const [endToEdit, setEndToEdit] = useState('');
-    const [descToEdit, setDescToEdit] = useState('');
 
     const [fakeIdCounter, setFakeIdCounter] = useState(6);
-    const [experienceIdToEdit, setExperienceIdToEdit] = useState(0); // reference to current course
 
+    // Experience object to pass into edit form
+    const [experienceToEdit, setExperienceToEdit] = useState(
+        {
+            _id: 0,
+            organization: '',
+            type: '',
+            position: '',
+            startDate: '',
+            endDate: '',
+            description: ''
+        }
+    )
     const [experiences, setExperiences] = useState([]);
 
     useEffect(() => {
@@ -76,24 +82,24 @@ const Experiences = () => {
     }, [isLoggedIn])
 
     const handleEditClick = (id, org, pos, type, start, end, desc) => {
-        setExperienceIdToEdit(id);
-        setOrgToEdit(org);
-        setImgToSave(imgType(type));
-        setPosToEdit(pos);
-        setTypeToEdit(type)
-        setStartToEdit(start);
-        setEndToEdit(end);
-        setDescToEdit(desc);
+        setExperienceToEdit({
+            _id: id,
+            organization: org,
+            position: pos,
+            type,
+            startDate: start,
+            endDate: end,
+            description: desc
+        })
         setShowEditPopUp(true);
     }
 
-    const handleAddExperience = (org, pos, type, start, end, desc) => {
-        // temporary image
-        const possibleImgs = [volunteeringPNG, workPNG]
-        const imageType =possibleImgs[Math.floor(Math.random() * 2)]
+    const handleAddExperience = async (org, pos, type, start, end, desc) => {
+        dispatch({ type: 'add', payload: {organization: org, position: pos, type: type, startDate: start, endDate: end, description: desc} });
+        let success = false; // temporary variable to get around reducer's async functionality
 
         if (isLoggedIn) {
-            apiRequest('experiences', 'POST',
+            await apiRequest('experiences', 'POST',
             {   organization: org,
                 position: pos,
                 type:type,
@@ -102,23 +108,32 @@ const Experiences = () => {
                 description: desc
             },
             (newExperience) => {
-                setExperiences([...experiences, newExperience])
-            }, console.log);
+                setExperiences([...experiences, newExperience]);
+                dispatch({ type: 'add_success' });
+                success = true;
+            }, (e) => {
+                dispatch({ type: 'add_error', payload: e.error });
+                success = false;
+            });
         } else {
-            setExperiences([... experiences, {_id: fakeIdCounter, organization: org, image: imageType, position: pos, type: type, startDate: start, endDate: end, description: desc}]);
+            setExperiences([... experiences, {_id: fakeIdCounter, organization: org, position: pos, type: type, startDate: start, endDate: end, description: desc}]);
             setFakeIdCounter(fakeIdCounter + 1);
+
+            dispatch({ type: 'add_success' });
+            success = true;
         }
+
+        return success;
     }
 
-    const handleEditExperience = (expId, org, pos, type, start, end, desc) => {
-        // temporary image
-        const possibleImgs = [volunteeringPNG, workPNG]
-        const imageType =possibleImgs[Math.floor(Math.random() * 2)]
+    const handleEditExperience = async (expId, org, pos, type, start, end, desc) => {
+        dispatch({ type: 'edit' });
+        let success = false; // temporary variable to get around reducer's async functionality
 
         const expToUpdate = experiences.find(exp => exp._id === expId);
 
         if (isLoggedIn) {
-            idApiRequest('experiences', expId, 'PATCH',
+            await idApiRequest('experiences', expId, 'PATCH',
             {
                 organization: org,
                 position: pos,
@@ -135,7 +150,13 @@ const Experiences = () => {
                 expToUpdate.endDate = exp.endDate;
                 expToUpdate.description = exp.description;
                 setExperiences([...experiences]);
-            }, console.log);
+
+                dispatch({ type: 'edit_success' });
+                success = true;
+            }, (e) => {
+                dispatch({ type:'edit_error', payload: e.error });
+                success = false;
+            });
         } else {
             expToUpdate.organization = org;
             expToUpdate.position = pos;
@@ -144,18 +165,35 @@ const Experiences = () => {
             expToUpdate.endDate = end;
             expToUpdate.description = desc;
             setExperiences([...experiences]);
-        }        
+            
+            dispatch({ type: 'edit_success' });
+            success = true;
+        }
+
+        return success;
     }
 
     // Handler for deleting experience and updating experiences
-    const handleDeleteExperience = (id) => {
+    const handleDeleteExperience = async (id) => {
+        dispatch({ type: 'delete' });
+        let success = false; // temporary variable to get around reducer's async functionality
+
         if (isLoggedIn) {
-            idApiRequest('experiences', id, 'DELETE', {}, () => {
+            await idApiRequest('experiences', id, 'DELETE', {}, () => {
                 setExperiences(experiences.filter(exp => exp._id !== id));
-            }, console.log);
+                dispatch({ type: 'delete_success' });
+                success = true;
+            }, (e) => {
+                dispatch({ type: 'delete_error', payload: e.error });
+                success = false;
+            });
         } else {
             setExperiences(experiences.filter(exp => exp._id !== id));
-        }        
+            dispatch({ type: 'delete_success' });
+            success = true;
+        }
+
+        return success;
     }
 
     // Function to set image type 
@@ -181,8 +219,8 @@ const Experiences = () => {
                 </div>
                 <AddButton onClick={() => setShowAddPopUp(true)}/>
             </div>
-            <AddExperiencePopUp visible={showAddPopUp} handleClose={() => setShowAddPopUp(false)} handleAdd={handleAddExperience}/>
-            <EditExperiencePopUp id={experienceIdToEdit} org={orgToEdit} imgType={imgToSave} position={posToEdit} type={typeToEdit} start={startToEdit} end={endToEdit} description={descToEdit} visible={showEditPopUp} handleClose={() => setShowEditPopUp(false)} handleEdit={handleEditExperience} handleDelete={handleDeleteExperience} />
+            <AddExperiencePopUp visible={showAddPopUp} state={state} dispatch={dispatch} handleClose={() => setShowAddPopUp(false)} handleAdd={handleAddExperience}/>
+            <EditExperiencePopUp experience={experienceToEdit} state={state} dispatch={dispatch} visible={showEditPopUp} handleClose={() => setShowEditPopUp(false)} handleEdit={handleEditExperience} handleDelete={handleDeleteExperience} />
         </section>
     )
 }

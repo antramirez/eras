@@ -2,19 +2,16 @@ import { useRef, useEffect, useState } from 'react';
 import cross from './../../assets/cross.svg';
 import arrow from './../../assets/arrow.svg';
 
-const EditPublicationsPopUp = ({publications, visible, handleClose, handleEdit, handleDelete}) => {
+const EditPublicationsPopUp = ({publications, visible, state, dispatch, handleClose, handleEdit, handleDelete}) => {
     const popUpContainerRef = useRef(null);
-    const [currIdx, setCurrIdx] = useState(0); // index of current publication in array
 
-    // Values of form
-    const [titleInputValue, setTitleInputValue] = useState('');
-    const [typeInputValue, setTypeInputValue] = useState('');
-    const [linkInputValue, setLinkInputValue] = useState('');
+    // Destructure state from reducer
+    const { title, link, type, isEditing, isDeleting, editError, deleteError } = state;
+    const [currIdx, setCurrIdx] = useState(0); // index of current publication in array
 
     // Set form with values and display the popup everytime visible is true, 
     // which happens when edit button is pressed, and set form fields
     useEffect(() => { 
-
         if (visible) {
             if (popUpContainerRef.current) {
                 popUpContainerRef.current.classList.remove('dn');
@@ -29,33 +26,25 @@ const EditPublicationsPopUp = ({publications, visible, handleClose, handleEdit, 
 
         // set input fields to current publication every time index changes
         if (publications.length > 0) {
-            setTitleInputValue(publications[currIdx].title);
-            setTypeInputValue(publications[currIdx].type);
-            setLinkInputValue(publications[currIdx].link);
+            dispatch({type: 'field', fieldName: 'title', payload: publications[currIdx].title});
+            dispatch({type: 'field', fieldName: 'type', payload: publications[currIdx].type});
+            dispatch({type: 'field', fieldName: 'link', payload: publications[currIdx].link});
+
         }        
     }, [visible, currIdx])
 
     const handleCloseClick = (e) => {
         e.preventDefault();
+        resetForm();
         handleClose();
-    }
-
-    // On change handlers for each input field
-    const handleTitleInputChange = (e) => {
-        setTitleInputValue(e.target.value);
-    }
-    const handleTypeInputChange = (e) => {
-        setTypeInputValue(e.target.value);
-    }
-    const handleLinkInputChange = (e) => {
-        setLinkInputValue(e.target.value);
     }
 
     // Reset input fields
     const resetForm = () => {
-        setTitleInputValue('');
-        setTypeInputValue('');
-        setLinkInputValue('');
+        dispatch({type: 'field', fieldName: 'title', payload: ''});
+        dispatch({type: 'field', fieldName: 'type', payload: ''});
+        dispatch({type: 'field', fieldName: 'link', payload: ''});
+        dispatch({type: 'edit_error', payload: ''});
 
         if (popUpContainerRef.current) {
             popUpContainerRef.current.firstChild.reset();
@@ -73,21 +62,36 @@ const EditPublicationsPopUp = ({publications, visible, handleClose, handleEdit, 
     }
 
     // Handler for submitting edited publication
-    const handleEditClick = (e) => {
+    const handleEditClick = async (e) => {
         e.preventDefault();
-        handleEdit(currIdx, titleInputValue, typeInputValue, linkInputValue);
-        setCurrIdx(0);
-        resetForm();
-        handleClose();
+        
+        // Don't allow empty fields or invalid url
+        if (title.trim() === '' || type.trim() === '' || link.trim() === '') {
+            dispatch({type: 'edit_error', payload: 'Please fill out all fields.'});
+        } else if (!RegExp(/^(ftp|http|https):\/\/[^ "]+$/).test(link.trim())) {
+            dispatch({type: 'edit_error', payload: 'Please enter a valid URL.'});
+        } else {
+            // Check if edit was successful after possible api call
+            const success = await handleEdit(currIdx, title, type, link);
+            if (success) {
+                setCurrIdx(0);
+                resetForm();
+                handleClose();
+            }
+        }
     }
 
     // Handler for submitting form to delete experience
-    const handleDeleteClick = (e) => {
+    const handleDeleteClick = async (e) => {
         e.preventDefault();
-        handleDelete(currIdx);
-        setCurrIdx(0);
-        resetForm();
-        handleClose();
+
+        // Check if delete was successful after possible api call
+        const success = await handleDelete(currIdx);
+        if (success) {
+            setCurrIdx(0);
+            resetForm();
+            handleClose();
+        }   
     }
 
     return (
@@ -100,11 +104,11 @@ const EditPublicationsPopUp = ({publications, visible, handleClose, handleEdit, 
                 <fieldset id="log_in" className="ba b--transparent ph0 mh0">
                 <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="title">Title</label>
-                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="edit-pub-title" id="edit-pub-title" value={titleInputValue} onChange={handleTitleInputChange}/>
+                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="edit-pub-title" placeholder="Tinea Capitis Associated with Tinea Faceii and Corporis" value={title} onChange={(e) => dispatch({type: 'field', fieldName: 'title', payload: e.target.value})}/>
                     </div>
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="edit-pub-type">Type</label>
-                        <select className="w-100 mt1 bn" name="edit-pub-type" id="edit-pub-type" value={typeInputValue} onChange={handleTypeInputChange}>
+                        <select className="w-100 mt1 bn" name="edit-pub-type" value={type} onChange={(e) => dispatch({type: 'field', fieldName: 'type', payload: e.target.value})}>
                             <option value="Paper">Paper</option>
                             <option value="Abstract">Abstract</option>
                             <option value="Presentation">Presentation</option>
@@ -113,13 +117,14 @@ const EditPublicationsPopUp = ({publications, visible, handleClose, handleEdit, 
                     </div>
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="edit-pub-link">Link</label>
-                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="edit-pub-link" id="edit-pub-link" value={linkInputValue} onChange={handleLinkInputChange}/>
+                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="edit-pub-link" placeholder="https://amsrj.org/index.php?journal=amsrj&page=article&op=view&path%5B%5D=507" value={link} onChange={(e) => dispatch({type: 'field', fieldName: 'link', payload: e.target.value})}/>
                     </div>
                 </fieldset>
                 <div className="tc">
-                    <button className=" mt3 mb2 mr2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleEditClick}>Edit</button>
-                    <button className=" mt3 mb2 ml2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleDeleteClick}>Delete</button>
+                    <button disabled={isEditing || isDeleting} className=" mt3 mb2 mr2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleEditClick}>{isEditing ? 'Editing...' : 'Edit'}</button>
+                    <button disabled={isDeleting || isEditing} className=" mt3 mb2 ml2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleDeleteClick}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
                 </div>
+                <p className="f5 red b tc">{deleteError ? deleteError : ''}{editError ? editError : ''}</p>
                 <div className="next-prev-btns">
                     <button className="absolute pointer edit-pub-back" onClick={handlePrevClick}><img src={arrow} alt="Previous publication"/></button>
                     <button className="absolute pointer edit-pub-next" onClick={handleNextClick}><img src={arrow} alt="Next publication"/></button>

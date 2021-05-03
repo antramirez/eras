@@ -1,15 +1,14 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import cross from './../../assets/cross.svg';
 
-const AddCalendarEventPopUp = ({date, visible, handleDateSelect, handleClose, handleAdd}) => {
+const AddCalendarEventPopUp = ({ visible, state, dispatch, handleClose, handleAdd }) => {
     const popUpContainerRef = useRef(null);
-    const [dateInputValue, setDateInputValue] = useState(date);
-    const [eventInputValue, setEventInputValue] = useState('');
+    
+    // Destructure state from reducer
+    const { title, date, dateStr, dateObj, isAdding, addError } = state;
 
     // Display the popup everytime visible is true, which happens when add button is pressed
     useEffect(() => {
-        setDateInputValue(date);
-
         if (visible) {
             if (popUpContainerRef.current) {
                 popUpContainerRef.current.classList.remove('dn');
@@ -26,8 +25,9 @@ const AddCalendarEventPopUp = ({date, visible, handleDateSelect, handleClose, ha
 
     // Reset input fields
     const resetForm = () => {
-        setDateInputValue('');
-        setEventInputValue('');
+        dispatch({ type: 'field', fieldName: 'dateStr', payload: '' });
+        dispatch({ type: 'field', fieldName: 'title', payload: '' });
+        dispatch({ type: 'add_error', payload: '' });
 
         if (popUpContainerRef.current) {
             popUpContainerRef.current.firstChild.reset();
@@ -41,18 +41,21 @@ const AddCalendarEventPopUp = ({date, visible, handleDateSelect, handleClose, ha
         handleClose();
     }
 
-    // Handler for event input change
-    const handleInputChange = (e) => {
-        setEventInputValue(e.target.value);
-        // handleDateSelect(inputValue)
-    }
-
     // Handler for submitting form
-    const handleAddClick = (e) => {
+    const handleAddClick = async (e) => {
         e.preventDefault();
-        handleAdd(eventInputValue, dateInputValue);
-        resetForm();
-        handleClose();
+
+        // Make sure field isn't empty
+        if (title.trim() === '') {
+            dispatch({type: 'add_error', payload: 'Please enter a goal/milestone.'});
+        } else {
+            // Check if add was successful after possible api call
+            const success = await handleAdd(title, date, dateObj, dateStr);
+            if (success) {
+                resetForm();
+                handleClose();
+            }
+        }
     }
 
     return (
@@ -65,14 +68,15 @@ const AddCalendarEventPopUp = ({date, visible, handleDateSelect, handleClose, ha
                 <fieldset id="log_in" className="ba b--transparent ph0 mh0">
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="calendar-event-date">Date</label>
-                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="calendar-event-date"  id="calendar-event-date" readOnly value={dateInputValue}/>
+                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="calendar-event-date" readOnly value={dateStr}/>
                     </div>
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="calendar-event-title">Goal/Milestone</label>
-                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="calendar-event-title"  id="calendar-event-title" onChange={handleInputChange}/>
+                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="calendar-event-title" placeholder="Application deadline" value={title} onChange={(e) => dispatch({type: 'field', fieldName: 'title', payload: e.target.value})}/>
                     </div>
                 </fieldset>
-                <button className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleAddClick}>Add</button>
+                <button isDisabled={isAdding} className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleAddClick}>{isAdding ? 'Adding...' : 'Add'}</button>
+                <p className="f5 b red tc">{addError}</p>
             </form>
         </article>
     )

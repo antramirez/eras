@@ -7,6 +7,7 @@ import Home from './containers/Home/Home'
 import LoginSignup from './containers/LoginSignUp/LoginSignUp';
 import Account from './containers/Account/Account';
 import Footer from './components/Footer/Footer';
+import Page404 from './containers/Page404/Page404';
 
 function App() {
   const { isLoggedIn }  = useContext(UserContext);
@@ -45,6 +46,9 @@ function App() {
             </Route>
             <Route exact path="/signup" >
               { isLoggedIn ? <Redirect to="/" /> : <LoginSignup /> }
+            </Route>
+            <Route  path="*" >
+              <Page404 />
             </Route>
           </Switch>
           <Footer />

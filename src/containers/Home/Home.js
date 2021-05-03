@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Element } from 'react-scroll';
-import Welcome from '../../components/Welcome/Welcome';
+import Welcome from '../../containers/Welcome/Welcome';
 import GoalsAndTasks from '../GoalsAndTasks/GoalsAndTasks';
 import Academics from '../Academics/Academics';
 import Experiences from '../Experiences/Experiences';

@@ -1,14 +1,17 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useReducer } from 'react';
 import { UserContext } from '../../context/UserContext';
 import CalendarSection from '../../components/CalendarSection/CalendarSection';
 import TaskTable from '../../components/TaskTable/TaskTable';
 import { apiRequest, idApiRequest } from '../../utils/apiRequests';
+import { taskReducer } from '../../reducers/TaskReducer';
 import './GoalsAndTasks.css';
 import taskIcon from './../../assets/completed-task.png';
 import check from './../../assets/check-mark.svg';
 
 const GoalsAndTasks = () => {
     const { isLoggedIn } = useContext(UserContext);
+
+    const [state, dispatch] = useReducer(taskReducer, { _id: 0, goalId: '', description: '', isAdding: false, isDeleting: false, addSuccess: false, deleteSuccess: false, addError: '', deleteError: '' });
 
     // TODO: move goals up from child components
     const [tasks, setTasks] = useState([]);
@@ -35,38 +38,60 @@ const GoalsAndTasks = () => {
 
 
     // Handler for adding task and updating tasks
-    const addTask = (description) => {
-        // if user is logged in
+    const addTask = async (description) => {
+        dispatch({ type: 'add', payload: description });
+        let success = false; // temporary variable to get around reducer's async functionality
+
         if (isLoggedIn) {
-            apiRequest('tasks', 'POST', {description}, (task) => {
+            await apiRequest('tasks', 'POST', {description}, (task) => {
                 const updatedTasks = [...tasks, task];
                 setTasks(updatedTasks);
                 setNumTasks(updatedTasks.length);
-            }, console.log);
+
+                dispatch({ type: 'add_success' });
+                success = true;
+            }, (e) => {
+                dispatch({ type: 'add_error', payload: e.error });
+                success = false;
+            });
         } else {
-            // if user is not logged in
             const updatedTasks = [...tasks, { _id: fakeTaskIdCounter, description }];
             setTasks(updatedTasks);
             setNumTasks(updatedTasks.length)
             setFakeTaskIdCounter(fakeTaskIdCounter + 1);
+            success = true;
         }
+
+        return success;
     }
 
     // Handler for marking task comleted (removing task)
-    const removeTask = (taskId) => {
+    const removeTask = async (taskId) => {
+        dispatch({ type: 'delete' });
+        let success = false; // temporary variable to get around reducer's async functionality
+
         const updatedTasks = tasks.filter(task => task._id !== taskId);
 
         if (isLoggedIn) {
-            // if user is logged in
-            idApiRequest('tasks', taskId, 'DELETE', {}, () => {
+            await idApiRequest('tasks', taskId, 'DELETE', {}, () => {
                 setTasks(updatedTasks);
                 setNumTasks(updatedTasks.length);
-            }, console.log);
+
+                dispatch({ type: 'delete_success' });
+                success = true;
+            }, (e) => {
+                dispatch({ type: 'delete_error', payload: e.error });
+                success = false;
+            });
         } else {
-            // if user is not logged in
             setTasks(updatedTasks);
             setNumTasks(updatedTasks.length);
+
+            dispatch({ type: 'delete_success' });
+            success = true;
         }
+
+        return success;
     }
 
     return (
@@ -80,7 +105,9 @@ const GoalsAndTasks = () => {
                 />
                 <TaskTable 
                     tasks={tasks} 
-                    numTasks={numTasks} 
+                    numTasks={numTasks}
+                    state={state}
+                    dispatch={dispatch}
                     addTask={addTask}
                     removeTask={removeTask}
                     check={check} 

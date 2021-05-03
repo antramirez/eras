@@ -28,6 +28,10 @@
     visibility: hidden;
 }
 
+.fc-daygrid-block-event {
+    cursor: default;
+}
+
 
 /* Calendar Events Table */
 .calendar-events {
@@ -90,7 +94,7 @@
 .add-calendar-event-popup-container > form {
     background-color: #d0d2d2;
     width: 28rem;
-    height: 22rem;
+    height: 24rem;
 }
 
 
@@ -174,5 +178,5 @@
 .add-task-popup-container > form {
     background-color: #d0d2d2;
     width: 28rem;
-    height: 22rem;
+    height: 20rem;
 }

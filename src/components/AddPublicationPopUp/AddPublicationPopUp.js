@@ -1,14 +1,15 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import cross from './../../assets/cross.svg';
 
-const AddPublicationPopUp = ({ visible, handleClose, handleAdd}) => {
+const AddPublicationPopUp = ({ visible, state, dispatch, handleClose, handleAdd}) => {
     const popUpContainerRef = useRef(null);
-    const [titleInputValue, setTitleInputValue] = useState('')
-    const [typeSelectValue, setTypeSelectValue] = useState('')
-    const [linkInputValue, setLinkInputValue] = useState('')
+
+    // Destructure state from reducer
+    const { title, link, type, isAdding, addError } = state;
 
     // Display the popup everytime visible is true, which happens when add button is pressed
     useEffect(() => {
+        resetState();
         if (visible) {
             if (popUpContainerRef.current) {
                 popUpContainerRef.current.classList.remove('dn');
@@ -22,12 +23,18 @@ const AddPublicationPopUp = ({ visible, handleClose, handleAdd}) => {
         }
         
     }, [visible])
-
+    
+    // Function to reset fields and error of state
+    const resetState = () => {
+        dispatch({type: 'field', fieldName: 'title', payload: ''});
+        dispatch({type: 'field', fieldName: 'type', payload: ''});
+        dispatch({type: 'field', fieldName: 'link', payload: ''});
+        dispatch({type: 'add_error', payload: ''});
+    }
+    
     // Reset input fields
     const resetForm = () => {
-        setTitleInputValue('');
-        setTypeSelectValue('');
-        setLinkInputValue('');
+        resetState();
 
         if (popUpContainerRef.current) {
             popUpContainerRef.current.firstChild.reset();
@@ -41,23 +48,23 @@ const AddPublicationPopUp = ({ visible, handleClose, handleAdd}) => {
         handleClose();
     }
 
-    // Handlers for changing inputs
-    const handleTitleInputChange = (e) => {
-        setTitleInputValue(e.target.value);
-    }
-    const handleSelectChange = (e) => {
-        setTypeSelectValue(e.target.value);
-    }
-    const handleLinkInputChange = (e) => {
-        setLinkInputValue(e.target.value);
-    }
-
     // Handler for submitting form
-    const handleAddClick = (e) => {
+    const handleAddClick = async (e) => {
         e.preventDefault();
-        handleAdd(titleInputValue, typeSelectValue, linkInputValue);
-        resetForm();
-        handleClose();
+
+        // Don't allow empty fields or invalid url
+        if (title.trim() === '' || type.trim() === '' || link.trim() === '') {
+            dispatch({type: 'add_error', payload: 'Please fill out all fields.'});
+        } else if (!RegExp(/^(ftp|http|https):\/\/[^ "]+$/).test(link.trim())) {
+            dispatch({type: 'add_error', payload: 'Please enter a valid URL.'});
+        } else {
+            // Check if add was successful after possible api call
+            const success = await handleAdd(title, type, link);
+            if (success) {
+                resetForm();
+                handleClose();
+            }
+        }
     }
 
     return (
@@ -71,11 +78,11 @@ const AddPublicationPopUp = ({ visible, handleClose, handleAdd}) => {
                 <fieldset id="log_in" className="ba b--transparent ph0 mh0">
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="title">Title</label>
-                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="title"  id="title" value={titleInputValue} onChange={handleTitleInputChange}/>
+                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="title" placeholder="Tinea Capitis Associated with Tinea Faceii and Corporis" value={title} onChange={(e) => dispatch({type: 'field', fieldName: 'title', payload: e.target.value})}/>
                     </div>
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="publication-type">Type</label>
-                        <select className="w-100 mt1 bn" name="publication-type" id="publication-type" value={typeSelectValue} onChange={handleSelectChange}>
+                        <select className="w-100 mt1 bn" name="publication-type" value={type} onChange={(e) => dispatch({type: 'field', fieldName: 'type', payload: e.target.value})}>
                             <option value="" selected disabled hidden></option>
                             <option value="Paper">Paper</option>
                             <option value="Abstract">Abstract</option>
@@ -85,10 +92,11 @@ const AddPublicationPopUp = ({ visible, handleClose, handleAdd}) => {
                     </div>
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="link">Link</label>
-                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="link"  id="link" value={linkInputValue} onChange={handleLinkInputChange} />
+                        <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="link" placeholder="https://amsrj.org/index.php?journal=amsrj&page=article&op=view&path%5B%5D=507" value={link} onChange={(e) => dispatch({type: 'field', fieldName: 'link', payload: e.target.value})} />
                     </div>
                 </fieldset>
-                <button className=" mt3 mb2   b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleAddClick} >Add</button>
+                <button disabled={isAdding} className=" mt3 mb2   b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleAddClick} >{isAdding ? 'Adding...' : 'Add'}</button>
+                <p className="f5 b red tc">{addError}</p>
             </form>
         </article>
     )
