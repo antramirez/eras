@@ -2,6 +2,7 @@ import { useState, useEffect, useContext, useReducer } from 'react';
 import { UserContext } from '../../context/UserContext';
 import Experience from './../../components/Experience/Experience';
 import { experienceReducer } from '../../reducers/ExperienceReducer';
+import { fakeExperiences } from '../../data/fakeData';
 import AddExperiencePopUp from './../../components/AddExperiencePopUp/AddExperiencePopUp';
 import EditExperiencePopUp from './../../components/EditExperiencePopUp/EditExperiencePopUp';
 import { apiRequest, idApiRequest } from '../../utils/apiRequests';
@@ -39,44 +40,6 @@ const Experiences = () => {
         if (isLoggedIn) {
             apiRequest('experiences', 'GET', {}, setExperiences, console.log);
         } else {
-            const fakeExperiences = [
-                {
-                    _id: 1,
-                    organization: 'Tutoring1',
-                    type: 'Work',
-                    position: 'Tutor',
-                    startDate: 'May 2019',
-                    endDate: 'August 2019',
-                    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
-                },
-                {
-                    _id: 2,
-                    organization: 'Volunteering',
-                    type: 'Volunteering',
-                    position: 'Tutor',
-                    startDate: 'May 2019',
-                    endDate: 'August 2019',
-                    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
-                },
-                {
-                    _id: 3,
-                    organization: 'Tutoring2',
-                    type: 'Work',
-                    position: 'Tutor',
-                    startDate: 'May 2019',
-                    endDate: 'August 2019',
-                    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
-                },
-                {
-                    _id: 4,
-                    organization: 'Tutoring3',
-                    type: 'Work',
-                    position: 'Tutor',
-                    startDate: 'May 2019',
-                    endDate: 'August 2019',
-                    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.'
-                }
-            ];
             setExperiences(fakeExperiences);
         }
     }, [isLoggedIn])
@@ -116,7 +79,7 @@ const Experiences = () => {
                 success = false;
             });
         } else {
-            setExperiences([... experiences, {_id: fakeIdCounter, organization: org, position: pos, type: type, startDate: start, endDate: end, description: desc}]);
+            setExperiences([...experiences, {_id: fakeIdCounter, organization: org, position: pos, type: type, startDate: start, endDate: end, description: desc}]);
             setFakeIdCounter(fakeIdCounter + 1);
 
             dispatch({ type: 'add_success' });

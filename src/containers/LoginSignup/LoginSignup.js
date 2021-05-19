@@ -1,7 +1,7 @@
 
 import SignUp from '../SignUp/SignUp';
 import Login from '../Login/Login';
-import './LoginSignUp.css';
+import './LoginSignup.css';
 
 const LoginSignUp = () => {
     return (

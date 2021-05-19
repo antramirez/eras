@@ -4,6 +4,7 @@ import AddCalendarEventPopUp from './../AddCalendarEventPopUp/AddCalendarEventPo
 import { apiRequest, idApiRequest } from '../../utils/apiRequests';
 import Calendar from './../Calendar/Calendar';
 import { eventReducer } from '../../reducers/EventReducer';
+import { fakeEvents } from '../../data/fakeData';
 import trophyIcon from './../../assets/trophy.png';
 import check from './../../assets/check-mark.svg';
 
@@ -28,13 +29,8 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
                 setNumEvents(data.length)
             }, console.log);
         } else {
-            setEvents([
-                { _id: 1, title: 'Milestone 1', date: '2021-03-01', dateStr: 'Mar 01, 2021', dateObj: new Date('2021-03-01') },
-                { _id: 2, title: 'Milestone 2', date: '2021-03-20', dateStr: 'Mar 20, 2021', dateObj: new Date('2021-03-20') },
-                { _id: 3, title: 'Milestone 3', date: '2021-03-22', dateStr: 'Mar 22, 2021', dateObj: new Date('2021-03-22') },
-                { _id: 4, title: 'Milestone 4', date: '2021-03-26', dateStr: 'Mar 26, 2021', dateObj: new Date('2021-03-26') }
-            ]);
-            setNumEvents(events.length);
+            setEvents(fakeEvents);
+            setNumEvents(fakeEvents.length);
         }
     }, [isLoggedIn])
 

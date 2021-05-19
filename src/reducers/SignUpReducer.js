@@ -1,11 +1,11 @@
-export function loginReducer(state, action) {
+export function signUpReducer(state, action) {
     switch (action.type) {
         case 'field':
             return {
                 ...state,
                 [action.fieldName]: action.payload
             }
-        case 'login':
+        case 'signup':
             return {
                 ...state,
                 error: '',
@@ -14,9 +14,13 @@ export function loginReducer(state, action) {
         case 'success':
             return {
                 ...state,
-                isLoading: false,
+                firstName: '',
+                lastName: '',
+                graduationYear: '',
                 email: '',
                 password: '',
+                legalUS: '',
+                isLoading: false,
                 success: true
             }
         case 'error':
@@ -24,7 +28,6 @@ export function loginReducer(state, action) {
                 ...state,
                 error: action.payload,
                 isLoading: false,
-                email: '',
                 password: '',
             }
         default:

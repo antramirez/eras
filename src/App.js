@@ -4,7 +4,7 @@ import { UserContext, UserActionsContext } from './context/UserContext';
 import 'tachyons';
 import Navigation from './components/Navigation/Navigation';
 import Home from './containers/Home/Home'
-import LoginSignup from './containers/LoginSignUp/LoginSignUp';
+import LoginSignup from './containers/LoginSignup/LoginSignup';
 import Account from './containers/Account/Account';
 import Footer from './components/Footer/Footer';
 import Page404 from './containers/Page404/Page404';

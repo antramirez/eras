@@ -1,66 +1,83 @@
-import { useContext, useReducer } from 'react';
+import { useContext, useReducer, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { loginReducer } from '../../reducers/LoginReducer';
-import { UserContext } from '../../context/UserContext';
+import { signUpReducer } from '../../reducers/SignUpReducer';
+import { UserActionsContext } from '../../context/UserContext';
 import { apiRequest } from '../../utils/apiRequests';
 
 const SignUp = () => {
 
-    const { setIsLoggedIn, setUser } = useContext(UserContext);
-    const [state, dispatch] = useReducer(loginReducer, 
+    const { setIsLoggedIn, setUser } = useContext(UserActionsContext);
+    const [state, dispatch] = useReducer(signUpReducer, 
         { 
             firstName: '',
             lastName: '',
             graduationYear: '',
-            username: '',
             email: '',
             password: '',
             legalUS: '',
             needVisa: '',
-            isLoading: '', 
+            isLoading: false,
+            success: false,
+            userData: {},
             error: ''
         }
     );
-    const { firstName, lastName, graduationYear, username, email, password, legalUS, needVisa, isLoading, error} = state;
+    const { firstName, lastName, graduationYear, email, password, legalUS, needVisa, isLoading, success, userData, error } = state;
 
-    // variables to redirect user back to homepage after login
+    // variables to redirect user back to homepage after signup
     let history = useHistory();
     let location = useLocation();
     let { from } = location.state || { from: { pathname: "/" } };
 
-    const handleClick = (e) => {
+    useEffect(() => {
+        let isMounted = true;
+
+        // check that component is still mounted and set user if signup is successful
+        if (isMounted) {
+            if (success) {
+                setUser(userData);
+                setIsLoggedIn(true);
+            }
+        }
+
+        return () => {
+            isMounted = false; // state will only be updated on mounted components
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [success])
+
+    const handleClick = async (e) => {
         e.preventDefault();
 
         // make sure each field is valid before attempting to make api request
-        if (firstName === '' || lastName === '' || username === '' || email === '' || password === '' || graduationYear === '' || legalUS === '' || needVisa === '') {
+        if (firstName.trim() === '' || lastName.trim() === '' || email.trim() === '' || password.trim() === '' || graduationYear === '' || legalUS === '' || needVisa === '') {
             dispatch({ type: 'error', payload: 'Please fill out every field.' });
         }
         else if (!RegExp(/^[A-Za-z0-9.!#$%&*+=?^_‘{}|~-]+@[A-Za-z0-9]+([._-]{0,1}[A-Za-z0-9])+(\.{1}[A-Za-z]{2,})$/).test(email)) {
             dispatch({ type: 'error', payload: 'Please enter a valid email.' });
         }
         else {
-            dispatch({ type: 'login' });
+            dispatch({ type: 'signup' });
 
-            apiRequest('signup', 'POST', 
+            await apiRequest('signup', 'POST', 
             {
                 firstName,
                 lastName,
                 graduationYear,
-                username,
-                email,
+                email: email.toLowerCase(),
                 password,
                 legalUS: legalUS === 'Yes' ? true : false, 
                 needVisa: needVisa === 'Yes' ? true : false
             }, (data) => {
                 localStorage.setItem('token', JSON.stringify(data.token));
-
-                setIsLoggedIn(true);
-                setUser(data.user);
-                dispatch({ type: 'success' });
+                localStorage.setItem('currentUser', JSON.stringify(data.user));
                 
-                // redirect back to homepage
+                dispatch({ type: 'field', fieldName: 'userData', payload: data.user });
+                dispatch({ type: 'success' });
+    
+                // go back to homepage
                 history.replace(from);
-            }, (e) => dispatch({ type: 'error', payload: 'An error occured, please try again.' }));
+            }, (e) => dispatch({ type: 'error', payload: e.error }));
         }
     }
 
@@ -100,23 +117,6 @@ const SignUp = () => {
                                     payload: e.target.value
                                 })
                             } 
-                        />
-                    </div>
-                    
-                    <div className="mt3">
-                        <label className="db fw4 lh-copy f5" htmlFor="username">Username</label>
-                        <input 
-                            className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" 
-                            type="text"
-                            name="username"
-                            value={username} 
-                            onChange={(e) => 
-                                dispatch({
-                                    type: 'field',
-                                    fieldName: 'username',
-                                    payload: e.target.value
-                                })
-                            }
                         />
                     </div>
                     <div className="mt3">
@@ -247,7 +247,7 @@ const SignUp = () => {
                         
                     </div>
                 </fieldset>
-                <div className="mt3 tc"><input disabled={isLoading} className="b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" value={isLoading ? "Signing Up" : "Sign Up"} onClick={handleClick} /></div>
+                <div className="mt3 tc"><input disabled={isLoading} className="b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" value={isLoading ? "Signing Up..." : "Sign Up"} onClick={handleClick} /></div>
                 <div><p className="f5 b red tc">{error}</p></div>
             </form>
         </article>

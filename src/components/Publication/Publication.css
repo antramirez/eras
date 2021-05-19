@@ -5,6 +5,16 @@
     max-width: 100%;
 }
 
+.publication button {
+    height: 28px;
+    bottom: 1em;
+    left: 1em;
+}
+
+.publication button > img{
+    height: 100%;
+}
+
 .publication a > img {
     height: 30px;
     bottom: 1em;

@@ -1,17 +1,19 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import cross from './../../assets/cross.svg';
-import arrow from './../../assets/arrow.svg';
 
-const EditPublicationsPopUp = ({publications, visible, state, dispatch, handleClose, handleEdit, handleDelete}) => {
+const EditPublicationsPopUp = ({publication, visible, state, dispatch, handleClose, handleEdit, handleDelete}) => {
     const popUpContainerRef = useRef(null);
 
     // Destructure state from reducer
     const { title, link, type, isEditing, isDeleting, editError, deleteError } = state;
-    const [currIdx, setCurrIdx] = useState(0); // index of current publication in array
 
     // Set form with values and display the popup everytime visible is true, 
     // which happens when edit button is pressed, and set form fields
     useEffect(() => { 
+        dispatch({type: 'field', fieldName: 'title', payload: publication.title});
+        dispatch({type: 'field', fieldName: 'type', payload: publication.type});
+        dispatch({type: 'field', fieldName: 'link', payload: publication.link});
+        
         if (visible) {
             if (popUpContainerRef.current) {
                 popUpContainerRef.current.classList.remove('dn');
@@ -22,16 +24,8 @@ const EditPublicationsPopUp = ({publications, visible, state, dispatch, handleCl
                 popUpContainerRef.current.classList.add('dn');
                 popUpContainerRef.current.classList.remove('flex', 'content-center', 'justify-center', 'items-center');
             }
-        }
-
-        // set input fields to current publication every time index changes
-        if (publications.length > 0) {
-            dispatch({type: 'field', fieldName: 'title', payload: publications[currIdx].title});
-            dispatch({type: 'field', fieldName: 'type', payload: publications[currIdx].type});
-            dispatch({type: 'field', fieldName: 'link', payload: publications[currIdx].link});
-
-        }        
-    }, [visible, currIdx])
+        }   
+    }, [visible])
 
     const handleCloseClick = (e) => {
         e.preventDefault();
@@ -51,16 +45,6 @@ const EditPublicationsPopUp = ({publications, visible, state, dispatch, handleCl
         }
     }
 
-    // Handlers for clicking previous/next buttons
-    const handlePrevClick = (e) => {
-        e.preventDefault();
-        setCurrIdx( currIdx > 0 ? currIdx-1 : publications.length - 1); // decrease index or make it loop to end of array
-    }
-    const handleNextClick = (e) => {
-        e.preventDefault();
-        setCurrIdx( currIdx < publications.length - 1 ? currIdx+1 : 0); // increase index or make it loop to front of array
-    }
-
     // Handler for submitting edited publication
     const handleEditClick = async (e) => {
         e.preventDefault();
@@ -72,9 +56,8 @@ const EditPublicationsPopUp = ({publications, visible, state, dispatch, handleCl
             dispatch({type: 'edit_error', payload: 'Please enter a valid URL.'});
         } else {
             // Check if edit was successful after possible api call
-            const success = await handleEdit(currIdx, title, type, link);
+            const success = await handleEdit(publication._id, title, type, link);
             if (success) {
-                setCurrIdx(0);
                 resetForm();
                 handleClose();
             }
@@ -86,9 +69,8 @@ const EditPublicationsPopUp = ({publications, visible, state, dispatch, handleCl
         e.preventDefault();
 
         // Check if delete was successful after possible api call
-        const success = await handleDelete(currIdx);
+        const success = await handleDelete(publication._id);
         if (success) {
-            setCurrIdx(0);
             resetForm();
             handleClose();
         }   
@@ -125,10 +107,6 @@ const EditPublicationsPopUp = ({publications, visible, state, dispatch, handleCl
                     <button disabled={isDeleting || isEditing} className=" mt3 mb2 ml2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleDeleteClick}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
                 </div>
                 <p className="f5 red b tc">{deleteError ? deleteError : ''}{editError ? editError : ''}</p>
-                <div className="next-prev-btns">
-                    <button className="absolute pointer edit-pub-back" onClick={handlePrevClick}><img src={arrow} alt="Previous publication"/></button>
-                    <button className="absolute pointer edit-pub-next" onClick={handleNextClick}><img src={arrow} alt="Next publication"/></button>
-                </div>
             </form>
         </article>
     )

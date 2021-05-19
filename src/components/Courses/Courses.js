@@ -3,6 +3,7 @@ import Course from './../Course/Course';
 import { UserContext } from '../../context/UserContext';
 import { courseReducer } from '../../reducers/CourseReducer';
 import { apiRequest, idApiRequest } from '../../utils/apiRequests';
+import { fakeCourses } from '../../data/fakeData';
 import AddCoursePopUp from './../AddCoursePopUp/AddCoursePopUp';
 import EditCoursePopUp from './../EditCoursePopUp/EditCoursePopUp';
 import AddButton from './../AddButton/AddButton';
@@ -25,13 +26,6 @@ const Courses = () => {
         if (isLoggedIn) {
             apiRequest('courses', 'GET', {}, setCourses, console.log);
         } else {
-            const fakeCourses = [
-                {_id: 1, name: 'Family Medicine', grade: 4},
-                {_id: 2, name: 'Pediatrics', grade: 2},
-                {_id: 3, name: 'Emergency Medicine', grade: 3},
-                {_id: 4, name: 'OB-GYN', grade: 3},
-                {_id: 5, name: 'Internal Medicine', grade: 4}
-            ];
             setCourses(fakeCourses);
         }
     }, [isLoggedIn])

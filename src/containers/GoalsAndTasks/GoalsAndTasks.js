@@ -4,6 +4,7 @@ import CalendarSection from '../../components/CalendarSection/CalendarSection';
 import TaskTable from '../../components/TaskTable/TaskTable';
 import { apiRequest, idApiRequest } from '../../utils/apiRequests';
 import { taskReducer } from '../../reducers/TaskReducer';
+import { fakeTasks } from '../../data/fakeData';
 import './GoalsAndTasks.css';
 import taskIcon from './../../assets/completed-task.png';
 import check from './../../assets/check-mark.svg';
@@ -26,11 +27,6 @@ const GoalsAndTasks = () => {
                 setNumTasks(data.length);
             }, console.log)
         } else {
-            // if user is not logged in
-            const fakeTasks = [
-                { _id: 1, goalId: null, description: 'Email Professor Erling about letter of rec' },
-                { _id: 2, goalId: null, description: 'Finish chapter 3 of textbook' }
-            ];
             setTasks(fakeTasks);
             setNumTasks(fakeTasks.length);
         }        
