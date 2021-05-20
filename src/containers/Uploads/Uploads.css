@@ -11,8 +11,6 @@
 .inputfile {
 	width: 0.1px;
 	height: 0.1px;
-	/* opacity: 0;
-	overflow: hidden; */
 	position: absolute;
 	z-index: -1;
 }
@@ -21,16 +19,10 @@
     font-size: 1.25em;
     font-weight: 700;
     color: black;
-    /* background-color: black; */
     display: inline-block;
 	cursor: pointer; 
     width: 100%; /* to make entire row clickable */
 }
-
-/* .inputfile:focus + label,
-.inputfile + label:hover {
-    background-color: red;
-} */
 
 .inputfile:focus + label {
 	outline: 1px dotted #000;
@@ -43,11 +35,33 @@
 }
 
 .upload-label span {
-    /* top: 10px; */
     top: .5em;
 }
 
 .upload-label span img {
     width: 25px;
     height: auto;
+}
+
+.must-signin-popup-container {
+    position: fixed;
+    z-index: 100000;
+    background-color: rgba(192, 151, 148, 0.49);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.must-signin-popup-container > div {
+    background-color: #D8B8A0;
+    width: 28rem;
+    height: 15.5rem;
+}
+
+.must-signin-popup-container .close-btn {
+    height: 1.2rem;
+    width: 1.2rem;
+    right: 1em;
+    top: 1em;
 }

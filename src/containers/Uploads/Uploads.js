@@ -1,22 +1,26 @@
-import { useState, useEffect, useContext, useReducer } from 'react';
+import { useState, useEffect, useContext, useReducer, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import FileUpload from '../../components/FileUpload/FileUpload';
+import UploadActions from '../../components/UploadActions/UploadActions';
 import { apiRequest, idApiRequest } from '../../utils/apiRequests';
 import {uploadReducer} from '../../reducers/UploadReducer';
 import download from 'downloadjs';
+import cross from '../../assets/cross.svg';
 import './Uploads.css';
 
 const Uploads = () => {
     const { isLoggedIn } = useContext(UserContext);
 
     const [state, dispatch] = useReducer(uploadReducer, { transcript: '', recommendation: '', other: '', isAddingTranscript: false, isAddingRecommendation: false, isAddingOther: false, isDeletingTranscript: false, isDeletingRecommendation: false, isDeletingOther: false, addTranscriptSuccess: '', addRecommendationSuccess: '', addOtherSuccess: '', addTranscriptError: '', addRecommendationError: '', addOtherError: '', deleteTranscriptSuccess: false, deleteRecommendationSuccess: false, deleteOtherSuccess: false, deleteTranscriptError: '', deleteRecommendationError: '', deleteOtherError: '' });
-
     const { addTranscriptError, addRecommendationError, addOtherError, addTranscriptSuccess, addRecommendationSuccess, addOtherSuccess, deleteTranscriptError, deleteRecommendationError, deleteOtherError } = state;
 
     const [uploads, setUploads] = useState([]); 
     const [transcripts, setTranscripts] = useState([]); 
     const [recommendations, setRecommendations] = useState([]); 
-    const [otherUploads, setOtherUploads] = useState([]); 
+    const [otherUploads, setOtherUploads] = useState([]);
+
+    const popup = useRef();
 
     useEffect(() => {
         if (isLoggedIn) {
@@ -40,6 +44,7 @@ const Uploads = () => {
             }, console.log);
         }
         // TODO: user not logged in
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])
 
     const handleUpload =  async (type, data) => {
@@ -69,7 +74,7 @@ const Uploads = () => {
                     setOtherUploads([...otherUploads, newUpload]);
                     dispatch({ type: 'add_other_success', payload: 'File uploaded successfully.' });
                 }
-                setUploads([... uploads, newUpload]);
+                setUploads([...uploads, newUpload]);
                 success = true;
             }, (e) => {
                 if (type === 'transcript') {
@@ -83,8 +88,19 @@ const Uploads = () => {
             });
 
             return success;
+        } else {
+            if (popup.current) {
+                popup.current.classList.remove('dn');
+                popup.current.classList.add('flex');
+            }
         }
-        // TODO: user not logged in
+    }
+
+    const closePopUp = () => {
+        if (popup.current) {
+            popup.current.classList.add('dn');
+            popup.current.classList.remove('flex');
+        }
     }
 
     const downloadFile = async (id) => {
@@ -126,7 +142,6 @@ const Uploads = () => {
                 }
             });
         }
-        // TODO: user not logged in
     }
 
     return (
@@ -137,43 +152,30 @@ const Uploads = () => {
                 <p className="f5 red b tc">{addTranscriptError ? addTranscriptError : ''}</p>
                 <p className="f5 green b tc">{addTranscriptSuccess ? addTranscriptSuccess : ''}</p>
                 <div className="transcript-uploads mw7 center">
-                    {transcripts.map(u => 
-                        <div className="transcript" key={u._id}>
-                            <p className="b dib">{u.fileName}</p>
-                            <span className="ml3">––</span>
-                            <p className="underline pointer dib ml3" onClick={() => downloadFile(u._id)}>Download</p>
-                            <p className="underline pointer dib ml3" onClick={() => deleteUpload(u.type, u._id)}>Delete</p>
-                        </div>
-                    )}
+                    {transcripts.map(u => <UploadActions key={u._id} id={u._id} fileName={u.fileName} type={u.type} downloadFile={downloadFile} deleteUpload={deleteUpload} />)}
                     <p className="f5 red b tc">{deleteTranscriptError ? deleteTranscriptError : ''}</p>
                 </div>
                 <FileUpload state={state} dispatch={dispatch} type={"recommendation"} label={"Letters of Recommendation"} handleUpload={handleUpload} />
                 <p className="f5 red b tc">{addRecommendationError ? addRecommendationError : ''}</p>
                 <p className="f5 green b tc">{addRecommendationSuccess ? addRecommendationSuccess : ''}</p>
                 <div className="recommendation-uploads mw7 center">
-                    {recommendations.map(u => 
-                        <div className="recommendation" key={u._id}>
-                            <p className="b dib">{u.fileName}</p>
-                            <span className="ml3">––</span>
-                            <p className="underline pointer dib ml3" onClick={() => downloadFile(u._id)}>Download</p>
-                            <p className="underline pointer dib ml3" onClick={() => deleteUpload(u.type, u._id)}>Delete</p>
-                        </div>
-                    )}
+                    {recommendations.map(u => <UploadActions key={u._id} id={u._id} fileName={u.fileName} type={u.type} downloadFile={downloadFile} deleteUpload={deleteUpload} />)}
                     <p className="f5 red b tc">{deleteRecommendationError ? deleteRecommendationError : ''}</p>
                 </div>
                 <FileUpload state={state} dispatch={dispatch} type={"other"} label={"Other documents"} handleUpload={handleUpload} />
                 <p className="f5 red b tc">{addOtherError ? addOtherError : ''}</p>
                 <p className="f5 green b tc">{addOtherSuccess ? addOtherSuccess : ''}</p>
                 <div className="other-uploads mw7 center">
-                    {otherUploads.map(u => 
-                        <div className="other-uploads" key={u._id}>
-                            <p className="b dib">{u.fileName}</p>
-                            <span className="ml3">––</span>
-                            <p className="underline pointer dib ml3" onClick={() => downloadFile(u._id)}>Download</p>
-                            <p className="underline pointer dib ml3" onClick={() => deleteUpload(u.type, u._id)}>Delete</p>
-                        </div>
-                    )}
+                    {otherUploads.map(u => <UploadActions key={u._id} id={u._id} fileName={u.fileName} type={u.type} downloadFile={downloadFile} deleteUpload={deleteUpload} />)}
                     <p className="f5 red b tc">{deleteOtherError ? deleteOtherError : ''}</p>
+                </div>
+            </div>
+            <div className="must-signin-popup-container dn content-center justify-center items-center" ref={popup}>
+                <div className="relative center pa4 br3">
+                    <button className="bg-transparent bn b absolute pointer close-btn pa0" onClick={() => closePopUp()}><img className="h-100" src={cross} alt="Close navigation popup"/></button>
+                    <p className="f3 mb1">You must be signed in to upload your documents.</p>
+                    <button className="mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6"><Link className="link black" to='/signin'>Sign in</Link></button>
+                    <p>New user? <Link to='/signup'>Create an account.</Link></p>
                 </div>
             </div>
         </section>

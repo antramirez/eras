@@ -60,3 +60,12 @@ nav img {
     left: 50%;
     transform: translateX(-50%);
 }
+
+.nav-popup button {
+    filter: brightness(0);
+    height: 2.25em;
+    right: .2em;
+    top: .2em;
+    position: absolute;
+    padding: .65em;
+}

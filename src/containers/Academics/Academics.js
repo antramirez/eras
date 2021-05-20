@@ -6,14 +6,19 @@ import { UserContext } from '../../context/UserContext';
 import './Academics.css';
 
 const Academics = () => {
-    const { user } = useContext(UserContext);
+    const { user, isLoggedIn } = useContext(UserContext);
     const { graduationYear } = user;
     return (
         <section id="academics" className="ph4 pv4 pv5-ns ph4-m ph5-l">
             <h1 className="pl3 f1">Academics</h1>
-            <Scores />
-            <Percentile />
-            {(graduationYear < 2024) && <Courses />}
+            {graduationYear <= 2023 || !isLoggedIn ?
+                <>
+                    <Scores />
+                    <Percentile />
+                </>
+                : ''
+            }
+            {graduationYear <= 2022 || !isLoggedIn ? <Courses/> : ''}
         </section>
     )
 }

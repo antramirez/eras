@@ -9,7 +9,8 @@ import Uploads from '../Uploads/Uploads';
 import {UserContext} from '../../context/UserContext';
 
 const Home = () => {
-    const { isLoggedIn } = useContext(UserContext);
+    const { isLoggedIn, user } = useContext(UserContext);
+    const { graduationYear } = user;
     
     return (
         <>
@@ -19,9 +20,7 @@ const Home = () => {
             <Element name="goalsAndTasks">
                 <GoalsAndTasks />
             </Element>
-            <Element name="academics">
-                <Academics />
-            </Element>
+            {!isLoggedIn | graduationYear < 2024 ? <Element name="academics"><Academics /></Element> : ''}
             <Element name="experiences">
                 <Experiences />
             </Element>

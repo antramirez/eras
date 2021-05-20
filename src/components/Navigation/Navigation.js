@@ -4,9 +4,11 @@ import { Link as NavLink, useLocation } from "react-router-dom";
 import { Link } from 'react-scroll';
 import './Navigation.css';
 import userPNG from './../../assets/user.png';
+import cross from './../../assets/cross.svg';
 
 const Navigation = () => {
-    const {isLoggedIn} = useContext(UserContext);
+    const { isLoggedIn, user } = useContext(UserContext);
+    const { graduationYear } = user;
     const [isHomepage, setIsHomepage] = useState(false);
 
     const [showNavPopUp, setShowNavPopUp] = useState(true);
@@ -23,12 +25,13 @@ const Navigation = () => {
             if (showNavPopUp) {
                 navPopUpTimeout = setTimeout(() => {
                     setShowNavPopUp(false);
-                }, 12000);
+                }, 15000);
             }
         }
         return () => {
             clearTimeout(navPopUpTimeout);
         }
+        //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname, isLoggedIn])
 
     return (
@@ -37,7 +40,7 @@ const Navigation = () => {
                 {isHomepage && 
                     <>
                         <Link activeClass="active" className="link dim white dib mr3 pointer" to='goalsAndTasks' spy={true} smooth={true} offset={-80} duration={500} >Goals &amp; Tasks</Link>
-                        <Link activeClass="active" className="link dim white dib mr3 pointer" to='academics' spy={true} smooth={true} offset={-80} duration={500} >Academics</Link>
+                        {graduationYear <= 2023 && <Link activeClass="active" className="link dim white dib mr3 pointer" to='academics' spy={true} smooth={true} offset={-80} duration={500} >Academics</Link>}
                         <Link activeClass="active" className="link dim white dib mr3 pointer" to='experiences' spy={true} smooth={true} offset={-80} duration={500} >Experiences</Link>
                         <Link activeClass="active" className="link dim white dib mr3 pointer" to='publications' spy={true} smooth={true} offset={-80} duration={500} >Publications</Link>
                         <Link activeClass="active" className="link dim white dib mr3 pointer" to='uploads' spy={true} smooth={true} offset={-80} duration={500} >Uploads</Link>
@@ -51,9 +54,10 @@ const Navigation = () => {
                 {!isLoggedIn && isHomepage &&
                     <>
                         <NavLink className="f6 dib white bg-animate hover-bg-white hover-black no-underline pv2 ph4 br-pill ba b--white-20 signin-icon" to="/signin" title="Sign In">Sign In</NavLink>
-                        <span style={{display: showNavPopUp ? 'block' : 'none'}} className="nav-popup br3 shadow-5 pl3 pr3">
+                        <span style={{display: showNavPopUp ? 'block' : 'none'}} className="nav-popup br3 shadow-5 pl3 pr3 pt3 pb1">
                             <div className="nav-arrow"></div>
                             <div>
+                                <button className="bg-transparent bn b absolute pointer" onClick={() => setShowNavPopUp(false)}><img className="h-100" src={cross} alt="Close navigation popup"/></button>
                                 <p>Without an account, any change you make will be deleted after leaving the page.</p>
                                 <p>New user?<NavLink className="link dim di " to="/signup" title="Sign Up"> Start here.</NavLink></p>
                             </div>

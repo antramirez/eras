@@ -1,0 +1,15 @@
+.step-bar::before {
+    position: relative;
+    display: block;
+    left: 5px;
+    width: 50px;
+    font-weight: 700;
+}
+
+.step1-bar::before {
+    content: 'Step 1';
+}
+
+.step2-bar::before {
+    content: 'Step 2';
+}

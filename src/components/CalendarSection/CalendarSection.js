@@ -113,7 +113,7 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
                 success = false;
             });
         } else {
-            const e = {_id: fakeIdCounter, title, date, dateStr: dateStr, dateObj: new Date(date)}
+            const e = {_id: fakeIdCounter, title, date, dateStr, dateObj}
             setEvents([...events, e]);
             setEventToAdd(e); 
             setFakeIdCounter(fakeIdCounter + 1);
@@ -219,7 +219,8 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
                 <Calendar events={events} numEvents={numEvents} eventToAdd={eventToAdd} eventToRemove={eventToRemove} handleAdd={() => setEventToAdd({})} handleRemove={() => setEventToRemove({})} handleDateClick={handleDateClick} />
             </div>
             <div className="calendar-events">
-                {events.map(e=> 
+                {events.filter(e => new Date(e.dateObj).getTime() >= new Date(new Date().setHours(0,0,0,0)).getTime()).length > 0 ? <h3 className="pt3 pb3 tc mt0 mb0 bb b--white">Upcoming</h3> : '' }
+                {events.filter(e => new Date(e.dateObj).getTime() >= new Date(new Date().setHours(0,0,0,0)).getTime()).map(e=> 
                     <div key={e._id} className="calendar-event-container pt3 pb3 pl1 pr1 bb b--white flex justify-between items-center">
                         <div className="calendar-event-icon-container relative ml2 mr2 br4 pa1 flex justify-center items-center">
                             <img src={trophyIcon} alt=""/>

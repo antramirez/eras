@@ -1,12 +1,14 @@
 import { useState, useEffect, useContext, useReducer } from 'react';
-import { UserContext } from '../../context/UserContext';
+import { UserContext, UserActionsContext } from '../../context/UserContext';
 import { apiRequest } from '../../utils/apiRequests';
 import { scoresReducer } from '../../reducers/ScoresReducer';
 import EditScorePopUp from './../EditScorePopUp/EditScorePopUp';
 import editPNG from './../../assets/edit.png';
 
 const Scores = () => {
-    const { isLoggedIn } = useContext(UserContext);
+    const { isLoggedIn, user } = useContext(UserContext);
+    const { setUser } = useContext(UserActionsContext);
+    const { graduationYear } = user;
 
     const [state, dispatch] = useReducer(scoresReducer, { _id: 0, step1: 0, step2: 0, step1Field: '', step2Field: '', isEditing: false, isDeleting: false, editSuccess: false, deleteSuccess: false, editError: '', deleteError: '' });
     const { step1, step2 } = state;
@@ -23,6 +25,7 @@ const Scores = () => {
                 dispatch({ type: 'field', fieldName: 'step2', payload: data.step2 });
             }, console.log);
         } else {
+            setUser({...user, step1: 260, step2: 0}); // fake user, only sets scores
             dispatch({ type: 'field', fieldName: 'step1', payload: 260 });
             dispatch({ type: 'field', fieldName: 'step2', payload: 0 });
         }        
@@ -35,6 +38,7 @@ const Scores = () => {
 
         if (isLoggedIn) {
             await apiRequest('account', 'PATCH', {step1: score}, (data) => {
+                setUser(data);
                 localStorage.setItem('currentUser', JSON.stringify(data));
                 dispatch({ type: 'field', fieldName: 'step1', payload: score });
                 dispatch({ type: 'edit_success' });
@@ -44,6 +48,7 @@ const Scores = () => {
                 success = false;
             });
         } else {
+            setUser({...user, step1: score}); // fake user, only sets score for context
             dispatch({ type: 'field', fieldName: 'step1', payload: score });
             dispatch({ type: 'edit_success' });
             success = true;
@@ -57,6 +62,7 @@ const Scores = () => {
 
         if (isLoggedIn) {
             await apiRequest('account', 'PATCH', {step2: score}, (data) => {
+                setUser(data);
                 localStorage.setItem('currentUser', JSON.stringify(data));
                 dispatch({ type: 'field', fieldName: 'step2', payload: score });
                 dispatch({ type: 'edit_success' });
@@ -66,6 +72,7 @@ const Scores = () => {
                 success = false;
             });
         } else {
+            setUser({...user, step2: score}); // fake user, only sets score for context
             dispatch({ type: 'field', fieldName: 'step2', payload: score });
             dispatch({ type: 'edit_success' });
             success = true;
@@ -81,6 +88,7 @@ const Scores = () => {
 
         if (isLoggedIn) {
             await apiRequest('account', 'PATCH', {step1: 0}, (data) => {
+                setUser(data);
                 localStorage.setItem('currentUser', JSON.stringify(data));
                 dispatch({ type: 'field', fieldName: 'step1', payload: 0 });
                 dispatch({ type: 'delete_success' });
@@ -90,6 +98,7 @@ const Scores = () => {
                 success = false;
             });
         } else {
+            setUser({...user, step1: 0}); // fake user, only sets score for context
             dispatch({ type: 'field', fieldName: 'step1', payload: 0 });
             dispatch({ type: 'delete_success' });
             success = true;
@@ -103,6 +112,7 @@ const Scores = () => {
 
         if (isLoggedIn) {
             await apiRequest('account', 'PATCH', {step2: 0}, (data) => {
+                setUser(data);
                 localStorage.setItem('currentUser', JSON.stringify(data));
                 dispatch({ type: 'field', fieldName: 'step2', payload: 0 });
                 dispatch({ type: 'delete_success' });
@@ -112,6 +122,7 @@ const Scores = () => {
                 success = false;
             });
         } else {
+            setUser({...user, step2: 0}); // fake user, only sets score for context
             dispatch({ type: 'field', fieldName: 'step2', payload: 0 });
             dispatch({ type: 'delete_success' });
             success = true;
@@ -122,7 +133,7 @@ const Scores = () => {
 
     return (
         <div className="scores-container flex center justify-center mw8 mb5">
-            <div className="score-container   br bw1 b--black">
+            <div className={`score-container bw1 b--black ${graduationYear <= 2022 && 'br'}`}>
                 <h2 className="f2 tc">Step 1</h2>
                 <div className="flex center justify-center">
                     <p className="f1 mt1 tc">
@@ -134,6 +145,7 @@ const Scores = () => {
                 </div>
                 <EditScorePopUp step={1} state={state} dispatch={dispatch} visible={showPopUp1} handleClose={() => setShowPopUp1(false)} handleEdit={handleEdit1} handleDelete={handleDelete1} />
             </div>
+            {graduationYear <= 2022 && 
             <div className="score-container">
                 <h2 className="f2 tc">Step 2</h2>
                 <div className="flex center justify-center">
@@ -146,6 +158,7 @@ const Scores = () => {
                 </div>     
                 <EditScorePopUp step={2} state={state} dispatch={dispatch} visible={showPopUp2} handleClose={() => setShowPopUp2(false)} handleEdit={handleEdit2} handleDelete={handleDelete2} />
             </div>
+            }
         </div>
     )
 }
