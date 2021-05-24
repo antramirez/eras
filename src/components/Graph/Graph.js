@@ -81,7 +81,6 @@ const Graph = () => {
 		if (chart.current) {
 			setHeight(chart.current.chart.height)
 		}
-		console.log(step1, step2)
 	}, [step1, step2, height])
 
 	return (

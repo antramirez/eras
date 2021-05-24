@@ -12,8 +12,8 @@ import './Uploads.css';
 const Uploads = () => {
     const { isLoggedIn } = useContext(UserContext);
 
-    const [state, dispatch] = useReducer(uploadReducer, { transcript: '', recommendation: '', other: '', isAddingTranscript: false, isAddingRecommendation: false, isAddingOther: false, isDeletingTranscript: false, isDeletingRecommendation: false, isDeletingOther: false, addTranscriptSuccess: '', addRecommendationSuccess: '', addOtherSuccess: '', addTranscriptError: '', addRecommendationError: '', addOtherError: '', deleteTranscriptSuccess: false, deleteRecommendationSuccess: false, deleteOtherSuccess: false, deleteTranscriptError: '', deleteRecommendationError: '', deleteOtherError: '' });
-    const { addTranscriptError, addRecommendationError, addOtherError, addTranscriptSuccess, addRecommendationSuccess, addOtherSuccess, deleteTranscriptError, deleteRecommendationError, deleteOtherError } = state;
+    const [state, dispatch] = useReducer(uploadReducer, { transcript: '', recommendation: '', other: '', isFetching: false, isAddingTranscript: false, isAddingRecommendation: false, isAddingOther: false, isDeletingTranscript: false, isDeletingRecommendation: false, isDeletingOther: false, fetchSuccess: false, addTranscriptSuccess: '', addRecommendationSuccess: '', addOtherSuccess: '', fetchError: '', addTranscriptError: '', addRecommendationError: '', addOtherError: '', deleteTranscriptSuccess: false, deleteRecommendationSuccess: false, deleteOtherSuccess: false, deleteTranscriptError: '', deleteRecommendationError: '', deleteOtherError: '' });
+    const { isFetching, fetchError, addTranscriptError, addRecommendationError, addOtherError, addTranscriptSuccess, addRecommendationSuccess, addOtherSuccess, deleteTranscriptError, deleteRecommendationError, deleteOtherError } = state;
 
     const [uploads, setUploads] = useState([]); 
     const [transcripts, setTranscripts] = useState([]); 
@@ -24,6 +24,7 @@ const Uploads = () => {
 
     useEffect(() => {
         if (isLoggedIn) {
+            dispatch({ type: 'fetch' });
             apiRequest('uploads', 'GET', {}, (data) => {
                 data.forEach(u => {
                     if (u.type === 'transcript') {
@@ -41,10 +42,17 @@ const Uploads = () => {
                     }
                 });
                 setUploads(data);
-            }, console.log);
+                dispatch({ type: 'fetch_success' });
+            }, () => {
+                dispatch({ type: 'fetch_error', payload: "Could not load your documents, please try again later." });
+            });
+
+            // Set error message if api can't be accessed
+            if (!state.fetchSuccess) {
+                dispatch({ type: 'fetch_error', payload: 'Could not load your documents, please try again later.' });
+            }
         }
-        // TODO: user not logged in
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])
 
     const handleUpload =  async (type, data) => {
@@ -147,6 +155,9 @@ const Uploads = () => {
     return (
         <section id="uploads" className="ph4 pv4 pv5-ns ph4-m ph5-l">
             <h1 className="pl3 f1">Uploads</h1>
+            {isFetching ? 'Loading publications...' : 
+            fetchError ? <p className="f4 red b tc">{fetchError}</p> :
+            <>
             <div className="file_uploads ph3 pv3 pv4-ns ph4-m ph5-l">
                 <FileUpload state={state} dispatch={dispatch} type={"transcript"} label={"Transcript"} handleUpload={handleUpload} />
                 <p className="f5 red b tc">{addTranscriptError ? addTranscriptError : ''}</p>
@@ -178,6 +189,7 @@ const Uploads = () => {
                     <p>New user? <Link to='/signup'>Create an account.</Link></p>
                 </div>
             </div>
+            </>}
         </section>
     )
 }

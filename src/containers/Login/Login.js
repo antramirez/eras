@@ -50,7 +50,13 @@ const Login = () => {
                 dispatch({ type: 'success' });
     
                 history.replace(from);
-            }, (e) => dispatch({ type: 'error', payload: 'Incorrect email/password.' }));
+            }, (e) => { dispatch({ type: 'error', payload: e.error }) });
+
+            // Set error message if api can't be accessed
+            if (!success) {
+                dispatch({ type: 'error', payload: 'An error occurred, please try again later.' });
+            }
+
         }
     }
 

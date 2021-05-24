@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { Element } from 'react-scroll';
 import Welcome from '../../containers/Welcome/Welcome';
 import GoalsAndTasks from '../GoalsAndTasks/GoalsAndTasks';
@@ -11,6 +11,11 @@ import {UserContext} from '../../context/UserContext';
 const Home = () => {
     const { isLoggedIn, user } = useContext(UserContext);
     const { graduationYear } = user;
+    
+    useEffect(() => {
+        document.title = 'ERAS';
+        window.scrollTo(0, 0);
+    }, [])
     
     return (
         <>

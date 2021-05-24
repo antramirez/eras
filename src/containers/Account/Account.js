@@ -1,4 +1,4 @@
-import { useContext, useReducer } from 'react';
+import { useContext, useReducer, useEffect } from 'react';
 import { UserContext, UserActionsContext } from '../../context/UserContext';
 import { accountReducer } from '../../reducers/AccountReducer';
 import { apiRequest } from '../../utils/apiRequests';
@@ -29,6 +29,11 @@ const Account = () => {
     let location = useLocation();
     let { from } = location.state || { from: { pathname: "/" } };
 
+    useEffect(() => {
+        document.title = 'ERAS - Account';
+        window.scrollTo(0, 0);
+    }, [])
+    
     // Handler for updating account
     const handleSaveClick = (e) => {
         e.preventDefault();

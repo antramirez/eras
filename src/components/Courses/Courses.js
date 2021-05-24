@@ -11,7 +11,8 @@ import AddButton from './../AddButton/AddButton';
 const Courses = () => {
     const { isLoggedIn } = useContext(UserContext);
 
-    const [state, dispatch] = useReducer(courseReducer, { name: '', grade: '', isAdding: false, isEditing: false, isDeleting: false, addSuccess: false, editSuccess: false, deleteSuccess: false, addError: '', editError: '', deleteError: '' });
+    const [state, dispatch] = useReducer(courseReducer, { name: '', grade: '', isFetching: false, isAdding: false, isEditing: false, isDeleting: false, fetchSuccess: false, addSuccess: false, editSuccess: false, deleteSuccess: false, fetchError: '', addError: '', editError: '', deleteError: '' });
+    const { isFetching, fetchError } = state;
 
     // Booleans for whether to show pop ups
     const [showAddCoursePopUp, setShowAddCoursePopUp] = useState(false);
@@ -24,10 +25,22 @@ const Courses = () => {
 
     useEffect(() => {
         if (isLoggedIn) {
-            apiRequest('courses', 'GET', {}, setCourses, console.log);
+            dispatch({ type: 'fetch' });
+            apiRequest('courses', 'GET', {}, (data) => {
+                setCourses(data);
+                dispatch({ type: 'fetch_success' });
+            }, () => {
+                dispatch({ type: 'fetch_error', payload: "Could not load your clerkship grades, please try again later." });
+            });
+
+            // Set error message if api can't be accessed
+            if (!state.fetchSuccess) {
+                dispatch({ type: 'fetch_error', payload: 'Could not load your clerkship grades, please try again later.' });
+            }
         } else {
             setCourses(fakeCourses);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])
 
     // Handler for when edit button in course row is clicked 
@@ -117,6 +130,9 @@ const Courses = () => {
     return (
         <div className="pa4 courses-container relative">
             <div className="courses-table-container mw8 center">
+                {isFetching ? 'Loading clerkship grades...' : 
+                fetchError ? <p className="f4 red b tc">{fetchError}</p> : 
+                <>
                 <table className="f6 w-100" cellSpacing="0">
                 <thead>
                     <tr className="">
@@ -133,6 +149,8 @@ const Courses = () => {
                 </tbody>
                 </table>
                 <AddButton onClick={() => setShowAddCoursePopUp(true)}/>
+                </>
+                }
             </div>
             <AddCoursePopUp visible={showAddCoursePopUp} state={state} dispatch={dispatch} handleClose={() => setShowAddCoursePopUp(false)} handleAdd={handleAddCourse} />
             <EditCoursePopUp course={courseToEdit} state={state} dispatch={dispatch} visible={showEditCoursePopUp} handleClose={() => setShowEditCoursePopUp(false)} handleEdit={handleEditCourse} handleDelete={handleDeleteCourse} />

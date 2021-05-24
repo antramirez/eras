@@ -11,7 +11,7 @@ import check from './../../assets/check-mark.svg';
 const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
     const { isLoggedIn } = useContext(UserContext);
 
-    const [state, dispatch] = useReducer(eventReducer, { title: '', date: '', dateStr: '', dateObj: '', isAdding: false, isEditing: false, isDeleting: false, addSuccess: false, editSuccess: false, deleteSuccess: false, addError: '', editError: '', deleteError: '' });
+    const [state, dispatch] = useReducer(eventReducer, { title: '', date: '', dateStr: '', dateObj: '', isFetching: false, isAdding: false, isEditing: false, isDeleting: false, fetchSuccess: false, addSuccess: false, editSuccess: false, deleteSuccess: false, fetchError: '', addError: '', editError: '', deleteError: '' });
 
     const [showAddCalendarEventPopUp, setShowAddCalendarEventPopUp] = useState(false);
     const [fakeIdCounter, setFakeIdCounter ]= useState(5);
@@ -22,16 +22,25 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
     const [eventToRemove, setEventToRemove] = useState({});
     const [eventToAdd, setEventToAdd] = useState({});
 
-    useEffect( () => {
+    useEffect( () => {        
         if (isLoggedIn) {
+            dispatch({ type: 'fetch' });
             apiRequest('goals', 'GET', {}, (data) => {
                 setEvents(data);
-                setNumEvents(data.length)
-            }, console.log);
+                setNumEvents(data.length);
+                dispatch({ type: 'fetch_success' });
+            }, (e) => {
+                dispatch({ type: 'fetch_error', payload: 'Could not load your calendar events, please try again later.' });
+            });
+            // Set error message if api can't be accessed
+            if (!state.fetchSuccess) {
+                dispatch({ type: 'fetch_error', payload: 'Could not load your calendar events, please try again later.' });
+            }
         } else {
             setEvents(fakeEvents);
             setNumEvents(fakeEvents.length);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])
 
     // Boolean to determine whether event is this week so it can go in task table
@@ -218,6 +227,7 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
             <div className="calendar pa2 white">
                 <Calendar events={events} numEvents={numEvents} eventToAdd={eventToAdd} eventToRemove={eventToRemove} handleAdd={() => setEventToAdd({})} handleRemove={() => setEventToRemove({})} handleDateClick={handleDateClick} />
             </div>
+            {state.isFetching ? 'Loading goals and tasks...' : 
             <div className="calendar-events">
                 {events.filter(e => new Date(e.dateObj).getTime() >= new Date(new Date().setHours(0,0,0,0)).getTime()).length > 0 ? <h3 className="pt3 pb3 tc mt0 mb0 bb b--white">Upcoming</h3> : '' }
                 {events.filter(e => new Date(e.dateObj).getTime() >= new Date(new Date().setHours(0,0,0,0)).getTime()).map(e=> 
@@ -231,8 +241,8 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
                         <button className="bg-transparent bn b grow pointer f6 ml2 mr2" onClick={() => handleRemoveEvent(e._id)}><img src={check} alt="Check mark"/></button>
                     </div>
                 )}
-                <p className="f5 red b tc">{state.deleteError ? state.deleteError : ''}</p>
-            </div>
+            </div>}
+            <p className="f5 red b tc mw5 center">{state.deleteError ? state.deleteError : ''}{state.fetchError ? state.fetchError : ''}</p>
             <AddCalendarEventPopUp visible={showAddCalendarEventPopUp} state={state} dispatch={dispatch} handleClose={handleClose} handleAdd={handleAddEvent} />
         </div>
     )

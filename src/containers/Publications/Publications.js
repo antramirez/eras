@@ -17,7 +17,8 @@ import paperclipPNG from './../../assets/paperclip.png';
 const Publications = () => {
     const { isLoggedIn } = useContext(UserContext);
 
-    const [state, dispatch] = useReducer(publicationReducer, {_id: 0, title: '', link: '', type: '', isAdding: false, isEditing: false, isDeleting: false, addSuccess: false, editSuccess: false, deleteSuccess: false, addError: '', editError: '', deleteError: ''})
+    const [state, dispatch] = useReducer(publicationReducer, {_id: 0, title: '', link: '', type: '', isFetching: false, isAdding: false, isEditing: false, isDeleting: false, fetchSuccess: false, addSuccess: false, editSuccess: false, deleteSuccess: false, fetchError: '', addError: '', editError: '', deleteError: ''})
+    const { isFetching, fetchError } = state;
 
     // Boolean for whether to display pop up
     const [showAddPopUp, setShowAddPopUp] = useState(false);
@@ -30,10 +31,22 @@ const Publications = () => {
     // fetch publications from database and add them to memory
     useEffect(() => {
         if (isLoggedIn) {
-            apiRequest('publications', 'GET', {}, setPublications, console.log);
+            dispatch({ type: 'fetch' });
+            apiRequest('publications', 'GET', {}, (data) => {
+                setPublications(data);
+                dispatch({ type: 'fetch_success' });
+            }, () => {
+                dispatch({ type: 'fetch_error', payload: "Could not load your publications, please try again later." });
+            });
+
+            // Set error message if api can't be accessed
+            if (!state.fetchSuccess) {
+                dispatch({ type: 'fetch_error', payload: 'Could not load your publications, please try again later.' });
+            }
         } else {
             setPublications(fakePublications);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])
 
     // Prevent link from opening when clicking on edit button
@@ -142,6 +155,9 @@ const Publications = () => {
     return (
         <section id="publications" className="ph4 pv4 pv5-ns ph4-m ph5-l">
             <h1 className="pl3 f1">Publications</h1>
+            {isFetching ? 'Loading publications...' : 
+            fetchError ? <p className="f4 red b tc">{fetchError}</p> :
+            <>
             <div className="publications-container mw8 center relative">
                 <div className="flex flex-wrap mw8 center justify-center">
                     {publications.map(pub => <Publication key={pub._id} title={pub.title} image={imgType(pub.type)} link={pub.link} type={pub.type} handleEdit ={(e) => handleEditClick(e, pub._id, pub.title, pub.link, pub.type)} />)}
@@ -150,6 +166,7 @@ const Publications = () => {
             </div>
             <AddPublicationPopUp visible={showAddPopUp} state={state} dispatch={dispatch} handleClose={() => setShowAddPopUp(false)} handleAdd={handleAddPublication}/>
             <EditPublicationsPopup publication={publicationToEdit} visible={showEditPopUp} state={state} dispatch={dispatch} handleClose={() => setShowEditPopUp(false)} handleEdit={handleEditPublication} handleDelete={handleDeletePublication} />
+            </>}
         </section>
     )
 }

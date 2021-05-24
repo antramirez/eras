@@ -14,7 +14,8 @@ import workPNG from './../../assets/experiences_work.png';
 const Experiences = () => {
     const { isLoggedIn } = useContext(UserContext);
 
-    const [state, dispatch] = useReducer(experienceReducer, { _id: 0, organization: '', type: '', position: '', startDate: '', endDate: '', description: '', isAdding: false, isEditing: false, isDeleting: false, addSuccess: false, editSuccess: false, deleteSuccess: false, addError: '', editError: '', deleteError: '' });
+    const [state, dispatch] = useReducer(experienceReducer, { _id: 0, organization: '', type: '', position: '', startDate: '', endDate: '', description: '', isFetching: false, isAdding: false, isEditing: false, isDeleting: false, fetchSuccess: false, addSuccess: false, editSuccess: false, deleteSuccess: false, fetchError: '', addError: '', editError: '', deleteError: '' });
+    const { isFetching, fetchError } = state;
 
     // Booleans for whether to display pop ups
     const [showAddPopUp, setShowAddPopUp] = useState(false);
@@ -38,10 +39,22 @@ const Experiences = () => {
 
     useEffect(() => {
         if (isLoggedIn) {
-            apiRequest('experiences', 'GET', {}, setExperiences, console.log);
+            dispatch({ type: 'fetch' });
+            apiRequest('experiences', 'GET', {}, (data) => {
+                setExperiences(data);
+                dispatch({ type: 'fetch_success' });
+            }, () => {
+                dispatch({ type: 'fetch_error', payload: "Could not load your experiences, please try again later." });
+            });
+
+            // Set error message if api can't be accessed
+            if (!state.fetchSuccess) {
+                dispatch({ type: 'fetch_error', payload: 'Could not load your experiences, please try again later.' });
+            }
         } else {
             setExperiences(fakeExperiences);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])
 
     const handleEditClick = (id, org, pos, type, start, end, desc) => {
@@ -176,6 +189,9 @@ const Experiences = () => {
     return (
         <section id="experiences" className="ph4 pv4 pv5-ns ph4-m ph5-l">
             <h1 className="pl3 f1">Experiences</h1>
+            {isFetching ? 'Loading experiences...' : 
+            fetchError ? <p className="f4 red b tc">{fetchError}</p> : 
+            <>
             <div className="experiences-container center">
                 <div className="flex flex-wrap justify-center mw8 center">
                     {experiences.map(exp => <Experience key={exp._id} organization={exp.organization} type={exp.type} image={imgType(exp.type)} position={exp.position} startDate={exp.startDate} endDate={exp.endDate} description={exp.description} handleEdit={() => handleEditClick(exp._id, exp.organization, exp.position, exp.type, exp.startDate, exp.endDate, exp.description)}/>)}
@@ -184,6 +200,8 @@ const Experiences = () => {
             </div>
             <AddExperiencePopUp visible={showAddPopUp} state={state} dispatch={dispatch} handleClose={() => setShowAddPopUp(false)} handleAdd={handleAddExperience}/>
             <EditExperiencePopUp experience={experienceToEdit} state={state} dispatch={dispatch} visible={showEditPopUp} handleClose={() => setShowEditPopUp(false)} handleEdit={handleEditExperience} handleDelete={handleDeleteExperience} />
+            </>
+            }
         </section>
     )
 }

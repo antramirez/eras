@@ -5,6 +5,11 @@ export function experienceReducer(state, action) {
                 ...state,
                 [action.fieldName]: action.payload
             }
+        case 'fetch':
+            return {
+                ...state,
+                isFetching: true
+            }
         case 'add':
             return {
                 ...state,
@@ -32,6 +37,13 @@ export function experienceReducer(state, action) {
                 isAdding: false,
                 addSuccess: true
             }
+        case 'fetch_success':
+            return {
+                ...state,
+                isFetching: false,
+                fetchError: '',
+                fetchSuccess: true
+            }
         case 'edit_success':
             return {
                 ...state,
@@ -46,6 +58,13 @@ export function experienceReducer(state, action) {
                 isDeleting: false,
                 deleteSuccess: false
             }
+        case 'fetch_error':
+            return {
+                ...state,
+                fetchError: action.payload,
+                isFetching: false,
+                fetchSuccess: false
+            }       
         case 'add_error':
             return {
                 ...state,

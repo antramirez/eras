@@ -12,7 +12,7 @@ import check from './../../assets/check-mark.svg';
 const GoalsAndTasks = () => {
     const { isLoggedIn } = useContext(UserContext);
 
-    const [state, dispatch] = useReducer(taskReducer, { _id: 0, goalId: '', description: '', isAdding: false, isDeleting: false, addSuccess: false, deleteSuccess: false, addError: '', deleteError: '' });
+    const [state, dispatch] = useReducer(taskReducer, { _id: 0, goalId: '', description: '', isFetching: false, isAdding: false, isDeleting: false, fetchSuccess: false, addSuccess: false, deleteSuccess: false, fetchError: '', addError: '', deleteError: '' });
 
     // TODO: move goals up from child components
     const [tasks, setTasks] = useState([]);
@@ -22,14 +22,24 @@ const GoalsAndTasks = () => {
     useEffect(() => {
         // if user is logged in, set tasks to their tasks
         if (isLoggedIn) {
+            dispatch({ type: 'fetch' });
             apiRequest('tasks', 'GET', {}, (data) => {
                 setTasks(data);
                 setNumTasks(data.length);
-            }, console.log)
+                dispatch({ type: 'fetch_success' });
+            }, () => {
+                dispatch({ type: 'fetch_error', payload: 'Could not load your tasks, please try again later.' });
+            })
+            
+            // Set error message if api can't be accessed
+            if (!state.fetchSuccess) {
+                dispatch({ type: 'fetch_error', payload: 'Could not load your tasks, please try again later.' });
+            }
         } else {
             setTasks(fakeTasks);
             setNumTasks(fakeTasks.length);
-        }        
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])
 
 

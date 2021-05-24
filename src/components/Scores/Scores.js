@@ -10,8 +10,8 @@ const Scores = () => {
     const { setUser } = useContext(UserActionsContext);
     const { graduationYear } = user;
 
-    const [state, dispatch] = useReducer(scoresReducer, { _id: 0, step1: 0, step2: 0, step1Field: '', step2Field: '', isEditing: false, isDeleting: false, editSuccess: false, deleteSuccess: false, editError: '', deleteError: '' });
-    const { step1, step2 } = state;
+    const [state, dispatch] = useReducer(scoresReducer, { _id: 0, step1: 0, step2: 0, step1Field: '', step2Field: '', isFetching: false, isEditing: false, isDeleting: false, fetchSuccess: false, editSuccess: false, deleteSuccess: false, fetchError: '', editError: '', deleteError: '' });
+    const { step1, step2, isFetching, fetchError } = state;
 
     // Booleans for whether pop ups should be displayed
     const [showPopUp1, setShowPopUp1] = useState(false);
@@ -20,15 +20,25 @@ const Scores = () => {
     useEffect(() => {
         // retrieve scores if user is logged in, otherwise use fake scores
         if (isLoggedIn) {
+            dispatch({ type: 'fetch' });
             apiRequest('account', 'GET', {}, data => {
                 dispatch({ type: 'field', fieldName: 'step1', payload: data.step1 });
                 dispatch({ type: 'field', fieldName: 'step2', payload: data.step2 });
-            }, console.log);
+                dispatch({ type: 'fetch_success' });
+            }, () => {
+                dispatch({ type: 'fetch_error', payload: "Could not load your scores, please try again later." });
+            });
+
+            // Set error message if api can't be accessed
+            if (!state.fetchSuccess) {
+                dispatch({ type: 'fetch_error', payload: 'Could not load your scores, please try again later.' });
+            }
         } else {
             setUser({...user, step1: 260, step2: 0}); // fake user, only sets scores
             dispatch({ type: 'field', fieldName: 'step1', payload: 260 });
             dispatch({ type: 'field', fieldName: 'step2', payload: 0 });
-        }        
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])
 
     // Handlers for setting scores when submitting form
@@ -133,7 +143,10 @@ const Scores = () => {
 
     return (
         <div className="scores-container flex center justify-center mw8 mb5">
-            <div className={`score-container bw1 b--black ${graduationYear <= 2022 && 'br'}`}>
+            {isFetching ? 'Loading scores...' :
+            fetchError ? <p className="f4 red b tc">{fetchError}</p> : 
+            <>
+            <div className={`score-container bw1 b--black ${graduationYear <= 2022 | !isLoggedIn && 'br'}`}>
                 <h2 className="f2 tc">Step 1</h2>
                 <div className="flex center justify-center">
                     <p className="f1 mt1 tc">
@@ -145,7 +158,7 @@ const Scores = () => {
                 </div>
                 <EditScorePopUp step={1} state={state} dispatch={dispatch} visible={showPopUp1} handleClose={() => setShowPopUp1(false)} handleEdit={handleEdit1} handleDelete={handleDelete1} />
             </div>
-            {graduationYear <= 2022 && 
+            {graduationYear <= 2022 | !isLoggedIn && 
             <div className="score-container">
                 <h2 className="f2 tc">Step 2</h2>
                 <div className="flex center justify-center">
@@ -158,6 +171,8 @@ const Scores = () => {
                 </div>     
                 <EditScorePopUp step={2} state={state} dispatch={dispatch} visible={showPopUp2} handleClose={() => setShowPopUp2(false)} handleEdit={handleEdit2} handleDelete={handleDelete2} />
             </div>
+            }
+            </>
             }
         </div>
     )

@@ -1,5 +1,10 @@
 export function uploadReducer(state, action) {
     switch (action.type) {
+        case 'fetch':
+            return {
+                ...state,
+                isFetching: true
+            }
         case 'add_transcript':
             return {
                 ...state,
@@ -35,6 +40,13 @@ export function uploadReducer(state, action) {
                 deleteOtherError: '',
                 isDeletingOther: true,
                 deleteOtherSuccess: false
+            }
+        case 'fetch_success':
+            return {
+                ...state,
+                isFetching: false,
+                fetchError: '',
+                fetchSuccess: true
             }
         case 'add_transcript_success':
             return {
@@ -77,6 +89,13 @@ export function uploadReducer(state, action) {
                 deleteOtherError: '',
                 isDeletingOther: false,
                 deleteROtherSuccess: false
+            }
+        case 'fetch_error':
+            return {
+                ...state,
+                fetchError: action.payload,
+                isFetching: false,
+                fetchSuccess: false
             }
         case 'add_transcript_error':
             return {

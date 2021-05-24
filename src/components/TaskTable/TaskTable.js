@@ -25,12 +25,15 @@ const TaskTable = ({tasks, numTasks, state, dispatch, addTask, removeTask, check
                             <th className="check-box"></th>
                         </tr>
                     </thead>
+                    {state.isFetching ? 'Loading tasks...' : 
                     <tbody className="lh-copy">
                         {tasks.map(task => <Task key={task._id} task={task} onClick={() => removeTask(task._id)} check={check}/>)}
                     </tbody>
+                    }
                 </table>
-                <AddButton onClick={() => setShowAddTaskPopUp(true) }/>
+                {state.isFetching || state.fetchError ? '' : <AddButton onClick={() => setShowAddTaskPopUp(true) }/> }
             </div>
+            <p className="f5 red b tc">{state.deleteError ? state.deleteError : ''}{state.fetchError ? state.fetchError : ''}</p>
             <AddTaskPopUp visible={showAddTaskPopUp} state={state} dispatch={dispatch} handleClose={() => setShowAddTaskPopUp(false)} handleAdd={addTask} cross={cross}/>
         </div>
     )

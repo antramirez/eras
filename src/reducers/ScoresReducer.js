@@ -5,6 +5,11 @@ export function scoresReducer(state, action) {
                 ...state,
                 [action.fieldName]: action.payload
             }
+        case 'fetch':
+            return {
+                ...state,
+                isFetching: true
+            }
         case 'edit':
             return {
                 ...state,
@@ -19,6 +24,13 @@ export function scoresReducer(state, action) {
                 isDeleting: true,
                 deleteSuccess: false
             }
+        case 'fetch_success':
+            return {
+                ...state,
+                isFetching: false,
+                fetchError: '',
+                fetchSuccess: true
+            }
         case 'edit_success':
             return {
                 ...state,
@@ -32,6 +44,13 @@ export function scoresReducer(state, action) {
                 deleteError: '',
                 isDeleting: false,
                 deleteSuccess: false
+            }
+        case 'fetch_error':
+            return {
+                ...state,
+                fetchError: action.payload,
+                isFetching: false,
+                fetchSuccess: false
             }
         case 'edit_error':
             return {

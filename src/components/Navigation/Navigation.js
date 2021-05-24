@@ -40,7 +40,7 @@ const Navigation = () => {
                 {isHomepage && 
                     <>
                         <Link activeClass="active" className="link dim white dib mr3 pointer" to='goalsAndTasks' spy={true} smooth={true} offset={-80} duration={500} >Goals &amp; Tasks</Link>
-                        {graduationYear <= 2023 && <Link activeClass="active" className="link dim white dib mr3 pointer" to='academics' spy={true} smooth={true} offset={-80} duration={500} >Academics</Link>}
+                        {graduationYear <= 2023 | !isLoggedIn && <Link activeClass="active" className="link dim white dib mr3 pointer" to='academics' spy={true} smooth={true} offset={-80} duration={500} >Academics</Link>}
                         <Link activeClass="active" className="link dim white dib mr3 pointer" to='experiences' spy={true} smooth={true} offset={-80} duration={500} >Experiences</Link>
                         <Link activeClass="active" className="link dim white dib mr3 pointer" to='publications' spy={true} smooth={true} offset={-80} duration={500} >Publications</Link>
                         <Link activeClass="active" className="link dim white dib mr3 pointer" to='uploads' spy={true} smooth={true} offset={-80} duration={500} >Uploads</Link>

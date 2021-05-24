@@ -11,12 +11,24 @@ export function taskReducer(state, action) {
                 editError: '',
                 isAdding: true
             }
+        case 'fetch':
+            return {
+                ...state,
+                isFetching: true
+            }
         case 'delete':
             return {
                 ...state,
                 deleteError: '',
                 isDeleting: true,
                 deleteSuccess: false
+            }
+        case 'fetch_success':
+            return {
+                ...state,
+                isFetching: false,
+                fetchError: '',
+                fetchSuccess: true
             }
         case 'add_success':
             return {
@@ -31,6 +43,13 @@ export function taskReducer(state, action) {
                 deleteError: '',
                 isDeleting: false,
                 deleteSuccess: false
+            }
+        case 'fetch_error':
+            return {
+                ...state,
+                fetchError: action.payload,
+                isFetching: false,
+                fetchSuccess: false
             }
         case 'add_error':
             return {
