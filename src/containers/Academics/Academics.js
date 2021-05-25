@@ -4,13 +4,16 @@ import Percentile from '../../components/Percentile/Percentile';
 import Courses from '../../components/Courses/Courses';
 import { UserContext } from '../../context/UserContext';
 import './Academics.css';
+import { Fade } from 'react-reveal';
 
 const Academics = () => {
     const { user, isLoggedIn } = useContext(UserContext);
     const { graduationYear } = user;
     return (
         <section id="academics" className="ph4 pv4 pv5-ns ph4-m ph5-l">
-            <h1 className="pl3 f1">Academics</h1>
+            <Fade top delay={300}>
+                <h1 className="pl3 f1">Academics</h1>
+            </Fade>
             {graduationYear <= 2023 || !isLoggedIn ?
                 <>
                     <Scores />

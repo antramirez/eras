@@ -7,8 +7,9 @@ import { eventReducer } from '../../reducers/EventReducer';
 import { fakeEvents } from '../../data/fakeData';
 import trophyIcon from './../../assets/trophy.png';
 import check from './../../assets/check-mark.svg';
+import { Fade } from 'react-reveal';
 
-const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
+const CalendarSection = ({tasks, updateTasks}) => {
     const { isLoggedIn } = useContext(UserContext);
 
     const [state, dispatch] = useReducer(eventReducer, { title: '', date: '', dateStr: '', dateObj: '', isFetching: false, isAdding: false, isEditing: false, isDeleting: false, fetchSuccess: false, addSuccess: false, editSuccess: false, deleteSuccess: false, fetchError: '', addError: '', editError: '', deleteError: '' });
@@ -18,7 +19,6 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
 
     const [events, setEvents] = useState([]);
 
-    const [numEvents, setNumEvents] = useState(0);
     const [eventToRemove, setEventToRemove] = useState({});
     const [eventToAdd, setEventToAdd] = useState({});
 
@@ -27,7 +27,6 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
             dispatch({ type: 'fetch' });
             apiRequest('goals', 'GET', {}, (data) => {
                 setEvents(data);
-                setNumEvents(data.length);
                 dispatch({ type: 'fetch_success' });
             }, (e) => {
                 dispatch({ type: 'fetch_error', payload: 'Could not load your calendar events, please try again later.' });
@@ -38,7 +37,6 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
             }
         } else {
             setEvents(fakeEvents);
-            setNumEvents(fakeEvents.length);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])
@@ -98,9 +96,11 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
         dispatch({ type: 'field', fieldName: 'dateObj', payload: dateObj });
         dispatch({ type: 'field', fieldName: 'dateStr', payload: dateStr });
 
+        document.body.style.overflowY = 'hidden';
         setShowAddCalendarEventPopUp(true);
     }
     const handleClose = () => {
+        document.body.style.overflowY = 'scroll';
         setShowAddCalendarEventPopUp(false);
     }
 
@@ -141,7 +141,6 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
             if (isLoggedIn) {
                 await apiRequest('tasks', 'POST', {description: `${title} (${dateStr})`}, 
                 (task) => {
-                    updateNumTasks([...tasks, task].length);
                     updateTasks([...tasks, task]);
 
                     dispatch({ type: 'add_success' });
@@ -153,7 +152,6 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
             } else {
                 const updatedTasks = [...tasks, {_id: `t-${fakeIdCounter}`, description: `${title} (${dateStr})`}]
                 updateTasks(updatedTasks);
-                updateNumTasks(updatedTasks.length);
 
                 dispatch({ type: 'add_success' });
                 success = true;
@@ -174,7 +172,6 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
             await idApiRequest('goals', eventId, 'DELETE', {}, () => {
                 const updatedEvents = events.filter(event => event._id !== eventId);
                 setEvents(updatedEvents);
-                setNumEvents(updatedEvents.length);
                 setEventToRemove(e);
 
                 dispatch({ type: 'delete_success' });
@@ -185,7 +182,6 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
             });    
         } else {
             setEvents(updatedEvents);
-            setNumEvents(updatedEvents.length);
             setEventToRemove(e);
 
             dispatch({ type: 'delete_success' });
@@ -200,7 +196,6 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
                 await idApiRequest('tasks', taskToRemove._id, 'DELETE', {}, () => {
                     const updatedTasks = tasks.filter(task => task.description !== `${e.title} (${e.dateStr})`)
                     updateTasks(updatedTasks)
-                    updateNumTasks(updatedTasks.length);
 
                     dispatch({ type: 'delete_success' });
                     success = true;
@@ -212,7 +207,6 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
                 const fakeTaskToRemove = tasks.find(task => task._id === `t-${eventId}`);
                 const updatedTasks = tasks.filter(task => task._id !== fakeTaskToRemove._id)
                 updateTasks(updatedTasks);
-                updateNumTasks(updatedTasks.length);
 
                 dispatch({ type: 'delete_success' });
                 success = true;
@@ -224,24 +218,28 @@ const CalendarSection = ({tasks, updateTasks, updateNumTasks}) => {
 
     return (
         <div className="calendar-container">
+            <Fade>
             <div className="calendar pa2 white">
-                <Calendar events={events} numEvents={numEvents} eventToAdd={eventToAdd} eventToRemove={eventToRemove} handleAdd={() => setEventToAdd({})} handleRemove={() => setEventToRemove({})} handleDateClick={handleDateClick} />
+                <Calendar events={events} eventToAdd={eventToAdd} eventToRemove={eventToRemove} handleAdd={() => setEventToAdd({})} handleRemove={() => setEventToRemove({})} handleDateClick={handleDateClick} />
             </div>
             {state.isFetching ? 'Loading goals and tasks...' : 
             <div className="calendar-events">
                 {events.filter(e => new Date(e.dateObj).getTime() >= new Date(new Date().setHours(0,0,0,0)).getTime()).length > 0 ? <h3 className="pt3 pb3 tc mt0 mb0 bb b--white">Upcoming</h3> : '' }
                 {events.filter(e => new Date(e.dateObj).getTime() >= new Date(new Date().setHours(0,0,0,0)).getTime()).map(e=> 
                     <div key={e._id} className="calendar-event-container pt3 pb3 pl1 pr1 bb b--white flex justify-between items-center">
-                        <div className="calendar-event-icon-container relative ml2 mr2 br4 pa1 flex justify-center items-center">
-                            <img src={trophyIcon} alt=""/>
-                        </div>
-                        <div className="desc-container">
-                            <p><b>{e.dateStr}</b> - {e.title}</p>
-                        </div>
-                        <button className="bg-transparent bn b grow pointer f6 ml2 mr2" onClick={() => handleRemoveEvent(e._id)}><img src={check} alt="Check mark"/></button>
+                        <Fade delay={200}>
+                            <div className="calendar-event-icon-container relative ml2 mr2 br4 pa1 flex justify-center items-center">
+                                <img src={trophyIcon} alt=""/>
+                            </div>
+                            <div className="desc-container">
+                                <p><b>{e.dateStr}</b> - {e.title}</p>
+                            </div>
+                            <button className="bg-transparent bn b grow pointer f6 ml2 mr2" onClick={() => handleRemoveEvent(e._id)}><img src={check} alt="Check mark"/></button>
+                        </Fade>
                     </div>
                 )}
             </div>}
+            </Fade>
             <p className="f5 red b tc mw5 center">{state.deleteError ? state.deleteError : ''}{state.fetchError ? state.fetchError : ''}</p>
             <AddCalendarEventPopUp visible={showAddCalendarEventPopUp} state={state} dispatch={dispatch} handleClose={handleClose} handleAdd={handleAddEvent} />
         </div>

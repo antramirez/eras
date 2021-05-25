@@ -8,6 +8,7 @@ import {uploadReducer} from '../../reducers/UploadReducer';
 import download from 'downloadjs';
 import cross from '../../assets/cross.svg';
 import './Uploads.css';
+import { Fade } from 'react-reveal';
 
 const Uploads = () => {
     const { isLoggedIn } = useContext(UserContext);
@@ -154,41 +155,55 @@ const Uploads = () => {
 
     return (
         <section id="uploads" className="ph4 pv4 pv5-ns ph4-m ph5-l">
-            <h1 className="pl3 f1">Uploads</h1>
+            <Fade top>
+                <h1 className="pl3 f1">Uploads</h1>
+            </Fade>
             {isFetching ? 'Loading publications...' : 
             fetchError ? <p className="f4 red b tc">{fetchError}</p> :
             <>
-            <div className="file_uploads ph3 pv3 pv4-ns ph4-m ph5-l">
-                <FileUpload state={state} dispatch={dispatch} type={"transcript"} label={"Transcript"} handleUpload={handleUpload} />
-                <p className="f5 red b tc">{addTranscriptError ? addTranscriptError : ''}</p>
-                <p className="f5 green b tc">{addTranscriptSuccess ? addTranscriptSuccess : ''}</p>
-                <div className="transcript-uploads mw7 center">
-                    {transcripts.map(u => <UploadActions key={u._id} id={u._id} fileName={u.fileName} type={u.type} downloadFile={downloadFile} deleteUpload={deleteUpload} />)}
-                    <p className="f5 red b tc">{deleteTranscriptError ? deleteTranscriptError : ''}</p>
+                <div className="file_uploads ph3 pv3 pv4-ns ph4-m ph5-l">
+                    <Fade delay={200}>
+                        <FileUpload state={state} dispatch={dispatch} type={"transcript"} label={"Transcript"} handleUpload={handleUpload} />
+                    </Fade>
+                    <Fade delay={300}>
+                        <p className="f5 red b tc">{addTranscriptError ? addTranscriptError : ''}</p>
+                        <p className="f5 green b tc">{addTranscriptSuccess ? addTranscriptSuccess : ''}</p>
+                        <div className="transcript-uploads mw7 center">
+                            {transcripts.map(u => <UploadActions key={u._id} id={u._id} fileName={u.fileName} type={u.type} downloadFile={downloadFile} deleteUpload={deleteUpload} />)}
+                            <p className="f5 red b tc">{deleteTranscriptError ? deleteTranscriptError : ''}</p>
+                        </div>
+                    </Fade>
+                    <Fade delay={400}>
+                        <FileUpload state={state} dispatch={dispatch} type={"recommendation"} label={"Letters of Recommendation"} handleUpload={handleUpload} />
+                    </Fade>
+                    <Fade delay={500}>
+                        <p className="f5 red b tc">{addRecommendationError ? addRecommendationError : ''}</p>
+                        <p className="f5 green b tc">{addRecommendationSuccess ? addRecommendationSuccess : ''}</p>
+                        <div className="recommendation-uploads mw7 center">
+                            {recommendations.map(u => <UploadActions key={u._id} id={u._id} fileName={u.fileName} type={u.type} downloadFile={downloadFile} deleteUpload={deleteUpload} />)}
+                            <p className="f5 red b tc">{deleteRecommendationError ? deleteRecommendationError : ''}</p>
+                        </div>
+                    </Fade>
+                    <Fade delay={600}>
+                        <FileUpload state={state} dispatch={dispatch} type={"other"} label={"Other documents"} handleUpload={handleUpload} />
+                    </Fade>
+                    <Fade delay={700}>
+                        <p className="f5 red b tc">{addOtherError ? addOtherError : ''}</p>
+                        <p className="f5 green b tc">{addOtherSuccess ? addOtherSuccess : ''}</p>
+                        <div className="other-uploads mw7 center">
+                            {otherUploads.map(u => <UploadActions key={u._id} id={u._id} fileName={u.fileName} type={u.type} downloadFile={downloadFile} deleteUpload={deleteUpload} />)}
+                            <p className="f5 red b tc">{deleteOtherError ? deleteOtherError : ''}</p>
+                        </div>
+                    </Fade>
                 </div>
-                <FileUpload state={state} dispatch={dispatch} type={"recommendation"} label={"Letters of Recommendation"} handleUpload={handleUpload} />
-                <p className="f5 red b tc">{addRecommendationError ? addRecommendationError : ''}</p>
-                <p className="f5 green b tc">{addRecommendationSuccess ? addRecommendationSuccess : ''}</p>
-                <div className="recommendation-uploads mw7 center">
-                    {recommendations.map(u => <UploadActions key={u._id} id={u._id} fileName={u.fileName} type={u.type} downloadFile={downloadFile} deleteUpload={deleteUpload} />)}
-                    <p className="f5 red b tc">{deleteRecommendationError ? deleteRecommendationError : ''}</p>
+                <div className="must-signin-popup-container dn content-center justify-center items-center" ref={popup}>
+                    <div className="relative center pa4 br3">
+                        <button className="bg-transparent bn b absolute pointer close-btn pa0" onClick={() => closePopUp()}><img className="h-100" src={cross} alt="Close navigation popup"/></button>
+                        <p className="f3 mb1">You must be signed in to upload your documents.</p>
+                        <button className="mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6"><Link className="link black" to='/signin'>Sign in</Link></button>
+                        <p>New user? <Link to='/signup'>Create an account.</Link></p>
+                    </div>
                 </div>
-                <FileUpload state={state} dispatch={dispatch} type={"other"} label={"Other documents"} handleUpload={handleUpload} />
-                <p className="f5 red b tc">{addOtherError ? addOtherError : ''}</p>
-                <p className="f5 green b tc">{addOtherSuccess ? addOtherSuccess : ''}</p>
-                <div className="other-uploads mw7 center">
-                    {otherUploads.map(u => <UploadActions key={u._id} id={u._id} fileName={u.fileName} type={u.type} downloadFile={downloadFile} deleteUpload={deleteUpload} />)}
-                    <p className="f5 red b tc">{deleteOtherError ? deleteOtherError : ''}</p>
-                </div>
-            </div>
-            <div className="must-signin-popup-container dn content-center justify-center items-center" ref={popup}>
-                <div className="relative center pa4 br3">
-                    <button className="bg-transparent bn b absolute pointer close-btn pa0" onClick={() => closePopUp()}><img className="h-100" src={cross} alt="Close navigation popup"/></button>
-                    <p className="f3 mb1">You must be signed in to upload your documents.</p>
-                    <button className="mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6"><Link className="link black" to='/signin'>Sign in</Link></button>
-                    <p>New user? <Link to='/signup'>Create an account.</Link></p>
-                </div>
-            </div>
             </>}
         </section>
     )

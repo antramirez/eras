@@ -4,6 +4,7 @@ import { accountReducer } from '../../reducers/AccountReducer';
 import { apiRequest } from '../../utils/apiRequests';
 import { useHistory, useLocation } from 'react-router-dom';
 import './Account.css';
+import { Fade } from 'react-reveal';
 
 const Account = () => {
     const { user } = useContext(UserContext);
@@ -67,7 +68,10 @@ const Account = () => {
     return (
         <section id="account" className="ph4 pv4 pv5-ns ph4-m ph5-l">
             <article className="pa1 black-80 mb6 center mw6 account-container">
-                <h1 className="f1 mb2">Account</h1>
+                <Fade top delay={200}>
+                    <h1 className="f1 mb2">Account</h1>
+                </Fade>
+                <Fade delay={300}>
                 <form acceptCharset="utf-8">
                     <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
                         <legend className="ph0 mh0 fw6 clip">Account</legend>
@@ -211,7 +215,7 @@ const Account = () => {
                 <p className="f5 b red">{error}</p>
                 <p className="f5 b green">{success ? 'Account updated.' : ''}</p>
                 <button className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleLogout}>{isLoading ? 'Logging out...' : 'Logout'}</button>
-
+                </Fade>
             </article>
         </section>
     )

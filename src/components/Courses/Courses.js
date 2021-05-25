@@ -7,6 +7,7 @@ import { fakeCourses } from '../../data/fakeData';
 import AddCoursePopUp from './../AddCoursePopUp/AddCoursePopUp';
 import EditCoursePopUp from './../EditCoursePopUp/EditCoursePopUp';
 import AddButton from './../AddButton/AddButton';
+import { Fade } from 'react-reveal';
 
 const Courses = () => {
     const { isLoggedIn } = useContext(UserContext);
@@ -45,6 +46,7 @@ const Courses = () => {
 
     // Handler for when edit button in course row is clicked 
     const handleEditCourseClick = (course) => {
+        document.body.style.overflowY = 'hidden';
         setCourseToEdit(course);
         setShowEditCoursePopUp(true);
     }
@@ -134,26 +136,53 @@ const Courses = () => {
                 fetchError ? <p className="f4 red b tc">{fetchError}</p> : 
                 <>
                 <table className="f6 w-100" cellSpacing="0">
-                <thead>
-                    <tr className="">
-                        <th className="fw6 tl pa3 academics-course-name f3">Clerkship Grades</th>
-                        <th className="fw6 tl pa3 academics-course-f">F</th>
-                        <th className="fw6 tl pa3 academics-course-p">P</th>
-                        <th className="fw6 tl pa3 academics-course-hp">HP</th>
-                        <th className="fw6 tl pa3 academics-course-h">H</th>
-                        <th className="fw6 tl pa3 blank-col"></th>
-                    </tr>
-                </thead>
-                <tbody className="lh-copy">
-                    {courses.map(course => <Course key={course._id} title={course.name} grade={course.grade} handleEdit={() => handleEditCourseClick(course)} />)}
-                </tbody>
+                    <Fade top delay={300}>
+                        <thead>
+                            <tr className="">
+                                <th className="fw6 tl pa3 academics-course-name f3">Clerkship Grades</th>
+                                <th className="fw6 tl pa3 academics-course-f">F</th>
+                                <th className="fw6 tl pa3 academics-course-p">P</th>
+                                <th className="fw6 tl pa3 academics-course-hp">HP</th>
+                                <th className="fw6 tl pa3 academics-course-h">H</th>
+                                <th className="fw6 tl pa3 blank-col"></th>
+                            </tr>
+                        </thead>
+                    </Fade>
+                    <Fade delay={500} >
+                        <tbody className="lh-copy">
+                            {courses.map(course => <Course key={course._id} title={course.name} grade={course.grade} handleEdit={() => handleEditCourseClick(course)} />)}
+                        </tbody>
+                    </Fade>
                 </table>
-                <AddButton onClick={() => setShowAddCoursePopUp(true)}/>
+                <AddButton onClick={() => {
+                    document.body.style.overflowY = 'hidden';
+                    setShowAddCoursePopUp(true);
+                }} />
                 </>
                 }
             </div>
-            <AddCoursePopUp visible={showAddCoursePopUp} state={state} dispatch={dispatch} handleClose={() => setShowAddCoursePopUp(false)} handleAdd={handleAddCourse} />
-            <EditCoursePopUp course={courseToEdit} state={state} dispatch={dispatch} visible={showEditCoursePopUp} handleClose={() => setShowEditCoursePopUp(false)} handleEdit={handleEditCourse} handleDelete={handleDeleteCourse} />
+            <AddCoursePopUp 
+                visible={showAddCoursePopUp}
+                state={state}
+                dispatch={dispatch}
+                handleClose={() => {
+                    document.body.style.overflowY = 'auto';
+                    setShowAddCoursePopUp(false);
+                }}
+                handleAdd={handleAddCourse} 
+            />
+            <EditCoursePopUp
+                course={courseToEdit}
+                state={state}
+                dispatch={dispatch}
+                visible={showEditCoursePopUp}
+                handleClose={() => {
+                    document.body.style.overflowY = 'auto';
+                    setShowEditCoursePopUp(false);
+                }}
+                handleEdit={handleEditCourse}
+                handleDelete={handleDeleteCourse}
+            />
         </div>
     )
 }

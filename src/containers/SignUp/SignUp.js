@@ -3,6 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { signUpReducer } from '../../reducers/SignUpReducer';
 import { UserActionsContext } from '../../context/UserContext';
 import { apiRequest } from '../../utils/apiRequests';
+import { Fade } from 'react-reveal';
 
 const SignUp = () => {
 
@@ -88,7 +89,10 @@ const SignUp = () => {
 
     return (
         <article className="pa1 black-80 pl6">
-            <h1 className="f1 tc mb2">Sign Up</h1>
+            <Fade top>
+                <h1 className="f1 tc mb2">Sign Up</h1>
+            </Fade>
+            <Fade delay={400}>
             <form acceptCharset="utf-8">
                 <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
                     <legend className="ph0 mh0 fw6 clip">Sign Up</legend>
@@ -255,6 +259,7 @@ const SignUp = () => {
                 <div className="mt3 tc"><input disabled={isLoading} className="b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" value={isLoading ? "Signing Up..." : "Sign Up"} onClick={handleClick} /></div>
                 <div><p className="f5 b red tc">{error}</p></div>
             </form>
+            </Fade>
         </article>
     )
 }

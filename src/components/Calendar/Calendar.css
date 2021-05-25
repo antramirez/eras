@@ -18,12 +18,18 @@
     border: none;
 }
 
+.fc-scrollgrid-sync-table tbody tr:last-of-type {
+    height: calc(100%/6 + 32px);
+}
+
+#goals_tasks > div > div.calendar-container > div.calendar.pa2.white > div > div.fc-view-harness.fc-view-harness-active > div > table > tbody > tr > td > div > div {
+    overflow: hidden !important;
+}
 
 #goals_tasks > div.mw8.calendar-container > div.calendar.pa2.white > div > div.fc-view-harness.fc-view-harness-active > div > table > thead > tr > td > div > div > table > tbody > tr {
     padding-top: 1.75em;
     padding-bottom: 1.75em;
 }
-
 
 .fc-daygrid-event {
     border-top-left-radius: 0;

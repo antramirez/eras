@@ -48,7 +48,7 @@ const AddTaskPopUp = ({visible, state, dispatch, handleClose, handleAdd, cross }
             dispatch({type: 'add_error', payload: 'Please add a valid task.'});
         } else {
             // Check if add was successful after possible api call
-            const success = handleAdd(description);
+            const success = await handleAdd(description);
             if (success) {
                 resetForm();
                 handleClose();

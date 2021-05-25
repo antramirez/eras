@@ -8,6 +8,7 @@ import { fakeTasks } from '../../data/fakeData';
 import './GoalsAndTasks.css';
 import taskIcon from './../../assets/completed-task.png';
 import check from './../../assets/check-mark.svg';
+import { Fade } from 'react-reveal';
 
 const GoalsAndTasks = () => {
     const { isLoggedIn } = useContext(UserContext);
@@ -16,7 +17,6 @@ const GoalsAndTasks = () => {
 
     // TODO: move goals up from child components
     const [tasks, setTasks] = useState([]);
-    const [numTasks, setNumTasks] = useState(0);
     const [fakeTaskIdCounter, setFakeTaskIdCounter] = useState(3);
 
     useEffect(() => {
@@ -25,7 +25,6 @@ const GoalsAndTasks = () => {
             dispatch({ type: 'fetch' });
             apiRequest('tasks', 'GET', {}, (data) => {
                 setTasks(data);
-                setNumTasks(data.length);
                 dispatch({ type: 'fetch_success' });
             }, () => {
                 dispatch({ type: 'fetch_error', payload: 'Could not load your tasks, please try again later.' });
@@ -37,7 +36,6 @@ const GoalsAndTasks = () => {
             }
         } else {
             setTasks(fakeTasks);
-            setNumTasks(fakeTasks.length);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])
@@ -52,7 +50,6 @@ const GoalsAndTasks = () => {
             await apiRequest('tasks', 'POST', {description}, (task) => {
                 const updatedTasks = [...tasks, task];
                 setTasks(updatedTasks);
-                setNumTasks(updatedTasks.length);
 
                 dispatch({ type: 'add_success' });
                 success = true;
@@ -63,7 +60,6 @@ const GoalsAndTasks = () => {
         } else {
             const updatedTasks = [...tasks, { _id: fakeTaskIdCounter, description }];
             setTasks(updatedTasks);
-            setNumTasks(updatedTasks.length)
             setFakeTaskIdCounter(fakeTaskIdCounter + 1);
             success = true;
         }
@@ -81,7 +77,6 @@ const GoalsAndTasks = () => {
         if (isLoggedIn) {
             await idApiRequest('tasks', taskId, 'DELETE', {}, () => {
                 setTasks(updatedTasks);
-                setNumTasks(updatedTasks.length);
 
                 dispatch({ type: 'delete_success' });
                 success = true;
@@ -91,7 +86,6 @@ const GoalsAndTasks = () => {
             });
         } else {
             setTasks(updatedTasks);
-            setNumTasks(updatedTasks.length);
 
             dispatch({ type: 'delete_success' });
             success = true;
@@ -102,16 +96,16 @@ const GoalsAndTasks = () => {
 
     return (
         <section id="goals_tasks" className="ph4 pv4 pv5-ns ph4-m ph5-l center ">
-            <h1 className="pl3 f1">Goals &amp; Tasks</h1>
+            <Fade top delay={200}>
+                <h1 className="pl3 f1">Goals &amp; Tasks</h1>
+            </Fade>
             <div className="goals-tasks-container flex justify-between wrap center pa3">
                 <CalendarSection 
                     tasks={tasks} 
                     updateTasks={(updatedTasks) => setTasks(updatedTasks)} 
-                    updateNumTasks={(num) => setNumTasks(num)} 
                 />
                 <TaskTable 
                     tasks={tasks} 
-                    numTasks={numTasks}
                     state={state}
                     dispatch={dispatch}
                     addTask={addTask}

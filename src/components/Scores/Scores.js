@@ -4,6 +4,7 @@ import { apiRequest } from '../../utils/apiRequests';
 import { scoresReducer } from '../../reducers/ScoresReducer';
 import EditScorePopUp from './../EditScorePopUp/EditScorePopUp';
 import editPNG from './../../assets/edit.png';
+import { Fade } from 'react-reveal';
 
 const Scores = () => {
     const { isLoggedIn, user } = useContext(UserContext);
@@ -147,29 +148,63 @@ const Scores = () => {
             fetchError ? <p className="f4 red b tc">{fetchError}</p> : 
             <>
             <div className={`score-container bw1 b--black ${graduationYear <= 2022 | !isLoggedIn && 'br'}`}>
-                <h2 className="f2 tc">Step 1</h2>
-                <div className="flex center justify-center">
-                    <p className="f1 mt1 tc">
-                        {step1 > 0 ? step1 : '---'}
-                    </p>
-                    <button className="bg-transparent bn b grow" onClick={() => setShowPopUp1(true)}>
-                        <img src={editPNG} alt="Edit button"/>
-                    </button>
-                </div>
-                <EditScorePopUp step={1} state={state} dispatch={dispatch} visible={showPopUp1} handleClose={() => setShowPopUp1(false)} handleEdit={handleEdit1} handleDelete={handleDelete1} />
+                <Fade top delay={400}>
+                    <h2 className="f2 tc">Step 1</h2>
+                </Fade>
+                <Fade delay={500}>
+                    <div className="flex center justify-center">
+                        <p className="f1 mt1 tc">
+                            {step1 > 0 ? step1 : '---'}
+                        </p>
+                        <button className="bg-transparent bn b grow" onClick={() => {
+                            document.body.style.overflowY = 'hidden';
+                            setShowPopUp1(true);
+                        }}>
+                            <img src={editPNG} alt="Edit button"/>
+                        </button>
+                    </div>
+                </Fade>
+                <EditScorePopUp 
+                    step={1}
+                    state={state}
+                    dispatch={dispatch}
+                    visible={showPopUp1} 
+                    handleClose={() => { 
+                        document.body.style.overflowY = 'auto';
+                        setShowPopUp1(false);
+                    }} 
+                    handleEdit={handleEdit1} 
+                    handleDelete={handleDelete1} />
             </div>
             {graduationYear <= 2022 | !isLoggedIn && 
             <div className="score-container">
-                <h2 className="f2 tc">Step 2</h2>
-                <div className="flex center justify-center">
-                    <p className="f1 mt1 tc">
-                        {step2 > 0 ? step2 : '---'}
-                    </p>
-                    <button className="bg-transparent bn b grow" onClick={() => setShowPopUp2(true)}>
-                        <img src={editPNG} alt="Edit button"/>
-                    </button>
-                </div>     
-                <EditScorePopUp step={2} state={state} dispatch={dispatch} visible={showPopUp2} handleClose={() => setShowPopUp2(false)} handleEdit={handleEdit2} handleDelete={handleDelete2} />
+                <Fade top delay={450}>
+                    <h2 className="f2 tc">Step 2</h2>
+                </Fade>
+                <Fade delay={550}>
+                    <div className="flex center justify-center">
+                        <p className="f1 mt1 tc">
+                            {step2 > 0 ? step2 : '---'}
+                        </p>
+                        <button className="bg-transparent bn b grow" onClick={() => {
+                            document.body.style.overflowY = 'hidden';
+                            setShowPopUp2(true);
+                        }}>
+                            <img src={editPNG} alt="Edit button"/>
+                        </button>
+                    </div>
+                </Fade> 
+                <EditScorePopUp
+                    step={2}
+                    state={state}
+                    dispatch={dispatch}
+                    visible={showPopUp2}
+                    handleClose={() => {
+                        document.body.style.overflowY = 'auto';
+                        setShowPopUp2(false);
+                    }}
+                    handleEdit={handleEdit2}
+                    handleDelete={handleDelete2} />
             </div>
             }
             </>

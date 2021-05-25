@@ -10,6 +10,7 @@ import AddButton from './../../components/AddButton/AddButton';
 import './Experiences.css';
 import volunteeringPNG from './../../assets/experience_volunteering.png';
 import workPNG from './../../assets/experiences_work.png';
+import { Fade } from 'react-reveal';
 
 const Experiences = () => {
     const { isLoggedIn } = useContext(UserContext);
@@ -66,7 +67,8 @@ const Experiences = () => {
             startDate: start,
             endDate: end,
             description: desc
-        })
+        });
+        document.body.style.overflowY = 'hidden';
         setShowEditPopUp(true);
     }
 
@@ -188,18 +190,45 @@ const Experiences = () => {
 
     return (
         <section id="experiences" className="ph4 pv4 pv5-ns ph4-m ph5-l">
-            <h1 className="pl3 f1">Experiences</h1>
+            <Fade top>
+                <h1 className="pl3 f1">Experiences</h1>
+            </Fade>
             {isFetching ? 'Loading experiences...' : 
             fetchError ? <p className="f4 red b tc">{fetchError}</p> : 
             <>
-            <div className="experiences-container center">
-                <div className="flex flex-wrap justify-center mw8 center">
-                    {experiences.map(exp => <Experience key={exp._id} organization={exp.organization} type={exp.type} image={imgType(exp.type)} position={exp.position} startDate={exp.startDate} endDate={exp.endDate} description={exp.description} handleEdit={() => handleEditClick(exp._id, exp.organization, exp.position, exp.type, exp.startDate, exp.endDate, exp.description)}/>)}
-                </div>
-                <AddButton onClick={() => setShowAddPopUp(true)}/>
-            </div>
-            <AddExperiencePopUp visible={showAddPopUp} state={state} dispatch={dispatch} handleClose={() => setShowAddPopUp(false)} handleAdd={handleAddExperience}/>
-            <EditExperiencePopUp experience={experienceToEdit} state={state} dispatch={dispatch} visible={showEditPopUp} handleClose={() => setShowEditPopUp(false)} handleEdit={handleEditExperience} handleDelete={handleDeleteExperience} />
+                <Fade delay={300}>
+                    <div className="experiences-container center">
+                        <div className="flex flex-wrap justify-center mw8 center">
+                            {experiences.map(exp => <Experience key={exp._id} organization={exp.organization} type={exp.type} image={imgType(exp.type)} position={exp.position} startDate={exp.startDate} endDate={exp.endDate} description={exp.description} handleEdit={() => handleEditClick(exp._id, exp.organization, exp.position, exp.type, exp.startDate, exp.endDate, exp.description)}/>)}
+                        </div>
+                        <AddButton onClick={() => {
+                            document.body.style.overflowY = 'hidden';
+                            setShowAddPopUp(true);
+                        }}/>
+                    </div>
+                </Fade>
+                <AddExperiencePopUp 
+                    visible={showAddPopUp}
+                    state={state}
+                    dispatch={dispatch}
+                    handleClose={() => {
+                        document.body.style.overflowY = 'auto';
+                        setShowAddPopUp(false);
+                    }}
+                    handleAdd={handleAddExperience}
+                />
+                <EditExperiencePopUp
+                    experience={experienceToEdit}
+                    state={state}
+                    dispatch={dispatch}
+                    visible={showEditPopUp}
+                    handleClose={() => {
+                        document.body.style.overflowY = 'auto';
+                        setShowEditPopUp(false);
+                    }}
+                    handleEdit={handleEditExperience}
+                    handleDelete={handleDeleteExperience}
+                />
             </>
             }
         </section>

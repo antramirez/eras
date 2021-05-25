@@ -3,6 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { loginReducer } from '../../reducers/LoginReducer';
 import { UserActionsContext } from '../../context/UserContext';
 import { apiRequest } from '../../utils/apiRequests';
+import { Fade } from 'react-reveal';
 
 const Login = () => {
     const { setIsLoggedIn, setUser } = useContext(UserActionsContext);
@@ -62,7 +63,10 @@ const Login = () => {
 
     return (
         <article className="pa1 black-80 pr6 br bw1 b--black">
-            <h1 className="f1 tc mb2">Login</h1>
+            <Fade top>
+                <h1 className="f1 tc mb2">Login</h1>
+            </Fade>
+            <Fade delay={400}>
             <form acceptCharset="utf-8">
                 <fieldset id="log_in" className="ba b--transparent ph0 mh0">
                     <legend className="ph0 mh0 fw6 clip">Login</legend>
@@ -101,6 +105,7 @@ const Login = () => {
                 <div className="mt3 tc"><input disabled={isLoading} className="b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" value={isLoading ? "Logging in..." : "Login"} onClick={handleClick}/></div>
                 <div><p className="f5 b red tc">{error}</p></div>
             </form>
+            </Fade>
         </article>
     )
 }

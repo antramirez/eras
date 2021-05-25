@@ -5,7 +5,7 @@ import AddButton from './../AddButton/AddButton';
 import taskIcon from './../../assets/completed-task.png';
 import cross from './../../assets/cross.svg';
 
-const TaskTable = ({tasks, numTasks, state, dispatch, addTask, removeTask, check}) => {
+const TaskTable = ({tasks, state, dispatch, addTask, removeTask, check}) => {
     const [showAddTaskPopUp, setShowAddTaskPopUp] = useState(false);
 
     return (
@@ -18,9 +18,9 @@ const TaskTable = ({tasks, numTasks, state, dispatch, addTask, removeTask, check
                                 <h2 className="f1 mb2 mt2">Tasks</h2>
                                 <div className="num_tasks flex justify-center items-center">
                                     <img className="ma1" src={taskIcon} alt=""/>
-                                    <h3 className="f2 ma1">{numTasks}</h3>
+                                    <h3 className="f2 ma1">{tasks.length}</h3>
                                 </div>
-                                <p className="f3 mb1 mt2">task{numTasks !== 1 && 's'} due this week</p>
+                                <p className="f3 mb1 mt2">task{tasks.length !== 1 && 's'} due this week</p>
                             </th>
                             <th className="check-box"></th>
                         </tr>
@@ -31,10 +31,25 @@ const TaskTable = ({tasks, numTasks, state, dispatch, addTask, removeTask, check
                     </tbody>
                     }
                 </table>
-                {state.isFetching || state.fetchError ? '' : <AddButton onClick={() => setShowAddTaskPopUp(true) }/> }
+                {state.isFetching || state.fetchError ? '' : 
+                    <AddButton onClick={() => {
+                        document.body.style.overflowY = 'hidden';
+                        setShowAddTaskPopUp(true);
+                    }}/>
+                }
             </div>
             <p className="f5 red b tc">{state.deleteError ? state.deleteError : ''}{state.fetchError ? state.fetchError : ''}</p>
-            <AddTaskPopUp visible={showAddTaskPopUp} state={state} dispatch={dispatch} handleClose={() => setShowAddTaskPopUp(false)} handleAdd={addTask} cross={cross}/>
+            <AddTaskPopUp
+                visible={showAddTaskPopUp}
+                state={state}
+                dispatch={dispatch}
+                handleClose={() => {
+                    document.body.style.overflowY = 'scroll';
+                    setShowAddTaskPopUp(false);
+                }}
+                handleAdd={addTask}
+                cross={cross}
+            />
         </div>
     )
 }

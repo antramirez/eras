@@ -12,7 +12,7 @@ import publicationPaperPNG from './../../assets/publication_paper.png';
 import presentationPNG from './../../assets/presentations.png';
 import geometricPNG from './../../assets/geometric.png';
 import paperclipPNG from './../../assets/paperclip.png';
-
+import { Fade } from 'react-reveal';
 
 const Publications = () => {
     const { isLoggedIn } = useContext(UserContext);
@@ -53,6 +53,7 @@ const Publications = () => {
     const handleEditClick = (e, id, title, link, type) => {
         e.preventDefault();
         e.stopPropagation();
+        document.body.style.overflowY = 'hidden';
         setPublicationToEdit({ _id: id, title, link, type });
         setShowEditPopUp(true);
     }
@@ -154,18 +155,45 @@ const Publications = () => {
 
     return (
         <section id="publications" className="ph4 pv4 pv5-ns ph4-m ph5-l">
-            <h1 className="pl3 f1">Publications</h1>
+            <Fade top>
+                <h1 className="pl3 f1">Publications</h1>
+            </Fade>
             {isFetching ? 'Loading publications...' : 
             fetchError ? <p className="f4 red b tc">{fetchError}</p> :
             <>
-            <div className="publications-container mw8 center relative">
-                <div className="flex flex-wrap mw8 center justify-center">
-                    {publications.map(pub => <Publication key={pub._id} title={pub.title} image={imgType(pub.type)} link={pub.link} type={pub.type} handleEdit ={(e) => handleEditClick(e, pub._id, pub.title, pub.link, pub.type)} />)}
-                </div>
-                <AddButton onClick={() => setShowAddPopUp(true)}/>
-            </div>
-            <AddPublicationPopUp visible={showAddPopUp} state={state} dispatch={dispatch} handleClose={() => setShowAddPopUp(false)} handleAdd={handleAddPublication}/>
-            <EditPublicationsPopup publication={publicationToEdit} visible={showEditPopUp} state={state} dispatch={dispatch} handleClose={() => setShowEditPopUp(false)} handleEdit={handleEditPublication} handleDelete={handleDeletePublication} />
+                <Fade delay={300}>
+                    <div className="publications-container mw8 center relative">
+                        <div className="flex flex-wrap mw8 center justify-center">
+                            {publications.map(pub => <Publication key={pub._id} title={pub.title} image={imgType(pub.type)} link={pub.link} type={pub.type} handleEdit ={(e) => handleEditClick(e, pub._id, pub.title, pub.link, pub.type)} />)}
+                        </div>
+                        <AddButton onClick={() => {
+                            document.body.style.overflowY = 'hidden';
+                            setShowAddPopUp(true);
+                        }}/>
+                    </div>
+                </Fade>
+                <AddPublicationPopUp
+                    visible={showAddPopUp}
+                    state={state}
+                    dispatch={dispatch}
+                    handleClose={() => {
+                        document.body.style.overflowY = 'auto';
+                        setShowAddPopUp(false);
+                    }}
+                    handleAdd={handleAddPublication}
+                />
+                <EditPublicationsPopup
+                    publication={publicationToEdit}
+                    visible={showEditPopUp}
+                    state={state}
+                    dispatch={dispatch}
+                    handleClose={() => {
+                        document.body.style.overflowY = 'auto';
+                        setShowEditPopUp(false);
+                    }}
+                    handleEdit={handleEditPublication}
+                    handleDelete={handleDeletePublication}
+                />
             </>}
         </section>
     )
