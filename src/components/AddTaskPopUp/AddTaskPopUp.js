@@ -57,7 +57,7 @@ const AddTaskPopUp = ({visible, state, dispatch, handleClose, handleAdd, cross }
     }
 
     return (
-        <article className="add-task-popup-container  " ref={popUpContainerRef}>
+        <article className="add-task-popup-container dn" ref={popUpContainerRef}>
             <form className="black-80 mw6 center pa4 shadow-5 br3 relative" acceptCharset="utf-8">
                 <button className="close-btn absolute bn bg-transparent" onClick={handleCloseClick}>
                     <img src={cross} alt=""/>
@@ -69,7 +69,7 @@ const AddTaskPopUp = ({visible, state, dispatch, handleClose, handleAdd, cross }
                         <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="task-title" placeholder="Finish application" value={description} onChange={(e) => dispatch({type: 'field', fieldName: 'description', payload: e.target.value})}/>
                     </div>
                 </fieldset>
-                <button disabled={isAdding} className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleAddClick}>{isAdding ? 'Adding...' : 'Add'}</button>
+                <button disabled={isAdding} className={`mt3 mb2 b ph3 pv2 input-reset f6 ba b--black ${isAdding ? '' : 'grow pointer'}`} type="submit" onClick={handleAddClick}>{isAdding ? 'Adding...' : 'Add'}</button>
                 <p className="f5 b red tc">{addError}</p>
             </form>
         </article>

@@ -11,7 +11,7 @@ const AddCoursePopUp = ({visible, state, dispatch, handleClose, handleAdd}) => {
     // display the popup everytime visible is true, which happens when add button is pressed
     useEffect(() => {
         resetState();
-        
+
         if (visible) {
             if (popUpContainerRef.current) {
                 popUpContainerRef.current.classList.remove('dn');
@@ -23,6 +23,7 @@ const AddCoursePopUp = ({visible, state, dispatch, handleClose, handleAdd}) => {
                 popUpContainerRef.current.classList.remove('flex', 'content-center', 'justify-center', 'items-center');
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [visible])
 
     // Function to reset fields and error of state
@@ -69,7 +70,7 @@ const AddCoursePopUp = ({visible, state, dispatch, handleClose, handleAdd}) => {
     }
 
     return (
-        <article className="add-course-popup-container" ref={popUpContainerRef}>
+        <article className="add-course-popup-container dn" ref={popUpContainerRef}>
             <form className="black-80 mw6 center pa4 shadow-5 br3 relative" acceptCharset="utf-8">
                 <button className="close-btn absolute bn bg-transparent" onClick={handleCloseClick}>
                     <img src={cross} alt=""/>
@@ -83,7 +84,7 @@ const AddCoursePopUp = ({visible, state, dispatch, handleClose, handleAdd}) => {
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="course-grade">Grade</label>
                         <select className="w-100 mt1 bn" name="course-grade" id="course-grade" value={grade} onChange={(e) => dispatch({type: 'field', fieldName: 'grade', payload: e.target.value})}>
-                            <option ref={selectOptionRef} value="" selected disabled hidden></option>
+                            <option ref={selectOptionRef} value="" disabled hidden></option>
                             <option value="1">Fail</option>
                             <option value="2">Pass</option>
                             <option value="3">High Pass</option>
@@ -91,7 +92,7 @@ const AddCoursePopUp = ({visible, state, dispatch, handleClose, handleAdd}) => {
                         </select>
                     </div>
                 </fieldset>
-                <button disabled={isAdding} className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleAddClick}>{isAdding ? 'Adding...' : 'Add'}</button>
+                <button disabled={isAdding} className={`mt3 mb2 b ph3 pv2 input-reset f6 ba b--black ${isAdding ? '' : 'grow pointer'}`}  type="submit" onClick={handleAddClick}>{isAdding ? 'Adding...' : 'Add'}</button>
                 <p className="f5 b red tc">{addError}</p>
             </form>
         </article>

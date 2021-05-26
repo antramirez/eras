@@ -29,11 +29,6 @@ const Scores = () => {
             }, () => {
                 dispatch({ type: 'fetch_error', payload: "Could not load your scores, please try again later." });
             });
-
-            // Set error message if api can't be accessed
-            if (!state.fetchSuccess) {
-                dispatch({ type: 'fetch_error', payload: 'Could not load your scores, please try again later.' });
-            }
         } else {
             setUser({...user, step1: 260, step2: 0}); // fake user, only sets scores
             dispatch({ type: 'field', fieldName: 'step1', payload: 260 });

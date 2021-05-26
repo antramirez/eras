@@ -23,6 +23,7 @@ const EditCoursePopUp = ({course, state, dispatch, visible, handleClose, handleE
                 popUpContainerRef.current.classList.remove('flex', 'content-center', 'justify-center', 'items-center');
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [visible])
 
     // Reset input fields
@@ -73,7 +74,7 @@ const EditCoursePopUp = ({course, state, dispatch, visible, handleClose, handleE
     }
 
     return (
-        <article className="edit-course-popup-container" ref={popUpContainerRef}>
+        <article className="edit-course-popup-container dn" ref={popUpContainerRef}>
             <form className="black-80 mw6 center pa4 shadow-5 br3 relative" acceptCharset="utf-8">
                 <button className="close-btn absolute bn bg-transparent" onClick={handleCloseClick}>
                     <img src={cross} alt=""/>
@@ -87,7 +88,7 @@ const EditCoursePopUp = ({course, state, dispatch, visible, handleClose, handleE
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="course-grade">Grade</label>
                         <select className="w-100 mt1 bn" name="course-grade" value={grade} onChange={(e) => dispatch({type: 'field', fieldName: 'grade', payload: e.target.value})}>
-                            <option value="" selected disabled hidden></option>
+                            <option value="" disabled hidden></option>
                             <option value="1">Fail</option>
                             <option value="2">Pass</option>
                             <option value="3">High Pass</option>
@@ -96,8 +97,8 @@ const EditCoursePopUp = ({course, state, dispatch, visible, handleClose, handleE
                     </div>
                 </fieldset>
                 <div className="buttons tc">
-                    <button disabled={isEditing || isDeleting} className="mt3 mb2 mr2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleEditClick}>{isEditing ? 'Editing...' : 'Edit'}</button>
-                    <button disabled={isDeleting || isEditing} className="mt3 mb2 ml2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleDeleteClick}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
+                    <button disabled={isEditing || isDeleting} className={`mt3 mb2 mr2 b ph3 pv2 input-reset f6 ba b--black ${isEditing || isDeleting ? '' : 'grow pointer'}`} type="submit" onClick={handleEditClick}>{isEditing ? 'Editing...' : 'Edit'}</button>
+                    <button disabled={isDeleting || isEditing} className={`mt3 mb2 ml2 b ph3 pv2 input-reset f6 ba b--black ${isEditing || isDeleting ? '' : 'grow pointer'}`} type="submit" onClick={handleDeleteClick}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
                 </div>
                 <p className="f5 red b tc">{deleteError ? deleteError : ''}{editError ? editError : ''}</p>
             </form>

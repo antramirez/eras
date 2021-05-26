@@ -38,11 +38,6 @@ const Publications = () => {
             }, () => {
                 dispatch({ type: 'fetch_error', payload: "Could not load your publications, please try again later." });
             });
-
-            // Set error message if api can't be accessed
-            if (!state.fetchSuccess) {
-                dispatch({ type: 'fetch_error', payload: 'Could not load your publications, please try again later.' });
-            }
         } else {
             setPublications(fakePublications);
         }

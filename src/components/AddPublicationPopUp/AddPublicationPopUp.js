@@ -21,7 +21,7 @@ const AddPublicationPopUp = ({ visible, state, dispatch, handleClose, handleAdd}
                 popUpContainerRef.current.classList.remove('flex', 'content-center', 'justify-center', 'items-center');
             }
         }
-        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [visible])
     
     // Function to reset fields and error of state
@@ -83,7 +83,7 @@ const AddPublicationPopUp = ({ visible, state, dispatch, handleClose, handleAdd}
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="publication-type">Type</label>
                         <select className="w-100 mt1 bn" name="publication-type" value={type} onChange={(e) => dispatch({type: 'field', fieldName: 'type', payload: e.target.value})}>
-                            <option value="" selected disabled hidden></option>
+                            <option value="" disabled hidden></option>
                             <option value="Paper">Paper</option>
                             <option value="Abstract">Abstract</option>
                             <option value="Presentation">Presentation</option>
@@ -95,7 +95,7 @@ const AddPublicationPopUp = ({ visible, state, dispatch, handleClose, handleAdd}
                         <input className="pa2 input-reset bt-0 bl-0 br-0 bb bg-transparent w-100 measure" type="text" name="link" placeholder="https://amsrj.org/index.php?journal=amsrj&page=article&op=view&path%5B%5D=507" value={link} onChange={(e) => dispatch({type: 'field', fieldName: 'link', payload: e.target.value})} />
                     </div>
                 </fieldset>
-                <button disabled={isAdding} className=" mt3 mb2   b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleAddClick} >{isAdding ? 'Adding...' : 'Add'}</button>
+                <button disabled={isAdding} className={`mt3 mb2 b ph3 pv2 input-reset f6 ba b--black ${isAdding ? '' : 'grow pointer'}`} type="submit" onClick={handleAddClick} >{isAdding ? 'Adding...' : 'Add'}</button>
                 <p className="f5 b red tc">{addError}</p>
             </form>
         </article>

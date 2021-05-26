@@ -54,7 +54,7 @@ const FileUpload = ({state, type, label, handleUpload}) => {
                 </div>
                 <div className="file-name-container mb1 mw6 center tc dn" ref={uploadButtonContainerRef}>
                     <p className="f4 mt1 mb3">{fileName}<span>
-                        <button className="mt3 mb2 ml3 b--black bg-transparent ba b ph3 pv2 grow pointer f6" onClick={handleUploadFile} >
+                        <button className={`mt3 mb2 ml3 b ph3 pv2 input-reset f6 ba b--black bg-transparent ${isAddingTranscript || isAddingRecommendation || isAddingOther ? '' : 'grow pointer'}`} onClick={handleUploadFile} >
                             {(() => {
                                 if (type === 'transcript') {
                                     return isAddingTranscript ? 'Uploading...' : 'Upload';

@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import cross from './../../assets/cross.svg';
 
 const EditScorePopUp = ({step, state, dispatch, visible, handleClose, handleEdit, handleDelete}) => {
@@ -25,7 +25,7 @@ const EditScorePopUp = ({step, state, dispatch, visible, handleClose, handleEdit
                 popUpContainerRef.current.classList.remove('flex', 'content-center', 'justify-center', 'items-center');
             }
         }
-        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [visible])
 
     // Reset input fields
@@ -50,7 +50,7 @@ const EditScorePopUp = ({step, state, dispatch, visible, handleClose, handleEdit
         e.preventDefault();
 
         // Make sure score is valid
-        if (scoreField.trim() === '' || isNaN(scoreField.trim()) || (!isNaN(scoreField.trim()) && parseInt(scoreField.trim()) < 1 || parseInt(scoreField.trim()) > 300)) {
+        if (scoreField.trim() === '' || isNaN(scoreField.trim()) || (!isNaN(scoreField.trim()) && (parseInt(scoreField.trim()) < 1 || parseInt(scoreField.trim()) > 300))) {
             dispatch({type: 'edit_error', payload: 'Please enter a valid score 1-300.'});
         } else {
             // Check if edit was successful after possible api call
@@ -73,7 +73,7 @@ const EditScorePopUp = ({step, state, dispatch, visible, handleClose, handleEdit
     }
 
     return (
-        <article className="edit-score-popup-container  " ref={popUpContainerRef}>
+        <article className="edit-score-popup-container dn" ref={popUpContainerRef}>
             <form className="black-80 mw6 center pa4 shadow-5 br3 relative" acceptCharset="utf-8">
                 <button className="close-btn absolute bn bg-transparent" onClick={handleCloseClick}>
                     <img src={cross} alt=""/>
@@ -86,8 +86,8 @@ const EditScorePopUp = ({step, state, dispatch, visible, handleClose, handleEdit
                         onChange={ (e) => dispatch({type: 'field', fieldName: scoreFieldName, payload: e.target.value}) } />
                     </div>
                 </fieldset>
-                <button disabled={isEditing || isDeleting} className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleEditClick}>{isEditing ? 'Editing...' : 'Edit'}</button>
-                <button disabled={isDeleting || isEditing} className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6 ml2" type="submit" onClick={handleDeleteClick}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
+                <button disabled={isEditing || isDeleting} className={`mt3 mb2 mr2 b ph3 pv2 input-reset f6 ba b--black ${isEditing || isDeleting ? '' : 'grow pointer'}`} type="submit" onClick={handleEditClick}>{isEditing ? 'Editing...' : 'Edit'}</button>
+                {score ? <button disabled={isDeleting || isEditing} className={`mt3 mb2 ml2 b ph3 pv2 input-reset f6 ba b--black ${isEditing || isDeleting ? '' : 'grow pointer'}`} type="submit" onClick={handleDeleteClick}>{isDeleting ? 'Deleting...' : 'Delete'}</button> : ''}
                 <p className="f5 red b tc">{deleteError ? deleteError : ''}{editError ? editError : ''}</p>
             </form>
         </article>

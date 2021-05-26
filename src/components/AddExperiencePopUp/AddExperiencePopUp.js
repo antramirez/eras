@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import cross from './../../assets/cross.svg';
 
 const AddExperiencePopUp = ({visible, state, dispatch, handleClose, handleAdd}) => {
@@ -23,7 +23,7 @@ const AddExperiencePopUp = ({visible, state, dispatch, handleClose, handleAdd}) 
                 popUpContainerRef.current.classList.remove('flex', 'content-center', 'justify-center', 'items-center');
             }
         }
-        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [visible])
 
     // Function to reset fields and error of state
@@ -92,7 +92,7 @@ const AddExperiencePopUp = ({visible, state, dispatch, handleClose, handleAdd}) 
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="experience-type">Type</label>
                         <select className="w-100 mt1 bn" name="experience-type" value={type} onChange={(e) => dispatch({type: 'field', fieldName: 'type', payload: e.target.value})}>
-                            <option ref={selectOptionRef} value="" selected disabled hidden></option>
+                            <option ref={selectOptionRef} value="" disabled hidden></option>
                             <option value="Volunteering">Volunteering</option>
                             <option value="Work">Work</option>
                             <option value="Other">Other</option>
@@ -108,10 +108,10 @@ const AddExperiencePopUp = ({visible, state, dispatch, handleClose, handleAdd}) 
                     </div>
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="description">Description</label>
-                        <textarea className="experience-description pa2 input-reset bn w-100 measure" type="text" maxlength="500" name="description" placeholder="Max 500 character limit" value={description} onChange={(e) => dispatch({type: 'field', fieldName: 'description', payload: e.target.value})}/>
+                        <textarea className="experience-description pa2 input-reset bn w-100 measure" type="text" maxLength="500" name="description" placeholder="Max 500 character limit" value={description} onChange={(e) => dispatch({type: 'field', fieldName: 'description', payload: e.target.value})}/>
                     </div>
                 </fieldset>
-                <button disabled={isAdding} className=" mt3 mb2   b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleAddClick} >{isAdding ? 'Adding...' : 'Add'}</button>
+                <button disabled={isAdding} className={`mt3 mb2 b ph3 pv2 input-reset f6 ba b--black ${isAdding ? '' : 'grow pointer'}`}  type="submit" onClick={handleAddClick} >{isAdding ? 'Adding...' : 'Add'}</button>
                 <p className="f5 b red tc">{addError}</p>
             </form>
         </article>

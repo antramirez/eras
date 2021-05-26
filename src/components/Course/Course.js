@@ -19,7 +19,9 @@ const Course = ({title, grade, handleEdit}) => {
         <tr className="stripe-dark relative">
             <td className="pa3 f5">{title}</td>
             {row.map(cell => cell)}
-            <button className="edit-btn bg-transparent bn b grow" onClick={handleClick}><img src={editPNG} alt="Edit icon"/></button>
+            <td>
+                <button className="edit-btn bg-transparent bn b grow" onClick={handleClick}><img src={editPNG} alt="Edit icon"/></button>
+            </td>
         </tr>
     )
 }

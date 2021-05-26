@@ -25,6 +25,7 @@ const EditPublicationsPopUp = ({publication, visible, state, dispatch, handleClo
                 popUpContainerRef.current.classList.remove('flex', 'content-center', 'justify-center', 'items-center');
             }
         }   
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [visible])
 
     const handleCloseClick = (e) => {
@@ -77,7 +78,7 @@ const EditPublicationsPopUp = ({publication, visible, state, dispatch, handleClo
     }
 
     return (
-        <article className="edit-publications-popup-container" ref={popUpContainerRef}>
+        <article className="edit-publications-popup-container dn" ref={popUpContainerRef}>
             <form className="black-80 mw6 center pa4 shadow-5 br3 relative" acceptCharset="utf-8">
                 <button className="close-btn absolute bn bg-transparent" onClick={handleCloseClick}>
                     <img src={cross} alt=""/>
@@ -103,8 +104,8 @@ const EditPublicationsPopUp = ({publication, visible, state, dispatch, handleClo
                     </div>
                 </fieldset>
                 <div className="tc">
-                    <button disabled={isEditing || isDeleting} className=" mt3 mb2 mr2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleEditClick}>{isEditing ? 'Editing...' : 'Edit'}</button>
-                    <button disabled={isDeleting || isEditing} className=" mt3 mb2 ml2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleDeleteClick}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
+                    <button disabled={isEditing || isDeleting} className={`mt3 mb2 mr2 b ph3 pv2 input-reset f6 ba b--black ${isEditing || isDeleting ? '' : 'grow pointer'}`} type="submit" onClick={handleEditClick}>{isEditing ? 'Editing...' : 'Edit'}</button>
+                    <button disabled={isDeleting || isEditing} className={`mt3 mb2 ml2 b ph3 pv2 input-reset f6 ba b--black ${isEditing || isDeleting ? '' : 'grow pointer'}`} type="submit" onClick={handleDeleteClick}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
                 </div>
                 <p className="f5 red b tc">{deleteError ? deleteError : ''}{editError ? editError : ''}</p>
             </form>

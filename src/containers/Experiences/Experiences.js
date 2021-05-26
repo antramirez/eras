@@ -10,6 +10,7 @@ import AddButton from './../../components/AddButton/AddButton';
 import './Experiences.css';
 import volunteeringPNG from './../../assets/experience_volunteering.png';
 import workPNG from './../../assets/experiences_work.png';
+import otherPNG from './../../assets/other_experience.png';
 import { Fade } from 'react-reveal';
 
 const Experiences = () => {
@@ -47,11 +48,6 @@ const Experiences = () => {
             }, () => {
                 dispatch({ type: 'fetch_error', payload: "Could not load your experiences, please try again later." });
             });
-
-            // Set error message if api can't be accessed
-            if (!state.fetchSuccess) {
-                dispatch({ type: 'fetch_error', payload: 'Could not load your experiences, please try again later.' });
-            }
         } else {
             setExperiences(fakeExperiences);
         }
@@ -182,7 +178,7 @@ const Experiences = () => {
             case'Work':
                 return workPNG;
             case 'Other':
-                return workPNG; // TODO: find new image
+                return otherPNG;
             default: 
                 return workPNG;
         }

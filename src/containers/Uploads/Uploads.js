@@ -47,11 +47,6 @@ const Uploads = () => {
             }, () => {
                 dispatch({ type: 'fetch_error', payload: "Could not load your documents, please try again later." });
             });
-
-            // Set error message if api can't be accessed
-            if (!state.fetchSuccess) {
-                dispatch({ type: 'fetch_error', payload: 'Could not load your documents, please try again later.' });
-            }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])

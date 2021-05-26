@@ -23,6 +23,7 @@ function App() {
     }
 
     setIsloading(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn])
 
   return (

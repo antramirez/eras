@@ -29,11 +29,6 @@ const GoalsAndTasks = () => {
             }, () => {
                 dispatch({ type: 'fetch_error', payload: 'Could not load your tasks, please try again later.' });
             })
-            
-            // Set error message if api can't be accessed
-            if (!state.fetchSuccess) {
-                dispatch({ type: 'fetch_error', payload: 'Could not load your tasks, please try again later.' });
-            }
         } else {
             setTasks(fakeTasks);
         }

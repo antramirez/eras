@@ -78,12 +78,7 @@ const SignUp = () => {
     
                 // go back to homepage
                 history.replace(from);
-            }, (e) => dispatch({ type: 'error', payload: e.error }));
-
-            // Set error message if api can't be accessed
-            if (!success) {
-                dispatch({ type: 'error', payload: 'An error occurred, please try again later.' });
-            }
+            }, (e) => dispatch({ type: 'error', payload: e.error || 'An error occurred, please try again later.' }));
         }
     }
 

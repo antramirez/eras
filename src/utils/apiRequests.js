@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const URL = 'http://localhost:5000';
+const URL = 'https://eras-api-djig9uqfe22ss4.herokuapp.com';
 
 const getAuthToken = () => {
     const authToken = localStorage.getItem('token');
@@ -25,6 +25,8 @@ const apiRequest = async (endpoint, method, data, handleData, handleError) => {
     } catch (e) {
         if (e.response) {
             handleError(e.response.data);
+        } else if (e.message) {
+            handleError(e.message);
         }
     }
 }
@@ -44,6 +46,8 @@ const idApiRequest = async (endpoint, id, method, data, handleData, handleError)
     } catch (e) {
         if (e.response) {
             handleError(e.response.data);
+        } else if (e.message) {
+            handleError(e.message);
         }
     }
 }

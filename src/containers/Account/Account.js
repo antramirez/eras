@@ -18,12 +18,26 @@ const Account = () => {
             accountGraduationYear: graduationYear,
             accountLegalUS: legalUS,
             accountNeedVisa: needVisa,
-            isLoading: false,
-            success: false,
-            error: ''
+            isSaving: false,
+            saveSuccess: false,
+            saveError: '',
+            isLoggingOut: false,
+            logoutSuccess: false,
+            logoutError: ''
         }
     )
-    const {accountFirstName, accountLastName, accountGraduationYear, accountLegalUS, accountNeedVisa, isLoading, success, error} = state;
+    const { 
+        accountFirstName,
+        accountLastName,
+        accountGraduationYear,
+        accountLegalUS,
+        accountNeedVisa,
+        isSaving,
+        saveSuccess,
+        saveError,
+        isLoggingOut,
+        logoutError
+    } = state;
 
     // variables to redirect user back to homepage after logout
     let history = useHistory();
@@ -36,14 +50,14 @@ const Account = () => {
     }, [])
     
     // Handler for updating account
-    const handleSaveClick = (e) => {
+    const handleSaveClick = async (e) => {
         e.preventDefault();
 
         if (accountFirstName === '' || accountLastName === '') {
-            dispatch({ type: 'error', payload: 'Please fill out all fields' });
+            dispatch({ type: 'save_error', payload: 'Please fill out all fields' });
         } else {
             dispatch({ type: 'save' });
-            apiRequest('account', 'PATCH', 
+            await apiRequest('account', 'PATCH', 
             {
                 firstName: accountFirstName,
                 lastName: accountLastName,
@@ -53,12 +67,12 @@ const Account = () => {
             }, (data) => {
                 localStorage.setItem('currentUser', JSON.stringify(data));
                 setUser(data);
-                dispatch({ type: 'success' });
-            }, (e) => dispatch({ type: 'error', payload: 'Couldn\'t update account, please try again.' }));
+                dispatch({ type: 'save_success' });
+            }, (e) => dispatch({ type: 'save_error', payload: 'Couldn\'t update account, please try again later.' }));
         }
     }
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         setIsLoggedIn(false);
         setUser({});
         localStorage.clear();
@@ -120,7 +134,7 @@ const Account = () => {
                                     })
                                 }
                             >
-                                <option value="" selected disabled hidden></option>
+                                <option value="" disabled hidden></option>
                                 <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
                                 <option value={new Date().getFullYear() + 1}>{new Date().getFullYear() + 1}</option>
                                 <option value={new Date().getFullYear() + 2}>{new Date().getFullYear() + 2}</option>
@@ -210,11 +224,12 @@ const Account = () => {
                             </div>
                         </div>
                     </fieldset>
-                    <button disabled={isLoading} className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleSaveClick}>{isLoading ? 'Saving...' : 'Save'}</button>
+                    <button disabled={isSaving} className={`mt3 mb2 b ph3 pv2 input-reset f6 ba b--black ${isSaving ? '' : 'grow pointer'}`} type="submit" onClick={handleSaveClick}>{isSaving ? 'Saving...' : 'Save'}</button>
                 </form>
-                <p className="f5 b red">{error}</p>
-                <p className="f5 b green">{success ? 'Account updated.' : ''}</p>
-                <button className=" mt3 mb2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleLogout}>{isLoading ? 'Logging out...' : 'Logout'}</button>
+                <p className="f5 b red">{saveError}</p>
+                <p className="f5 b green">{saveSuccess ? 'Account updated.' : ''}</p>
+                <button className={` mt3 mb2 b ph3 pv2 input-reset f6 ba b--black ${isLoggingOut ? '' : 'grow pointer'}`} type="submit" onClick={handleLogout}>{isLoggingOut ? 'Logging out...' : 'Logout'}</button>
+                <p className="f5 b red">{logoutError}</p>
                 </Fade>
             </article>
         </section>

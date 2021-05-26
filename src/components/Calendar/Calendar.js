@@ -47,6 +47,7 @@ const Calendar = ({events, eventToAdd = {}, eventToRemove = {}, handleAdd, handl
         handleRemove();
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventToAdd, eventToRemove])
 
   return (

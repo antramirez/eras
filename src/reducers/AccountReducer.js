@@ -8,22 +8,42 @@ export function accountReducer(state, action) {
         case 'save':
             return {
                 ...state,
-                error: '',
-                isLoading: true,
-                success: false
+                saveError: '',
+                isSaving: true,
+                saveSuccess: false
             }
-        case 'success':
+        case 'save_success':
             return {
                 ...state,
-                isLoading: false,
-                success: true
+                isSaving: false,
+                saveSuccess: true
             }
-        case 'error':
+        case 'save_error':
             return {
                 ...state,
-                error: action.payload,
-                isLoading: false,
-                success: false
+                saveError: action.payload,
+                isSaving: false,
+                saveSuccess: false
+            }
+        case 'logout':
+            return {
+                ...state,
+                logoutError: '',
+                isLoggingOut: true,
+                logoutSuccess: false
+            }
+        case 'logout_success':
+            return {
+                ...state,
+                isLoggingOut: false,
+                logoutSuccess: true
+            }
+        case 'logout_error':
+            return {
+                ...state,
+                logoutError: action.payload,
+                isLoggingOut: false,
+                saveSuccess: false
             }
         default:
             return;

@@ -21,7 +21,7 @@ const Courses = () => {
     const [fakeIdCounter, setFakeIdCounter] = useState(6);
     
     // Course object to pass into edit form
-    const [courseToEdit, setCourseToEdit] = useState({_id: 0, title: '', grade: 0});
+    const [courseToEdit, setCourseToEdit] = useState({_id: 0, name: '', grade: 0});
     const [courses, setCourses] = useState([]);
 
     useEffect(() => {
@@ -33,11 +33,6 @@ const Courses = () => {
             }, () => {
                 dispatch({ type: 'fetch_error', payload: "Could not load your clerkship grades, please try again later." });
             });
-
-            // Set error message if api can't be accessed
-            if (!state.fetchSuccess) {
-                dispatch({ type: 'fetch_error', payload: 'Could not load your clerkship grades, please try again later.' });
-            }
         } else {
             setCourses(fakeCourses);
         }

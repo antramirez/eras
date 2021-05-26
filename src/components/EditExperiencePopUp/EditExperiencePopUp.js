@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import cross from './../../assets/cross.svg';
 
 const EditExperiencePopUp = ({experience, state, dispatch, visible, handleClose, handleEdit, handleDelete}) => {
@@ -27,7 +27,7 @@ const EditExperiencePopUp = ({experience, state, dispatch, visible, handleClose,
                 popUpContainerRef.current.classList.remove('flex', 'content-center', 'justify-center', 'items-center');
             }
         }
-        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [visible])
 
     const handleCloseClick = (e) => {
@@ -83,7 +83,7 @@ const EditExperiencePopUp = ({experience, state, dispatch, visible, handleClose,
     }
 
     return (
-        <article className="edit-experience-popup-container  " ref={popUpContainerRef}>
+        <article className="edit-experience-popup-container dn" ref={popUpContainerRef}>
             <form className="black-80 mw6 center pa4 shadow-5 br3 relative" acceptCharset="utf-8">
                 <button className="close-btn absolute bn bg-transparent" onClick={handleCloseClick}>
                     <img src={cross} alt=""/>
@@ -101,7 +101,7 @@ const EditExperiencePopUp = ({experience, state, dispatch, visible, handleClose,
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="edit-experience-type">Type</label>
                         <select className="w-100 mt1 bn" name="edit-experience-type" value={type} onChange={(e) => dispatch({type: 'field', fieldName: 'type', payload: e.target.value})}>
-                            <option value="" selected disabled hidden></option>
+                            <option value="" disabled hidden></option>
                             <option value="Volunteering">Volunteering</option>
                             <option value="Work">Work</option>
                             <option value="Other">Other</option>
@@ -117,12 +117,12 @@ const EditExperiencePopUp = ({experience, state, dispatch, visible, handleClose,
                     </div>
                     <div className="mt3">
                         <label className="db fw4 lh-copy f5" htmlFor="edit-description">Description</label>
-                        <textarea className="experience-description pa2 input-reset bn w-100 measure" type="text" maxlength="500" name="edit-description" placeholder="Max 500 character limit" value={description} onChange={(e) => dispatch({type: 'field', fieldName: 'description', payload: e.target.value})}/>
+                        <textarea className="experience-description pa2 input-reset bn w-100 measure" type="text" maxLength="500" name="edit-description" placeholder="Max 500 character limit" value={description} onChange={(e) => dispatch({type: 'field', fieldName: 'description', payload: e.target.value})}/>
                     </div>
                 </fieldset>
                 <div className="tc">
-                    <button disabled={isEditing || isDeleting} className=" mt3 mb2 mr2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleEditClick}>{isEditing ? 'Editing...' : 'Edit'}</button>
-                    <button disabled={isDeleting || isEditing} className=" mt3 mb2 ml2 b ph3 pv2 input-reset ba b--black grow pointer f6" type="submit" onClick={handleDeleteClick}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
+                    <button disabled={isEditing || isDeleting} className={`mt3 mb2 mr2 b ph3 pv2 input-reset f6 ba b--black ${isEditing || isDeleting ? '' : 'grow pointer'}`} type="submit" onClick={handleEditClick}>{isEditing ? 'Editing...' : 'Edit'}</button>
+                    <button disabled={isDeleting || isEditing} className={`mt3 mb2 ml2 b ph3 pv2 input-reset f6 ba b--black ${isEditing || isDeleting ? '' : 'grow pointer'}`} type="submit" onClick={handleDeleteClick}>{isDeleting ? 'Deleting...' : 'Delete'}</button>
                 </div>
                 <p className="f5 red b tc">{deleteError ? deleteError : ''}{editError ? editError : ''}</p>
             </form>

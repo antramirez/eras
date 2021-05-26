@@ -4,6 +4,7 @@ import { Link as NavLink, useLocation } from "react-router-dom";
 import { Link } from 'react-scroll';
 import './Navigation.css';
 import userPNG from './../../assets/user.png';
+import home from './../../assets/home.png';
 import cross from './../../assets/cross.svg';
 
 const Navigation = () => {
@@ -66,7 +67,7 @@ const Navigation = () => {
                 }
                 
                 {isLoggedIn && !isHomepage &&
-                    <NavLink activeClass="active" className="link dim white dib mr3" to="/" title="Home">Home</NavLink>
+                    <NavLink activeClass="active" className="link dim white dib mr3 home-icon" to="/" title="Home"><img src={home} alt="Go back home"/></NavLink>
                 }
 
                 {!isLoggedIn && !isHomepage && 
